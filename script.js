@@ -220,7 +220,7 @@ if (currentUser) {
     };
   }
 }
-});
+;
 
 // ==========================================
 // 3. GERENCIAMENTO VISUAL DA SESSÃO DO USUÁRIO (ROBUSTO)
@@ -334,3 +334,12 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
   }
+
+  // Força a abertura do calendário ao clicar em qualquer ponto da caixa de data
+  document.querySelectorAll('input[type="date"]').forEach(dateInput => {
+    dateInput.addEventListener('click', () => {
+      if (typeof dateInput.showPicker === 'function') {
+        dateInput.showPicker();
+      }
+    });
+  });

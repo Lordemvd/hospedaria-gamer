@@ -2281,3 +2281,24 @@ body {
         display: none;
     }
 }
+
+/* ==========================================================================
+   AJUSTE DE CALENDÁRIO GLOBAL EM INPUTS DE DATA
+   ========================================================================== */
+input[type="date"] {
+  cursor: pointer;
+  position: relative;
+}
+
+/* Força o ícone nativo do calendário a adotar tons ciano/néon nos navegadores WebKit/Chromium */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  filter: invert(0.8) sepia(100%) saturate(600%) hue-rotate(140deg);
+  opacity: 0.85;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+  transform: scale(1.15);
+}
