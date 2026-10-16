@@ -427,7 +427,7 @@ body {
   color: var(--text-muted);
 }
 /* ==========================================================================
-   7. BAR & GASTRONOMIA (TEXTO NO TOPO & 3 COLUNAS) & RODAPÉ
+   7. BAR & GASTRONOMIA (IMAGENS AMPLIADAS & DESTAQUE COMERCIAL)
    ========================================================================== */
 
 /* Fundo Temático e Subtítulo */
@@ -471,7 +471,7 @@ body {
   box-shadow: 0 10px 30px rgba(176, 38, 255, 0.3);
 }
 
-/* Cabeçalho do Card: Texto no Topo com Efeito Neon */
+/* Cabeçalho do Card (Texto no Topo com Efeito Neon) */
 .menu-header-top {
   padding: 22px 22px 14px 22px;
   display: flex;
@@ -525,13 +525,13 @@ body {
   box-shadow: 0 0 8px rgba(255, 215, 0, 0.25);
 }
 
-/* Moldura e Imagem no Meio do Card */
+/* Moldura Ampliada da Imagem (Agora com 280px de altura para valorizar os produtos) */
 .menu-item-img-wrapper {
   position: relative;
   width: 100%;
-  height: 200px;
-  min-height: 200px;
-  max-height: 200px;
+  height: 280px;
+  min-height: 280px;
+  max-height: 280px;
   overflow: hidden;
   background: #090a10;
 }
@@ -546,11 +546,16 @@ body {
   transition: transform 0.4s ease;
 }
 
+/* Enquadramento customizado do drink Mana para centralizar o copo */
+.menu-item-card:nth-child(2) .menu-thumb {
+  object-position: center 35%;
+}
+
 .menu-item-card:hover .menu-thumb {
   transform: scale(1.08);
 }
 
-/* Rodapé do Card com Preço */
+/* Rodapé do Card */
 .menu-footer {
   display: flex;
   justify-content: space-between;
@@ -573,11 +578,49 @@ body {
   color: var(--text-muted);
 }
 
-/* Responsividade para Telas Menores */
+/* Responsividade para Telas Médias e Celulares */
 @media (max-width: 992px) {
   .menu-grid {
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   }
+}
+
+/* ==========================================================================
+   RODAPÉ (MANTIDO INTACTO)
+   ========================================================================== */
+.footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 40px 8%;
+  background: #06070a;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.footer-content p {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.footer-links {
+  display: flex;
+  gap: 20px;
+}
+
+.footer-links a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: var(--transition);
+}
+
+.footer-links a:hover {
+  color: var(--neon-cyan);
 }
 
 /* ==========================================================================
