@@ -1605,13 +1605,16 @@ body {
 }
 
 .main-image-frame {
-    width: 100%;
-    height: 100%;
-    position: relative;
-    display: flex;
-    align-items: flex-end;
-    padding: 30px;
-    transition: opacity 0.3s ease, background 0.4s ease;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  padding: 30px;
+  background-color: #090a10;
+  background-size: cover;
+  background-position: center;
+  transition: opacity 0.25s ease, background-image 0.3s ease;
 }
 
 .image-overlay-info {
