@@ -343,3 +343,15 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   });
+
+  // Inicialização do Calendário Gamer Temático
+  if (typeof flatpickr !== 'undefined') {
+    flatpickr("input[type='date']", {
+      locale: "pt",
+      dateFormat: "Y-m-d",
+      altInput: true,
+      altFormat: "d/m/Y",
+      minDate: "today",
+      disableMobile: true // Garante o visual gamer mesmo em smartphones
+    });
+  }

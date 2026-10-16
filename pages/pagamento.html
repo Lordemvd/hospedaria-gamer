@@ -11,7 +11,10 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap"
         rel="stylesheet">
-</head>
+    <!-- Flatpickr (Calendário Customizável) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+    </head>
 
 <body>
 
@@ -71,8 +74,8 @@
                         <p class="pix-instruction">Escaneie o QR Code no app do seu banco ou use a chave Copia e Cola:
                         </p>
                         <div class="copy-paste-group">
-                            <input type="text" id="pixKey"
-                                value="00020126580014BR.GOV.BCB.PIX0136nexusinn-reserva-gamer-9843252040000" readonly>
+                            <input type="text" id="pixKey" aria-label="Chave Copia e Cola do PIX" 
+                            value="00020126580014BR.GOV.BCB.PIX0136nexusinn-reserva-gamer-9843252040000" readonly>
                             <button type="button" id="btnCopyPix" class="btn-secondary">Copiar</button>
                         </div>
                         <button type="button" id="btnConfirmPix" class="btn-primary btn-full-width">Já fiz o
@@ -255,6 +258,8 @@
             });
         });
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
 </body>
 
 </html>

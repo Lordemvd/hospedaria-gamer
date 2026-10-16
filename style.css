@@ -2302,3 +2302,100 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   opacity: 1;
   transform: scale(1.15);
 }
+
+/* ==========================================================================
+   CALENDÁRIO TEMÁTICO NEXUS INN (FLATPICKR NEON DARK)
+   ========================================================================== */
+.flatpickr-calendar {
+  background: #090a12 !important;
+  border: 1px solid var(--neon-cyan) !important;
+  box-shadow: 0 0 25px rgba(0, 240, 255, 0.3) !important;
+  border-radius: 8px !important;
+  font-family: var(--font-body) !important;
+}
+
+.flatpickr-calendar.arrowTop:before,
+.flatpickr-calendar.arrowTop:after {
+  border-bottom-color: var(--neon-cyan) !important;
+}
+
+.flatpickr-calendar.arrowBottom:before,
+.flatpickr-calendar.arrowBottom:after {
+  border-top-color: var(--neon-cyan) !important;
+}
+
+/* Cabeçalho do Mês e Ano */
+.flatpickr-months {
+  background: rgba(18, 20, 31, 0.9) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  padding: 8px 0 !important;
+  border-radius: 8px 8px 0 0 !important;
+}
+
+.flatpickr-current-month {
+  font-family: var(--font-display) !important;
+  font-size: 1rem !important;
+  color: #ffffff !important;
+}
+
+.flatpickr-current-month .flatpickr-monthDropdown-months {
+  background: #090a12 !important;
+  color: var(--neon-cyan) !important;
+  font-family: var(--font-display) !important;
+}
+
+.flatpickr-months .flatpickr-prev-month,
+.flatpickr-months .flatpickr-next-month {
+  color: var(--neon-cyan) !important;
+  fill: var(--neon-cyan) !important;
+}
+
+.flatpickr-months .flatpickr-prev-month:hover,
+.flatpickr-months .flatpickr-next-month:hover {
+  color: var(--neon-purple) !important;
+  fill: var(--neon-purple) !important;
+}
+
+/* Dias da Semana (D, S, T, Q...) */
+span.flatpickr-weekday {
+  color: var(--neon-cyan) !important;
+  font-family: var(--font-display) !important;
+  font-size: 0.8rem !important;
+  font-weight: 700 !important;
+}
+
+/* Dias do Mês */
+.flatpickr-day {
+  color: #e2e8f0 !important;
+  font-size: 1rem !important;
+  border-radius: 6px !important;
+  transition: all 0.2s ease !important;
+}
+
+.flatpickr-day:hover {
+  background: rgba(0, 240, 255, 0.2) !important;
+  border-color: var(--neon-cyan) !important;
+  color: #ffffff !important;
+}
+
+.flatpickr-day.today {
+  border-color: var(--neon-pink) !important;
+  color: var(--neon-pink) !important;
+}
+
+/* Dia Selecionado */
+.flatpickr-day.selected,
+.flatpickr-day.startRange,
+.flatpickr-day.endRange {
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple)) !important;
+  border-color: transparent !important;
+  color: #050608 !important;
+  font-weight: 700 !important;
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.5) !important;
+}
+
+.flatpickr-day.flatpickr-disabled,
+.flatpickr-day.prevMonthDay,
+.flatpickr-day.nextMonthDay {
+  color: rgba(255, 255, 255, 0.18) !important;
+}
