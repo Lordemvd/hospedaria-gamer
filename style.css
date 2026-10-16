@@ -347,24 +347,29 @@ body {
 }
 
 /* Moldura padronizada da imagem (mantém todas no mesmo tamanho) */
+/* Moldura travada da imagem (!important */
 .room-image-wrapper {
-  position: relative;
-  width: 100%;
-  height: 220px;
-  overflow: hidden;
+position: relative !important;
+  width: 100% !important;
+  height: 220px !important;
+  max-height: 220px !important;
+  overflow: hidden !important; /* Corta o zoom e qualquer excesso da foto */
   background: #090a10;
+  display: block !important;
 }
 
+/* A foto é forçada a caber nos 220px sem distorcer */
 .room-thumb {
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* Mantém a proporção exata sem esticar */
-  display: block;
+  width: 100% !important;
+  height: 220px !important;
+  max-height: 220px !important;
+  object-fit: cover !important; /* Corta proporcionalmente sem esticar */
+  display: block !important;
   transition: transform 0.4s ease;
 }
 
 .room-card:hover .room-thumb {
-  transform: scale(1.06);
+  transform: scale(1.08) !important;
 }
 
 /* Informações do quarto com padding próprio */
