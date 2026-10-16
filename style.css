@@ -321,52 +321,94 @@ body {
 }
 
 .card-feature,
-.room-card {
-    background: var(--bg-card);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 6px;
-    padding: 30px;
-    transition: var(--transition);
-}
 
+/* ==========================================================================
+   VITRINE DE QUARTOS (PADRÃO COMERCIAL UNIFORMIZADO)
+   ========================================================================== */
+
+/* Efeito Hover compartilhado */
 .card-feature:hover,
 .room-card:hover {
-    transform: translateY(-6px);
-    border-color: var(--neon-cyan);
-    box-shadow: 0 8px 25px rgba(0, 240, 255, 0.15);
+  transform: translateY(-6px);
+  border-color: var(--neon-cyan);
+  box-shadow: 0 8px 25px rgba(0, 240, 255, 0.2);
 }
 
-.card-feature h3 {
-    font-family: var(--font-display);
-    font-size: 1.3rem;
-    color: var(--neon-cyan);
-    margin-bottom: 12px;
+/* Card Principal */
+.room-card {
+  background: var(--bg-card);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  overflow: hidden; /* Corta a imagem nas bordas arredondadas */
+  padding: 0;       /* Sem padding externo para a foto colar no topo */
+  display: flex;
+  flex-direction: column;
+  transition: var(--transition);
 }
 
-.card-feature p {
-    color: var(--text-muted);
+/* Moldura padronizada da imagem (mantém todas no mesmo tamanho) */
+.room-image-wrapper {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  overflow: hidden;
+  background: #090a10;
 }
 
-.room-card h3 {
-    font-family: var(--font-display);
-    font-size: 1.4rem;
-    margin-bottom: 10px;
+.room-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Mantém a proporção exata sem esticar */
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.room-card:hover .room-thumb {
+  transform: scale(1.06);
+}
+
+/* Informações do quarto com padding próprio */
+.room-info {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  flex: 1; /* Nivela a altura de todos os cards */
+  justify-content: space-between;
+}
+
+.room-info h3 {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  margin-bottom: 8px;
 }
 
 .room-info .specs {
-    color: var(--neon-purple);
-    font-weight: 600;
-    margin-bottom: 12px;
+  color: var(--neon-purple);
+  font-size: 0.95rem;
+  margin-bottom: 16px;
+  line-height: 1.4;
 }
 
-.room-info .price {
-    display: block;
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: #ffffff;
-    margin-bottom: 20px;
+/* Rodapé do card: preço e botão alinhados na mesma linha */
+.room-footer-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+.room-footer-card .price {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  color: #ffffff;
+}
+
+.room-footer-card .price small {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
 /* ==========================================================================
    7. BAR & RODAPÉ
    ========================================================================== */
