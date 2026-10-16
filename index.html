@@ -83,30 +83,28 @@
             <button id="nextBtn" class="control-btn">&#10095;</button>
         </div>
 
-        <!-- 3. BARRA DE BUSCA RÁPIDA -->
-        <div class="quick-booking">
-            <form class="booking-form" action="pages/reserva.html" method="GET">
-                <div class="form-group">
-                    <label for="checkin">Check-in</label>
-                    <input type="date" id="checkin" name="checkin" required>
-                </div>
-                <div class="form-group">
-                    <label for="checkout">Check-out</label>
-                    <input type="date" id="checkout" name="checkout" required>
-                </div>
-                <div class="form-group">
-                    <label for="console">Console Preferido</label>
-                    <select id="console" name="console">
-                        <option value="ps5">PlayStation 5</option>
-                        <option value="xbox">Xbox Series X</option>
-                        <option value="switch">Nintendo Switch</option>
-                        <option value="pc">PC Gamer Top Tier</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn-primary btn-search">Buscar Quarto</button>
-            </form>
+        <!-- 3. BARRA DE AÇÃO DIRETA (ABOVE THE FOLD) -->
+    <div class="quick-booking quick-booking-hero">
+      <form class="booking-form" action="pages/reserva.html" method="GET">
+        <div class="form-group">
+          <label for="checkin">Check-in</label>
+          <input type="date" id="checkin" name="checkin" required>
         </div>
-    </section>
+        <div class="form-group">
+          <label for="checkout">Check-out</label>
+          <input type="date" id="checkout" name="checkout" required>
+        </div>
+        <div class="form-group">
+          <label for="room">Acomodação Desejada</label>
+          <select id="room" name="room">
+            <option value="solo">Suíte Solo Streamer (R$ 180)</option>
+            <option value="duo" selected>Suíte Duo Next-Gen (R$ 260)</option>
+            <option value="squad">Party Room Squad (R$ 340)</option>
+          </select>
+        </div>
+        <button type="submit" class="btn-primary btn-search-hero">RESERVAR AGORA</button>
+      </form>
+    </div>
 
     <!-- 4. DIFERENCIAIS -->
     <section id="diferenciais" class="section">
