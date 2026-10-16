@@ -234,32 +234,107 @@ body {
 }
 
 /* ==========================================================================
-   5. BARRA DE BUSCA RÁPIDA (WIDGET FLUTUANTE)
+   PADRONIZAÇÃO GLOBAL DE INPUTS E FORMULÁRIOS
+   ========================================================================== */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  margin-bottom: 14px;
+}
+
+.form-group label {
+  font-family: var(--font-display);
+  font-size: 0.88rem;
+  letter-spacing: 1px;
+  color: var(--neon-cyan);
+}
+
+/* Todos os inputs e selects passam a ocupar 100% da largura com tema escuro */
+.form-group input,
+.form-group select,
+.auth-form input,
+.credit-card-form input,
+.credit-card-form select {
+  width: 100% !important;
+  background: #090a12 !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  color: #ffffff !important;
+  padding: 12px 16px !important;
+  border-radius: 6px !important;
+  font-family: var(--font-body) !important;
+  font-size: 1.05rem !important;
+  outline: none !important;
+  transition: var(--transition) !important;
+  box-sizing: border-box !important;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.auth-form input:focus,
+.credit-card-form input:focus {
+  border-color: var(--neon-cyan) !important;
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.35) !important;
+}
+
+/* ==========================================================================
+   5. BARRA DE BUSCA RÁPIDA (HERO BANNER ALARGADO)
    ========================================================================== */
 .quick-booking-hero {
   position: relative;
   z-index: 20;
-  margin-top: 35px;
+  margin-top: 40px;
   background: rgba(10, 11, 16, 0.92);
   border: 1px solid var(--neon-cyan);
   box-shadow: 0 0 25px rgba(0, 240, 255, 0.25);
   border-radius: 10px;
-  padding: 24px;
+  padding: 24px 30px;
   backdrop-filter: blur(12px);
-  max-width: 950px;
+  width: 90%;
+  max-width: 1000px;
   margin-left: auto;
   margin-right: auto;
 }
 
-.btn-search-hero {
-  font-family: var(--font-display);
-  font-size: 1rem;
-  letter-spacing: 1px;
-  padding: 14px 28px;
-  box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
-  align-self: flex-end;
+/* Disposição dos 4 itens lado a lado em linha no desktop */
+.quick-booking-hero .booking-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.4fr auto;
+  gap: 20px;
+  align-items: flex-end;
 }
 
+.quick-booking-hero .form-group {
+  margin-bottom: 0;
+}
+
+.btn-search-hero {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  letter-spacing: 1px;
+  padding: 12px 24px;
+  height: 48px;
+  white-space: nowrap;
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+  cursor: pointer;
+}
+
+/* Telas menores empilham harmoniosamente */
+@media (max-width: 900px) {
+  .quick-booking-hero .booking-form {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================================================
+   AJUSTES DE CARTÃO DE CRÉDITO (PAGAMENTO)
+   ========================================================================== */
+.form-row-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
 /* ==========================================================================
    6. SEÇÕES GERAIS, DIFERENCIAIS & VITRINE DE QUARTOS
    ========================================================================== */
