@@ -271,39 +271,43 @@
       const galleryData = [
         {
           title: "Vista Panorâmica da Suíte & TV OLED 55\"",
-          image: "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1200&auto=format&fit=crop",
+          image: "https://6ad275ba2ff4c710e5e3ff3e.imgix.net/sandbox/Gemini_Generated_Image_i2ulq5i2ulq5i2ul.jfif",
           accentText: "TV OLED 4K 120Hz & Sofá Gamer Co-op"
         },
         {
           title: "Setup de Consoles: PS5 + Xbox Series X Integrados",
-          image: "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=1200&auto=format&fit=crop",
+          image: "https://6ad275ba2ff4c710e5e3ff3e.imgix.net/sandbox/Gemini_Generated_Image_k0c8swk0c8swk0c8.jfif",
           accentText: "Dock de carregamento rápido e controles sem fio prontos"
         },
         {
           title: "Cama Queen-Size com Iluminação Noturna Cyberpunk",
-          image: "https://images.unsplash.com/photo-1590490360182-c33d57733427?q=80&w=1200&auto=format&fit=crop",
+          image: "https://6ad275ba2ff4c710e5e3ff3e.imgix.net/Gemini_Generated_Image_h0gjyjh0gjyjh0gj.jfif",
           accentText: "Colchão ortopédico com isolamento acústico e blackout 100%"
         },
         {
           title: "Estação de Snacks, Frigobar Gamer e Cafeteira",
-          image: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=1200&auto=format&fit=crop",
+          image: "https://6ad275ba2ff4c710e5e3ff3e.imgix.net/Gemini_Generated_Image_dor715dor715dor7.jfif",
           accentText: "Frigobar com poções energéticas e snacks rápidos 24h"
         },
         {
           title: "Banheiro Privativo com Ducha Pressurizada",
-          image: "https://images.unsplash.com/photo-1584622781564-1d987f7333c1?q=80&w=1200&auto=format&fit=crop",
+          image: "https://6ad275ba2ff4c710e5e3ff3e.imgix.net/watermarked_img_5248074706252359224.jpg",
           accentText: "Ducha de alta pressão, amenidades e toalhas premium"
         }
       ];
 
       let currentIndex = 0;
+      let autoPlayTimer = null;
+      const AUTO_PLAY_DELAY = 10000; // 10 segundos
+
       const mainDisplay = document.getElementById('mainDisplay');
       const imageCaption = document.getElementById('imageCaption');
       const thumbsTrack = document.getElementById('thumbsTrack');
       const prevBtn = document.getElementById('galleryPrev');
       const nextBtn = document.getElementById('galleryNext');
+      const displayWrapper = document.querySelector('.main-display-wrapper');
 
-      // Gera as miniaturas com fundo das próprias imagens
+      // Gera as miniaturas dinamicamente
       thumbsTrack.innerHTML = '';
       galleryData.forEach((item, index) => {
         const thumb = document.createElement('div');
@@ -316,6 +320,7 @@
         
         thumb.addEventListener('click', () => {
           updateGallery(index);
+          resetAutoPlay();
         });
 
         thumbsTrack.appendChild(thumb);
@@ -325,9 +330,9 @@
         currentIndex = (index + galleryData.length) % galleryData.length;
         const currentData = galleryData[currentIndex];
 
-        mainDisplay.style.opacity = '0.4';
+        mainDisplay.style.opacity = '0.3';
         setTimeout(() => {
-          mainDisplay.style.backgroundImage = `linear-gradient(180deg, rgba(10,11,16,0.2) 0%, rgba(10,11,16,0.85) 100%), url('${currentData.image}')`;
+          mainDisplay.style.backgroundImage = `linear-gradient(180deg, rgba(10,11,16,0.15) 0%, rgba(10,11,16,0.85) 100%), url('${currentData.image}')`;
           mainDisplay.style.backgroundSize = 'cover';
           mainDisplay.style.backgroundPosition = 'center';
           imageCaption.innerHTML = `<strong>${currentData.title}</strong><br><small style="color: var(--neon-cyan)">${currentData.accentText}</small>`;
@@ -340,15 +345,62 @@
         });
       }
 
-      if (prevBtn) prevBtn.addEventListener('click', () => updateGallery(currentIndex - 1));
-      if (nextBtn) nextBtn.addEventListener('click', () => updateGallery(currentIndex + 1));
+      function nextImage() {
+        updateGallery(currentIndex + 1);
+      }
 
+      function startAutoPlay() {
+        stopAutoPlay();
+        autoPlayTimer = setInterval(nextImage, AUTO_PLAY_DELAY);
+      }
+
+      function stopAutoPlay() {
+        if (autoPlayTimer) {
+          clearInterval(autoPlayTimer);
+          autoPlayTimer = null;
+        }
+      }
+
+      function resetAutoPlay() {
+        stopAutoPlay();
+        startAutoPlay();
+      }
+
+      // Eventos das setas manuais
+      if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+          updateGallery(currentIndex - 1);
+          resetAutoPlay();
+        });
+      }
+
+      if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+          updateGallery(currentIndex + 1);
+          resetAutoPlay();
+        });
+      }
+
+      // Teclado (setas esquerda/direita)
       document.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowLeft') updateGallery(currentIndex - 1);
-        if (e.key === 'ArrowRight') updateGallery(currentIndex + 1);
+        if (e.key === 'ArrowLeft') {
+          updateGallery(currentIndex - 1);
+          resetAutoPlay();
+        } else if (e.key === 'ArrowRight') {
+          updateGallery(currentIndex + 1);
+          resetAutoPlay();
+        }
       });
 
+      // Pausa o carrossel se o usuário estiver com o mouse sobre a imagem
+      if (displayWrapper) {
+        displayWrapper.addEventListener('mouseenter', stopAutoPlay);
+        displayWrapper.addEventListener('mouseleave', startAutoPlay);
+      }
+
+      // Inicializa exibição e auto-play
       updateGallery(0);
+      startAutoPlay();
     });
   </script>
 </body>
