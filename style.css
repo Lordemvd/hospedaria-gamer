@@ -323,78 +323,90 @@ body {
 .card-feature,
 
 /* ==========================================================================
-   VITRINE DE QUARTOS (PADRÃO COMERCIAL UNIFORMIZADO)
+   VITRINE DE QUARTOS: SISTEMA DE CAMADAS & EXPANSÃO CENTRALIZADA
    ========================================================================== */
 
-/* Efeito Hover compartilhado */
-.card-feature:hover,
-.room-card:hover {
-  transform: translateY(-6px);
-  border-color: var(--neon-cyan);
-  box-shadow: 0 8px 25px rgba(0, 240, 255, 0.2);
+/* Linha dos Quartos */
+.grid-rooms {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 30px;
+  align-items: stretch;
 }
 
-/* Card Principal */
+/* Card em Repouso (Segunda Camada) */
 .room-card {
+  position: relative;
+  z-index: 1; /* Camada base */
   background: var(--bg-card);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
-  overflow: hidden; /* Corta a imagem nas bordas arredondadas */
-  padding: 0;       /* Sem padding externo para a foto colar no topo */
+  overflow: hidden; /* Mantém a imagem presa dentro dos cantos arredondados */
+  padding: 0;
   display: flex;
   flex-direction: column;
-  transition: var(--transition);
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, z-index 0.3s ease;
 }
 
-/* Moldura padronizada da imagem (mantém todas no mesmo tamanho) */
-/* Moldura travada da imagem (!important */
+/* Card com Hover (Sobe para a Primeira Camada) */
+.room-card:hover {
+  z-index: 10; /* Vem para a frente de todos os outros elementos */
+  transform: translateY(-6px);
+  border-color: var(--neon-cyan);
+  box-shadow: 0 12px 30px rgba(0, 240, 255, 0.25);
+}
+
+/* Moldura Centralizada da Imagem */
 .room-image-wrapper {
-position: relative !important;
-  width: 100% !important;
-  height: 220px !important;
-  max-height: 220px !important;
-  overflow: hidden !important; /* Corta o zoom e qualquer excesso da foto */
+  position: relative;
+  width: 100%;
+  height: 220px;
+  overflow: hidden; /* Corta as laterais do zoom para não vazar */
   background: #090a10;
-  display: block !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* A foto é forçada a caber nos 220px sem distorcer */
+/* Imagem Centralizada com Zoom a partir do Centro Exato */
 .room-thumb {
-  width: 100% !important;
-  height: 220px !important;
-  max-height: 220px !important;
-  object-fit: cover !important; /* Corta proporcionalmente sem esticar */
-  display: block !important;
-  transition: transform 0.4s ease;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center; /* Trava a foto no centro geométrico */
+  transform-origin: center center; /* Faz a foto crescer igualmente para todos os lados */
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  display: block;
 }
 
+/* Zoom suave simétrico */
 .room-card:hover .room-thumb {
-  transform: scale(1.08) !important;
+  transform: scale(1.08); /* Expande igualmente a partir do centro sem deslocar para a direita */
 }
 
-/* Informações do quarto com padding próprio */
+/* Conteúdo de Texto e Informações */
 .room-info {
   padding: 24px;
   display: flex;
   flex-direction: column;
-  flex: 1; /* Nivela a altura de todos os cards */
+  flex: 1;
   justify-content: space-between;
 }
 
-.room-info h3 {
+.room-header-info h3 {
   font-family: var(--font-display);
   font-size: 1.35rem;
   margin-bottom: 8px;
 }
 
-.room-info .specs {
+.room-header-info .specs {
   color: var(--neon-purple);
-  font-size: 0.95rem;
+  font-size: 0.92rem;
+  line-height: 1.5;
   margin-bottom: 16px;
-  line-height: 1.4;
 }
 
-/* Rodapé do card: preço e botão alinhados na mesma linha */
+/* Rodapé do Card */
 .room-footer-card {
   display: flex;
   justify-content: space-between;
