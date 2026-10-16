@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Inn | Checkout & Pagamento</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <header class="navbar">
+        <div class="logo">
+            <a href="../index.html" style="text-decoration: none; color: inherit;">
+                <span class="logo-highlight">NEXUS</span>INN
+            </a>
+        </div>
+        <div class="checkout-timer-badge">
+            Tempo restante para reservar: <strong id="timer">14:59</strong>
+        </div>
+    </header>
+
+    <main class="payment-container">
+        <div class="payment-grid">
+
+            <!-- COLUNA PRINCIPAL: ESCOLHA E DADOS DO PAGAMENTO -->
+            <section class="payment-main">
+                <h1 class="page-title">PAGAMENTO SEGURO</h1>
+                <p class="section-subtitle">Escolha o método de pagamento para confirmar sua gameplay.</p>
+
+                <!-- SELETOR DE ABAS -->
+                <div class="payment-tabs">
+                    <button type="button" class="tab-btn active" data-tab="pix">
+                        <span class="tab-icon">&#9889;</span> PIX (Aprovação Instantânea)
+                    </button>
+                    <button type="button" class="tab-btn" data-tab="card">
+                        <span class="tab-icon">&#128179;</span> Cartão de Crédito
+                    </button>
+                </div>
+
+                <!-- CONTEÚDO 1: PIX -->
+                <div id="tab-pix" class="tab-content active">
+                    <div class="pix-box">
+                        <div class="qr-placeholder">
+                            <!-- QR Code Simulado SVG -->
+                            <svg width="180" height="180" viewBox="0 0 100 100" fill="none">
+                                <rect width="100" height="100" fill="#090a10" />
+                                <rect x="10" y="10" width="25" height="25" stroke="#00f0ff" stroke-width="5"
+                                    fill="none" />
+                                <rect x="17" y="17" width="11" height="11" fill="#00f0ff" />
+                                <rect x="65" y="10" width="25" height="25" stroke="#00f0ff" stroke-width="5"
+                                    fill="none" />
+                                <rect x="72" y="17" width="11" height="11" fill="#00f0ff" />
+                                <rect x="10" y="65" width="25" height="25" stroke="#00f0ff" stroke-width="5"
+                                    fill="none" />
+                                <rect x="17" y="72" width="11" height="11" fill="#00f0ff" />
+                                <rect x="45" y="15" width="10" height="10" fill="#b026ff" />
+                                <rect x="45" y="45" width="10" height="10" fill="#00f0ff" />
+                                <rect x="65" y="45" width="20" height="10" fill="#b026ff" />
+                                <rect x="45" y="65" width="10" height="25" fill="#00f0ff" />
+                                <rect x="65" y="75" width="25" height="15" fill="#ff007f" />
+                            </svg>
+                        </div>
+                        <p class="pix-instruction">Escaneie o QR Code no app do seu banco ou use a chave Copia e Cola:
+                        </p>
+                        <div class="copy-paste-group">
+                            <input type="text" id="pixKey"
+                                value="00020126580014BR.GOV.BCB.PIX0136nexusinn-reserva-gamer-9843252040000" readonly>
+                            <button type="button" id="btnCopyPix" class="btn-secondary">Copiar</button>
+                        </div>
+                        <button type="button" id="btnConfirmPix" class="btn-primary btn-full-width">Já fiz o
+                            PIX</button>
+                    </div>
+                </div>
+
+                <!-- CONTEÚDO 2: CARTÃO DE CRÉDITO -->
+                <div id="tab-card" class="tab-content">
+                    <form id="cardForm" class="credit-card-form">
+                        <div class="form-group">
+                            <label for="cardNumber">Número do Cartão</label>
+                            <input type="text" id="cardNumber" placeholder="0000 0000 0000 0000" maxlength="19"
+                                required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cardHolder">Nome Impresso no Cartão</label>
+                            <input type="text" id="cardHolder" placeholder="NOME COMO NO CARTÃO" required>
+                        </div>
+
+                        <div class="form-row-card">
+                            <div class="form-group">
+                                <label for="cardExp">Validade</label>
+                                <input type="text" id="cardExp" placeholder="MM/AA" maxlength="5" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="cardCvv">CVV</label>
+                                <input type="text" id="cardCvv" placeholder="123" maxlength="4" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="installments">Parcelamento</label>
+                            <select id="installments">
+                                <option value="1">1x à vista (sem juros)</option>
+                                <option value="2">2x sem juros</option>
+                                <option value="3">3x sem juros</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn-primary btn-full-width">Pagar com Cartão</button>
+                    </form>
+                </div>
+
+                <!-- MODAL DE PROCESSAMENTO / SIMULAÇÃO DE STATUS -->
+                <div id="processingModal" class="processing-modal">
+                    <div class="processing-card">
+                        <div class="spinner"></div>
+                        <h3 id="statusHeading">Processando Pagamento...</h3>
+                        <p id="statusDesc">Estamos validando sua transação com o sistema bancário.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- COLUNA LATERAL: RESUMO DO PEDIDO -->
+            <aside class="order-summary-card">
+                <h3 class="summary-title">RESUMO DA COMPRA</h3>
+                <div class="summary-row">
+                    <span>Acomodação:</span>
+                    <strong id="displayRoom">Carregando...</strong>
+                </div>
+                <div class="summary-row">
+                    <span>Check-in:</span>
+                    <span id="displayCheckin">-</span>
+                </div>
+                <div class="summary-row">
+                    <span>Check-out:</span>
+                    <span id="displayCheckout">-</span>
+                </div>
+                <hr class="summary-divider">
+                <div class="summary-total">
+                    <span>Total a Pagar:</span>
+                    <strong id="displayTotal">R$ 0,00</strong>
+                </div>
+                <div class="security-guarantee">
+                    <span>&#128274; Transação criptografada 256-bit</span>
+                    <span>&#10004; Setup garantido na chegada</span>
+                </div>
+            </aside>
+
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. RESGATE DE DADOS DA URL
+            const params = new URLSearchParams(window.location.search);
+            const roomParam = params.get('room') || 'solo';
+            const checkinParam = params.get('checkin') || 'Data a definir';
+            const checkoutParam = params.get('checkout') || 'Data a definir';
+            const totalParam = params.get('total') || 'R$ 198,00';
+
+            const roomNames = {
+                'solo': 'Suíte Solo Streamer',
+                'duo': 'Suíte Duo Next-Gen',
+                'squad': 'Party Room Squad'
+            };
+
+            document.getElementById('displayRoom').textContent = roomNames[roomParam] || 'Quarto Personalizado';
+            document.getElementById('displayCheckin').textContent = checkinParam;
+            document.getElementById('displayCheckout').textContent = checkoutParam;
+            document.getElementById('displayTotal').textContent = totalParam;
+
+            // 2. TEMPORIZADOR DE EXPIRAÇÃO DE SESSÃO (15 MINUTOS)
+            let timeLeft = 15 * 60;
+            const timerElement = document.getElementById('timer');
+            const timerInterval = setInterval(() => {
+                timeLeft--;
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerElement.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    alert('O tempo de reserva expirou. O quarto foi liberado.');
+                    window.location.href = '../index.html';
+                }
+            }, 1000);
+
+            // 3. ALTERNÂNCIA DE ABAS (PIX / CARTÃO)
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+
+                    btn.classList.add('active');
+                    document.getElementById(`tab-${btn.dataset.tab}`).classList.add('active');
+                });
+            });
+
+            // 4. COPIAR CÓDIGO PIX
+            const btnCopyPix = document.getElementById('btnCopyPix');
+            const pixKeyInput = document.getElementById('pixKey');
+            btnCopyPix.addEventListener('click', () => {
+                pixKeyInput.select();
+                navigator.clipboard.writeText(pixKeyInput.value);
+                btnCopyPix.textContent = 'Copiado!';
+                setTimeout(() => btnCopyPix.textContent = 'Copiar', 2000);
+            });
+
+            // 5. SIMULAÇÃO DE PROCESSAMENTO E FINALIZAÇÃO
+            const processingModal = document.getElementById('processingModal');
+            const statusHeading = document.getElementById('statusHeading');
+            const statusDesc = document.getElementById('statusDesc');
+
+            function executePayment(metodo) {
+                processingModal.classList.add('show');
+
+                setTimeout(() => {
+                    statusHeading.textContent = 'Pagamento Aprovado!';
+                    statusHeading.style.color = 'var(--neon-cyan)';
+                    statusDesc.textContent = 'Gerando comprovante e chave de acesso...';
+
+                    setTimeout(() => {
+                        const reservationCode = 'NX-' + Math.floor(100000 + Math.random() * 900000);
+                        const redirectParams = new URLSearchParams({
+                            codigo: reservationCode,
+                            quarto: document.getElementById('displayRoom').textContent,
+                            checkin: checkinParam,
+                            checkout: checkoutParam,
+                            total: totalParam,
+                            metodo: metodo
+                        });
+                        window.location.href = `finalizacao.html?${redirectParams.toString()}`;
+                    }, 1500);
+                }, 2000);
+            }
+
+            document.getElementById('btnConfirmPix').addEventListener('click', () => {
+                executePayment('PIX');
+            });
+
+            document.getElementById('cardForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                executePayment('Cartão de Crédito');
+            });
+        });
+    </script>
+</body>
+
+</html>

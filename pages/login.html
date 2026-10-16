@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Inn | Login do Jogador</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body class="auth-page-body">
+
+    <header class="navbar">
+        <div class="logo">
+            <a href="../index.html" style="text-decoration: none; color: inherit;">
+                <span class="logo-highlight">NEXUS</span>INN
+            </a>
+        </div>
+        <nav class="nav-links">
+            <a href="../index.html">Voltar ao Início</a>
+        </nav>
+    </header>
+
+    <main class="auth-wrapper">
+        <div class="auth-card">
+            <div class="auth-card-header">
+                <span class="badge">PLAYER ACCESS</span>
+                <h1 class="auth-title">BEM-VINDO DE VOLTA</h1>
+                <p class="auth-subtitle">Acesse o seu setup e gerencie as suas reservas.</p>
+            </div>
+
+            <form id="loginForm" class="auth-form">
+                <div class="form-group">
+                    <label for="loginEmail">E-mail ou GamerTag</label>
+                    <input type="text" id="loginEmail" placeholder="player@nexusinn.com ou GamerTag" required
+                        autocomplete="username">
+                </div>
+
+                <div class="form-group">
+                    <label for="loginPass">Senha</label>
+                    <input type="password" id="loginPass" placeholder="••••••••" required
+                        autocomplete="current-password">
+                </div>
+
+                <!-- MENSAGEM FIXA DE ERRO EM VERMELHO/NEON -->
+                <div id="loginErrorMsg" class="input-error-msg"
+                    style="display: none; text-align: center; font-size: 1rem; margin-top: 6px;">
+                    Usuário ou senha inválidos.
+                </div>
+
+                <button type="submit" class="btn-primary btn-full-width" style="margin-top: 10px;">Entrar no
+                    Setup</button>
+            </form>
+
+            <div class="auth-card-footer">
+                <p>Ainda não tem conta? <a href="cadastro.html" class="link-highlight">Criar Gamer Tag</a></p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginForm = document.getElementById('loginForm');
+            const errorMsg = document.getElementById('loginErrorMsg');
+
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault(); // Impede recarregar a tela
+
+                const identifier = document.getElementById('loginEmail').value.trim().toLowerCase();
+                const password = document.getElementById('loginPass').value;
+
+                const stored = localStorage.getItem('nexus_users');
+                let users = [];
+                try {
+                    users = stored ? JSON.parse(stored) : [];
+                } catch (err) {
+                    users = [];
+                }
+
+                // Procura usuário correspondente
+                const matchedUser = users.find(u =>
+                    (u.email && u.email.toLowerCase() === identifier) ||
+                    (u.gamerTag && u.gamerTag.toLowerCase() === identifier)
+                );
+
+                // Se errar usuário ou senha: APENAS MOSTRA O AVISO E FICA NA PÁGINA
+                if (!matchedUser || matchedUser.password !== password) {
+                    errorMsg.textContent = 'Usuário ou senha inválidos.';
+                    errorMsg.style.display = 'block';
+                    return; // Para aqui, sem trocar de página
+                }
+
+                // Se acertou: limpa erro, guarda sessão e vai para a home
+                errorMsg.style.display = 'none';
+                localStorage.setItem('nexus_current_user', JSON.stringify({
+                    fullName: matchedUser.fullName,
+                    gamerTag: matchedUser.gamerTag,
+                    email: matchedUser.email
+                }));
+
+                window.location.href = '../index.html';
+            });
+        });
+    </script>
+</body>
+
+</html>

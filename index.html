@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Inn | Hospedaria Gamer</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Fonte moderna Gamer/Tech -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- 1. CABEÇALHO / NAVBAR COM MENU RESPONSIVO -->
+    <header class="navbar">
+        <div class="logo">
+            <span class="logo-highlight">NEXUS</span>INN
+        </div>
+
+        <!-- BOTÃO HAMBÚRGUER COM DISPARO DIRETO -->
+        <button class="menu-toggle" id="menuToggle" type="button" onclick="toggleMobileMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <nav class="nav-links" id="navLinks">
+            <a href="#quartos" onclick="toggleMobileMenu(false)">Quartos</a>
+            <a href="#diferenciais" onclick="toggleMobileMenu(false)">Infraestrutura</a>
+            <a href="#bar" onclick="toggleMobileMenu(false)">Bar & Gastronomia</a>
+            <a href="pages/login.html" class="btn-link">Entrar</a>
+            <a href="pages/reserva.html" class="btn-primary">Reservar</a>
+        </nav>
+    </header>
+
+    <!-- 2. HERO SECTION COM SLIDER -->
+    <section class="hero-section">
+        <div class="slider-container">
+            <div class="slide active">
+                <div class="slide-content">
+                    <span class="badge">E-SPORTS & CONFORTO</span>
+                    <h1>O SETUP DOS SEUS SONHOS, O DESCANSO QUE VOCÊ MERECE</h1>
+                    <p>Quartos equipados com PS5, Xbox Series X, Switch e PCs de alta performance com fibra óptica
+                        dedicada.</p>
+                </div>
+            </div>
+            <div class="slide">
+                <div class="slide-content">
+                    <span class="badge">NEXT-GEN EXCLUSIVE</span>
+                    <h1>GAMEPLAY SEM LAG, IMERSÃO TOTAL</h1>
+                    <p>Monitores 240Hz, cadeiras ergonômicas e isolamento acústico individual.</p>
+                </div>
+            </div>
+            <div class="slide">
+                <div class="slide-content">
+                    <span class="badge">GASTRONOMIA 24H</span>
+                    <h1>COQUETELARIA TEMÁTICA & ROOM SERVICE</h1>
+                    <p>Poções artesanais, hambúrgueres e snacks sem pausar a partida.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controles do Slide -->
+        <div class="slider-controls">
+            <button id="prevBtn" class="control-btn">&#10094;</button>
+            <button id="nextBtn" class="control-btn">&#10095;</button>
+        </div>
+
+        <!-- 3. BARRA DE BUSCA RÁPIDA -->
+        <div class="quick-booking">
+            <form class="booking-form" action="pages/reserva.html" method="GET">
+                <div class="form-group">
+                    <label for="checkin">Check-in</label>
+                    <input type="date" id="checkin" name="checkin" required>
+                </div>
+                <div class="form-group">
+                    <label for="checkout">Check-out</label>
+                    <input type="date" id="checkout" name="checkout" required>
+                </div>
+                <div class="form-group">
+                    <label for="console">Console Preferido</label>
+                    <select id="console" name="console">
+                        <option value="ps5">PlayStation 5</option>
+                        <option value="xbox">Xbox Series X</option>
+                        <option value="switch">Nintendo Switch</option>
+                        <option value="pc">PC Gamer Top Tier</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-primary btn-search">Buscar Quarto</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- 4. DIFERENCIAIS -->
+    <section id="diferenciais" class="section">
+        <h2 class="section-title">INFRAESTRUTURA DE ALTA PERFORMANCE</h2>
+        <div class="grid-features">
+            <div class="card-feature">
+                <h3>Ping Ultrabaixo</h3>
+                <p>Links dedicados de fibra com redundância e rede interna cabeada Cat6 em todos os quartos.</p>
+            </div>
+            <div class="card-feature">
+                <h3>Isolamento Acústico</h3>
+                <p>Tratamento de estúdio para você jogar, conversar no Discord ou streamar sem ruídos.</p>
+            </div>
+            <div class="card-feature">
+                <h3>Room Service 24h</h3>
+                <p>Peça bebidas, drinks e lanches diretamente pelo terminal do seu quarto a qualquer hora.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. VITRINE DE QUARTOS -->
+    <section id="quartos" class="section">
+        <h2 class="section-title">QUARTOS EM DESTAQUE</h2>
+        <div class="grid-rooms">
+            <div class="room-card">
+                <div class="room-info">
+                    <h3>Suíte Solo Streamer</h3>
+                    <p class="specs">PC 240Hz | Microfone Pro | Cama Solteiro</p>
+                    <span class="price">A partir de R$ 180 / noite</span>
+                    <a href="pages/galeria.html" class="btn-secondary">Ver Galeria</a>
+                </div>
+            </div>
+            <div class="room-card">
+                <div class="room-info">
+                    <h3>Suíte Duo Next-Gen</h3>
+                    <p class="specs">PS5 + Xbox Series X | TV OLED 4K 120Hz | Cama Queen</p>
+                    <span class="price">A partir de R$ 260 / noite</span>
+                    <a href="pages/galeria.html" class="btn-secondary">Ver Galeria</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. BAR & COQUETELARIA -->
+    <section id="bar" class="section bar-section">
+        <h2 class="section-title">BAR & GASTRONOMIA</h2>
+        <p class="section-subtitle">Poções energéticas, smash burgers e drinks autorais temáticos.</p>
+    </section>
+
+    <!-- 7. RODAPÉ -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2026 Nexus Inn - A hospedaria definitiva para gamers.</p>
+            <div class="footer-links">
+                <a href="#">Termos de Uso</a>
+                <a href="#">Política de Cancelamento</a>
+                <a href="#">Contato</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

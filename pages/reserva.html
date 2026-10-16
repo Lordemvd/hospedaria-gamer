@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Inn | Reservar Quarto</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <header class="navbar">
+        <div class="logo">
+            <a href="../index.html" style="text-decoration: none; color: inherit;">
+                <span class="logo-highlight">NEXUS</span>INN
+            </a>
+        </div>
+        <nav class="nav-links">
+            <a href="../index.html">Início</a>
+            <a href="galeria.html">Galeria</a>
+        </nav>
+    </header>
+
+    <main class="booking-page-container">
+        <div class="booking-layout">
+
+            <!-- COLUNA DA ESQUERDA: CONFIGURADOR DO QUARTO E SETUP -->
+            <section class="booking-config">
+                <h1 class="page-title">CONFIGURAR RESERVA</h1>
+                <p class="section-subtitle">Monte seu setup, escolha as datas e adicione os extras do bar.</p>
+
+                <form id="reservation-form">
+                    <!-- 1. SELEÇÃO DO QUARTO -->
+                    <div class="form-card">
+                        <h3>1. Escolha o Quarto</h3>
+                        <div class="room-selector-group">
+                            <label class="radio-card">
+                                <input type="radio" name="roomType" value="solo" data-price="180" checked>
+                                <div class="radio-card-content">
+                                    <span class="room-name">Suíte Solo Streamer</span>
+                                    <span class="room-desc">PC 240Hz, Cama Solteiro, Isolamento Acústico</span>
+                                    <span class="room-rate">R$ 180 / noite</span>
+                                </div>
+                            </label>
+
+                            <label class="radio-card">
+                                <input type="radio" name="roomType" value="duo" data-price="260">
+                                <div class="radio-card-content">
+                                    <span class="room-name">Suíte Duo Next-Gen</span>
+                                    <span class="room-desc">PS5 + Xbox Series X, TV OLED 4K, Cama Queen</span>
+                                    <span class="room-rate">R$ 260 / noite</span>
+                                </div>
+                            </label>
+
+                            <label class="radio-card">
+                                <input type="radio" name="roomType" value="squad" data-price="340">
+                                <div class="radio-card-content">
+                                    <span class="room-name">Party Room Squad</span>
+                                    <span class="room-desc">Até 4 players, 4 monitores, Switch + PS5 + Lounge</span>
+                                    <span class="room-rate">R$ 340 / noite</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- 2. DATAS DE ESTADIA -->
+                    <div class="form-card">
+                        <h3>2. Período da Estadia</h3>
+                        <div class="dates-grid">
+                            <div class="form-group">
+                                <label for="checkinDate">Check-in</label>
+                                <input type="date" id="checkinDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="checkoutDate">Check-out</label>
+                                <input type="date" id="checkoutDate" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. CONSOLES E EXTRAS DO SETUP -->
+                    <div class="form-card">
+                        <h3>3. Periféricos & Consoles Extras</h3>
+                        <p class="small-text">Customizações adicionadas diretamente ao quarto:</p>
+                        <div class="extras-list">
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="extra" value="switch-dock" data-cost="35">
+                                <span class="opt-label">Nintendo Switch com Dock & 4 Controles (+ R$ 35/estadia)</span>
+                            </label>
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="extra" value="vr-headset" data-cost="60">
+                                <span class="opt-label">Kit VR Headset 120Hz configurado (+ R$ 60/estadia)</span>
+                            </label>
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="extra" value="pro-controller" data-cost="20">
+                                <span class="opt-label">Controle Pro Competitivo com paddles (+ R$ 20/estadia)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- 4. COMBO GASTRONOMIA & BAR -->
+                    <div class="form-card">
+                        <h3>4. Boas-Vindas do Bar Gamer</h3>
+                        <div class="extras-list">
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="extra" value="combo-snack" data-cost="45">
+                                <span class="opt-label">Kit Mana Boost (2x Drinks Poções + Snack Gamer) (+ R$ 45)</span>
+                            </label>
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="extra" value="burger-pass" data-cost="55">
+                                <span class="opt-label">Smash Burger Artesanal + Refil na chegada (+ R$ 55)</span>
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </section>
+
+            <!-- COLUNA DA DIREITA: RESUMO DINÂMICO E TOTALIZADOR -->
+            <aside class="booking-summary-card">
+                <h3 class="summary-title">RESUMO DA RESERVA</h3>
+
+                <div class="summary-row">
+                    <span>Quarto:</span>
+                    <strong id="summary-room">Suíte Solo Streamer</strong>
+                </div>
+
+                <div class="summary-row">
+                    <span>Período:</span>
+                    <span id="summary-dates">1 noite(s)</span>
+                </div>
+
+                <div class="summary-row">
+                    <span>Diárias (<span id="summary-nights-count">1</span>x):</span>
+                    <span id="summary-room-subtotal">R$ 180,00</span>
+                </div>
+
+                <div class="summary-row">
+                    <span>Consoles & Bar Extras:</span>
+                    <span id="summary-extras">R$ 0,00</span>
+                </div>
+
+                <div class="summary-row">
+                    <span>Taxa de Serviço (10%):</span>
+                    <span id="summary-tax">R$ 18,00</span>
+                </div>
+
+                <hr class="summary-divider">
+
+                <div class="summary-total">
+                    <span>Total Geral:</span>
+                    <strong id="summary-grand-total">R$ 198,00</strong>
+                </div>
+
+                <button id="btn-proceed-payment" class="btn-primary btn-checkout">Ir para o Pagamento</button>
+                <span class="secure-badge">&#128274; Cancelamento grátis até 24h antes</span>
+            </aside>
+
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2026 Nexus Inn - A hospedaria definitiva para gamers.</p>
+        </div>
+    </footer>
+
+    <!-- SCRIPT DE CÁLCULO E VALIDAÇÃO DINÂMICA -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const roomRadios = document.querySelectorAll('input[name="roomType"]');
+            const checkinInput = document.getElementById('checkinDate');
+            const checkoutInput = document.getElementById('checkoutDate');
+            const extraCheckboxes = document.querySelectorAll('input[name="extra"]');
+
+            const summaryRoom = document.getElementById('summary-room');
+            const summaryDates = document.getElementById('summary-dates');
+            const summaryNightsCount = document.getElementById('summary-nights-count');
+            const summaryRoomSubtotal = document.getElementById('summary-room-subtotal');
+            const summaryExtras = document.getElementById('summary-extras');
+            const summaryTax = document.getElementById('summary-tax');
+            const summaryGrandTotal = document.getElementById('summary-grand-total');
+            const btnProceed = document.getElementById('btn-proceed-payment');
+
+            // 1. Inicializa datas vindas da URL ou datas padrões (hoje e amanhã)
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlCheckin = urlParams.get('checkin');
+            const urlCheckout = urlParams.get('checkout');
+
+            const today = new Date();
+            const tomorrow = new Date();
+            tomorrow.setDate(today.getDate() + 1);
+
+            const toISODate = (d) => d.toISOString().split('T')[0];
+
+            checkinInput.value = urlCheckin || toISODate(today);
+            checkoutInput.value = urlCheckout || toISODate(tomorrow);
+
+            checkinInput.min = toISODate(today);
+            checkoutInput.min = checkinInput.value;
+
+            // 2. Função de Cálculo
+            function calculateReservation() {
+                // Encontra quarto selecionado
+                let selectedRoomRadio = document.querySelector('input[name="roomType"]:checked');
+                let baseRate = parseFloat(selectedRoomRadio.dataset.price);
+                let roomLabel = selectedRoomRadio.closest('.radio-card').querySelector('.room-name').textContent;
+
+                // Calcula noites
+                const start = new Date(checkinInput.value);
+                const end = new Date(checkoutInput.value);
+                const diffTime = end - start;
+                let nights = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                if (isNaN(nights) || nights < 1) {
+                    nights = 1;
+                }
+
+                // Subtotal do quarto
+                const roomTotal = baseRate * nights;
+
+                // Soma opcionais
+                let extrasTotal = 0;
+                extraCheckboxes.forEach((chk) => {
+                    if (chk.checked) {
+                        extrasTotal += parseFloat(chk.dataset.cost);
+                    }
+                });
+
+                // Taxa de serviço (10%)
+                const tax = (roomTotal + extrasTotal) * 0.10;
+                const grandTotal = roomTotal + extrasTotal + tax;
+
+                // Atualização da UI
+                summaryRoom.textContent = roomLabel;
+                summaryDates.textContent = `${nights} noite(s)`;
+                summaryNightsCount.textContent = nights;
+                summaryRoomSubtotal.textContent = `R$ ${roomTotal.toFixed(2).replace('.', ',')}`;
+                summaryExtras.textContent = `R$ ${extrasTotal.toFixed(2).replace('.', ',')}`;
+                summaryTax.textContent = `R$ ${tax.toFixed(2).replace('.', ',')}`;
+                summaryGrandTotal.textContent = `R$ ${grandTotal.toFixed(2).replace('.', ',')}`;
+            }
+
+            // 3. Ouvintes de eventos para recalcular automaticamente
+            roomRadios.forEach(radio => radio.addEventListener('change', calculateReservation));
+            extraCheckboxes.forEach(chk => chk.addEventListener('change', calculateReservation));
+
+            checkinInput.addEventListener('change', () => {
+                checkoutInput.min = checkinInput.value;
+                if (checkoutInput.value <= checkinInput.value) {
+                    const nextDay = new Date(checkinInput.value);
+                    nextDay.setDate(nextDay.getDate() + 1);
+                    checkoutInput.value = toISODate(nextDay);
+                }
+                calculateReservation();
+            });
+
+            checkoutInput.addEventListener('change', calculateReservation);
+
+            // 4. Encaminhamento para tela de pagamento
+            btnProceed.addEventListener('click', () => {
+                const selectedRoom = document.querySelector('input[name="roomType"]:checked').value;
+                const grandTotal = summaryGrandTotal.textContent;
+
+                // Leva para tela de pagamento com parâmetros prontos
+                const paymentParams = new URLSearchParams({
+                    room: selectedRoom,
+                    checkin: checkinInput.value,
+                    checkout: checkoutInput.value,
+                    total: grandTotal
+                });
+
+                window.location.href = `pagamento.html?${paymentParams.toString()}`;
+            });
+
+            // Cálculo inicial
+            calculateReservation();
+        });
+    </script>
+</body>
+
+</html>

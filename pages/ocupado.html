@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Inn | Quarto Ocupado</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- NAVBAR SIMPLIFICADA -->
+    <header class="navbar">
+        <div class="logo">
+            <a href="../index.html" style="text-decoration: none; color: inherit;">
+                <span class="logo-highlight">NEXUS</span>INN
+            </a>
+        </div>
+        <nav class="nav-links">
+            <a href="../index.html">Voltar ao Início</a>
+        </nav>
+    </header>
+
+    <main class="occupied-container">
+        <!-- BLOCO DE ALERTA GAMER -->
+        <section class="alert-box">
+            <span class="status-badge">ZONE FULL / COOLDOWN</span>
+            <h1 class="alert-title">QUARTO INDISPONÍVEL NESTAS DATAS</h1>
+            <p class="alert-description">
+                Todos os slots com essa configuração já foram ocupados para o período solicitado
+                (<span id="display-dates" class="highlight-text">Carregando período...</span>).
+            </p>
+
+            <div class="action-buttons">
+                <a href="../index.html" class="btn-secondary">Alterar Datas</a>
+                <a href="#lista-espera" class="btn-primary">Entrar na Fila de Espera</a>
+            </div>
+        </section>
+
+        <!-- ALTERNATIVAS DISPONÍVEIS -->
+        <section class="suggestions-section">
+            <h2 class="sub-heading">QUARTOS DISPONÍVEIS NAS MESMAS DATAS</h2>
+            <p class="helper-text">Você pode reservar um destes setups alternativos agora mesmo:</p>
+
+            <div class="grid-rooms">
+                <div class="room-card suggestion-card">
+                    <div class="room-info">
+                        <span class="badge-avail">2 VAGAS LIVRES</span>
+                        <h3>Suíte Solo Streamer</h3>
+                        <p class="specs">PC 240Hz | RTX 4080 | Fibra Dedicada</p>
+                        <span class="price">R$ 180 / noite</span>
+                        <a href="reserva.html" class="btn-primary">Reservar Este Setup</a>
+                    </div>
+                </div>
+
+                <div class="room-card suggestion-card">
+                    <div class="room-info">
+                        <span class="badge-avail">ÚLTIMA VAGA</span>
+                        <h3>Party Room / Squad</h3>
+                        <p class="specs">4x Monitores | Switch + PS5 | Sofá Co-op</p>
+                        <span class="price">R$ 310 / noite</span>
+                        <a href="reserva.html" class="btn-primary">Reservar Este Setup</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FORMULÁRIO DE LISTA DE ESPERA -->
+        <section id="lista-espera" class="waitlist-card">
+            <h3 class="waitlist-title">Quer ser avisado se alguém cancelar?</h3>
+            <p class="waitlist-subtitle">Insira seu e-mail ou Discord tag. Caso haja cancelamento, você recebe um alerta
+                na hora com 15 minutos de prioridade.</p>
+
+            <form class="waitlist-form"
+                onsubmit="event.preventDefault(); alert('Você está na fila! Avisaremos assim que o quarto liberar.');">
+                <input type="text" placeholder="Seu e-mail ou Discord Tag (ex: player#1234)" required>
+                <button type="submit" class="btn-secondary">Notificar-me</button>
+            </form>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2026 Nexus Inn - Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Recupera parâmetros da URL (checkin, checkout, console) para exibir na tela
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const checkin = urlParams.get('checkin');
+            const checkout = urlParams.get('checkout');
+            const datesDisplay = document.getElementById('display-dates');
+
+            if (checkin && checkout) {
+                datesDisplay.textContent = `${checkin} até ${checkout}`;
+            } else {
+                datesDisplay.textContent = 'datas selecionadas';
+            }
+        });
+    </script>
+</body>
+
+</html>
