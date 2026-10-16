@@ -131,101 +131,106 @@ body {
    4. HERO SECTION COM SLIDER E CARROSSEL
    ========================================================================== */
 .hero-section {
-    position: relative;
-    min-height: 100vh;
-    padding-top: 75px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background: radial-gradient(circle at 50% 30%, #171b30 0%, var(--bg-dark) 70%);
+  position: relative !important;
+  min-height: 100vh;
+  padding-top: 75px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: radial-gradient(circle at 50% 30%, #171b30 0%, var(--bg-dark) 70%);
+  overflow: hidden;
 }
 
 .slider-container {
-    width: 100%;
-    max-width: 1100px;
-    min-height: 360px;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 20px;
+  width: 100%;
+  max-width: 1100px;
+  min-height: 360px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 20px;
 }
 
 .slide {
-    position: absolute;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.7s ease, visibility 0.7s;
-    width: 100%;
+  position: absolute;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.7s ease, visibility 0.7s;
+  width: 100%;
 }
 
 .slide.active {
-    opacity: 1;
-    visibility: visible;
+  opacity: 1;
+  visibility: visible;
 }
 
 .badge {
-    font-family: var(--font-display);
-    font-size: 0.85rem;
-    color: var(--neon-pink);
-    border: 1px solid var(--neon-pink);
-    padding: 4px 12px;
-    border-radius: 20px;
-    letter-spacing: 2px;
-    display: inline-block;
-    margin-bottom: 16px;
-    box-shadow: 0 0 10px rgba(255, 0, 127, 0.2);
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  color: var(--neon-pink);
+  border: 1px solid var(--neon-pink);
+  padding: 4px 12px;
+  border-radius: 20px;
+  letter-spacing: 2px;
+  display: inline-block;
+  margin-bottom: 16px;
+  box-shadow: 0 0 10px rgba(255, 0, 127, 0.2);
 }
 
 .slide-content h1 {
-    font-family: var(--font-display);
-    font-size: clamp(2rem, 5vw, 3.4rem);
-    font-weight: 900;
-    line-height: 1.15;
-    margin-bottom: 16px;
-    letter-spacing: 1px;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3.4rem);
+  font-weight: 900;
+  line-height: 1.15;
+  margin-bottom: 16px;
+  letter-spacing: 1px;
 }
 
 .slide-content p {
-    color: var(--text-muted);
-    max-width: 650px;
-    margin: 0 auto;
-    font-size: 1.25rem;
+  color: var(--text-muted);
+  max-width: 650px;
+  margin: 0 auto;
+  font-size: 1.25rem;
 }
 
+/* Setas travadas dentro da área do banner Hero */
 .slider-controls {
-    position: absolute;
-    top: 40%;
-    width: 100%;
-    max-width: 1250px;
-    display: flex;
-    justify-content: space-between;
-    padding: 0 20px;
-    pointer-events: none;
+  position: absolute !important;
+  top: 50% !important;
+  left: 0;
+  right: 0;
+  transform: translateY(-50%) !important;
+  width: 100%;
+  display: flex !important;
+  justify-content: space-between !important;
+  padding: 0 4% !important;
+  pointer-events: none;
+  z-index: 15;
 }
 
 .control-btn {
-    background: rgba(18, 20, 31, 0.7);
-    border: 1px solid var(--border-glow);
-    color: var(--neon-cyan);
-    font-size: 1.5rem;
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    cursor: pointer;
-    pointer-events: auto;
-    transition: var(--transition);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  background: rgba(18, 20, 31, 0.7);
+  border: 1px solid var(--border-glow);
+  color: var(--neon-cyan);
+  font-size: 1.5rem;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .control-btn:hover {
-    background: var(--neon-cyan);
-    color: var(--bg-dark);
-    box-shadow: 0 0 15px var(--neon-cyan);
+  background: var(--neon-cyan);
+  color: var(--bg-dark);
+  box-shadow: 0 0 15px var(--neon-cyan);
 }
 
 /* ==========================================================================
@@ -256,69 +261,88 @@ body {
 }
 
 /* ==========================================================================
-   6. SEÇÕES GERAIS, DIFERENCIAIS & VITRINE
+   6. SEÇÕES GERAIS, DIFERENCIAIS & VITRINE DE QUARTOS
    ========================================================================== */
 .section {
-    padding: 90px 8%;
+  padding: 90px 8%;
 }
 
 .section-title {
-    font-family: var(--font-display);
-    font-size: 2.2rem;
-    text-align: center;
-    margin-bottom: 50px;
-    letter-spacing: 2px;
-    position: relative;
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  text-align: center;
+  margin-bottom: 50px;
+  letter-spacing: 2px;
+  position: relative;
 }
 
 .section-title::after {
-    content: '';
-    display: block;
-    width: 60px;
-    height: 3px;
-    background: var(--neon-purple);
-    margin: 12px auto 0;
-    box-shadow: 0 0 10px var(--neon-purple);
+  content: '';
+  display: block;
+  width: 60px;
+  height: 3px;
+  background: var(--neon-purple);
+  margin: 12px auto 0;
+  box-shadow: 0 0 10px var(--neon-purple);
 }
 
-.grid-features,
-.grid-rooms {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 30px;
-}
-
-.card-feature,
-
-/* ==========================================================================
-   VITRINE DE QUARTOS: SISTEMA DE CAMADAS & EXPANSÃO CENTRALIZADA
-   ========================================================================== */
-
-/* Linha dos Quartos */
-.grid-rooms {
+.grid-features {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+}
+
+.card-feature {
+  background: var(--bg-card);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  padding: 30px;
+  transition: var(--transition);
+}
+
+.card-feature:hover {
+  transform: translateY(-6px);
+  border-color: var(--neon-cyan);
+  box-shadow: 0 8px 25px rgba(0, 240, 255, 0.15);
+}
+
+.card-feature h3 {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  color: var(--neon-cyan);
+  margin-bottom: 12px;
+}
+
+.card-feature p {
+  color: var(--text-muted);
+}
+
+/* Vitrine de Quartos com 3 Colunas Lado a Lado no Desktop */
+.grid-rooms {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
   gap: 30px;
   align-items: stretch;
+  width: 100%;
 }
 
 /* Card em Repouso (Segunda Camada) */
 .room-card {
   position: relative;
-  z-index: 1; /* Camada base */
+  z-index: 1;
   background: var(--bg-card);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
-  overflow: hidden; /* Mantém a imagem presa dentro dos cantos arredondados */
+  overflow: hidden;
   padding: 0;
   display: flex;
   flex-direction: column;
   transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, z-index 0.3s ease;
 }
 
-/* Card com Hover (Sobe para a Primeira Camada) */
+/* Card no Hover (Sobe para Primeira Camada) */
 .room-card:hover {
-  z-index: 10; /* Vem para a frente de todos os outros elementos */
+  z-index: 10;
   transform: translateY(-6px);
   border-color: var(--neon-cyan);
   box-shadow: 0 12px 30px rgba(0, 240, 255, 0.25);
@@ -329,30 +353,28 @@ body {
   position: relative;
   width: 100%;
   height: 220px;
-  overflow: hidden; /* Corta as laterais do zoom para não vazar */
+  overflow: hidden;
   background: #090a10;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* Imagem Centralizada com Zoom a partir do Centro Exato */
 .room-thumb {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center center; /* Trava a foto no centro geométrico */
-  transform-origin: center center; /* Faz a foto crescer igualmente para todos os lados */
+  object-position: center center;
+  transform-origin: center center;
   transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   display: block;
 }
 
-/* Zoom suave simétrico */
 .room-card:hover .room-thumb {
-  transform: scale(1.08); /* Expande igualmente a partir do centro sem deslocar para a direita */
+  transform: scale(1.08);
 }
 
-/* Conteúdo de Texto e Informações */
+/* Informações do Quarto */
 .room-info {
   padding: 24px;
   display: flex;
@@ -394,11 +416,10 @@ body {
   font-size: 0.8rem;
   color: var(--text-muted);
 }
+
 /* ==========================================================================
    7. BAR & GASTRONOMIA (IMAGENS AMPLIADAS & DESTAQUE COMERCIAL)
    ========================================================================== */
-
-/* Fundo Temático e Subtítulo */
 .bar-section {
   text-align: center;
   background: linear-gradient(180deg, var(--bg-dark) 0%, #0d0f18 50%, var(--bg-dark) 100%);
@@ -411,7 +432,6 @@ body {
   margin-bottom: 20px;
 }
 
-/* Grid de 3 Colunas Lado a Lado no Desktop */
 .menu-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -421,7 +441,6 @@ body {
   text-align: left;
 }
 
-/* Card Geral */
 .menu-item-card {
   background: var(--bg-card);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -439,7 +458,6 @@ body {
   box-shadow: 0 10px 30px rgba(176, 38, 255, 0.3);
 }
 
-/* Cabeçalho do Card (Texto no Topo com Efeito Neon) */
 .menu-header-top {
   padding: 22px 22px 14px 22px;
   display: flex;
@@ -463,7 +481,6 @@ body {
   min-height: 52px;
 }
 
-/* Badges Neon */
 .menu-badge {
   display: inline-block;
   align-self: flex-start;
@@ -493,7 +510,6 @@ body {
   box-shadow: 0 0 8px rgba(255, 215, 0, 0.25);
 }
 
-/* Moldura Ampliada da Imagem (Agora com 280px de altura para valorizar os produtos) */
 .menu-item-img-wrapper {
   position: relative;
   width: 100%;
@@ -514,7 +530,6 @@ body {
   transition: transform 0.4s ease;
 }
 
-/* Enquadramento customizado do drink Mana para centralizar o copo */
 .menu-item-card:nth-child(2) .menu-thumb {
   object-position: center 35%;
 }
@@ -523,7 +538,6 @@ body {
   transform: scale(1.08);
 }
 
-/* Rodapé do Card */
 .menu-footer {
   display: flex;
   justify-content: space-between;
@@ -546,8 +560,11 @@ body {
   color: var(--text-muted);
 }
 
-/* Responsividade para Telas Médias e Celulares */
+/* Responsividade das seções para telas menores */
 @media (max-width: 992px) {
+  .grid-rooms {
+    grid-template-columns: 1fr !important;
+  }
   .menu-grid {
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   }

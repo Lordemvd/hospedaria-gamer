@@ -1,89 +1,72 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus Inn | Hospedaria Gamer</title>
-    <link rel="stylesheet" href="style.css">
-    <!-- Fonte moderna Gamer/Tech -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap"
-        rel="stylesheet">
-        <!-- Metatags Comerciais & SEO -->
-  <meta name="description" content="Nexus Inn - A hospedaria definitiva para gamers. Setups de alta performance, consoles de última geração e coquetelaria temática.">
-  <meta name="theme-color" content="#00f0ff">
-
-  <!-- Open Graph para Discord, WhatsApp e Redes Sociais -->
-  <meta property="og:title" content="Nexus Inn | Hospedaria Gamer">
-  <meta property="og:description" content="Quartos equipados com PS5, Xbox Series X, Switch e PCs 240Hz com ping ultrabaixo.">
-  <meta property="og:type" content="website">
-  <meta property="og:image" content="https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1200&auto=format&fit=crop">
-
-  <!-- Favicon Gamer Vetorial Embutido -->
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%AE%3C/text%3E%3C/svg%3E">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexus Inn | Hospedaria Gamer</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%AE%3C/text%3E%3C/svg%3E">
 </head>
-
 <body>
 
-    <!-- 1. CABEÇALHO / NAVBAR COM MENU RESPONSIVO -->
-    <header class="navbar">
-        <div class="logo">
-            <span class="logo-highlight">NEXUS</span>INN
+  <!-- 1. CABEÇALHO / NAVBAR COM MENU RESPONSIVO -->
+  <header class="navbar">
+    <div class="logo">
+      <span class="logo-highlight">NEXUS</span>INN
+    </div>
+
+    <!-- BOTÃO HAMBÚRGUER COM DISPARO DIRETO -->
+    <button class="menu-toggle" id="menuToggle" type="button" onclick="toggleMobileMenu()">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <nav class="nav-links" id="navLinks">
+      <a href="#quartos" onclick="toggleMobileMenu(false)">Quartos</a>
+      <a href="#diferenciais" onclick="toggleMobileMenu(false)">Infraestrutura</a>
+      <a href="#bar" onclick="toggleMobileMenu(false)">Bar & Gastronomia</a>
+      <a href="pages/login.html" class="btn-link">Entrar</a>
+      <a href="pages/reserva.html" class="btn-primary">Reservar</a>
+    </nav>
+  </header>
+
+  <!-- 2. HERO SECTION COM SLIDER E CONTROLES TRAVADOS -->
+  <section class="hero-section">
+    <div class="slider-container">
+      <div class="slide active">
+        <div class="slide-content">
+          <span class="badge">E-SPORTS & CONFORTO</span>
+          <h1>O SETUP DOS SEUS SONHOS, O DESCANSO QUE VOCÊ MERECE</h1>
+          <p>Quartos equipados com PS5, Xbox Series X, Switch e PCs de alta performance com fibra óptica dedicada.</p>
         </div>
-
-        <!-- BOTÃO HAMBÚRGUER COM DISPARO DIRETO -->
-        <button class="menu-toggle" id="menuToggle" type="button" onclick="toggleMobileMenu()">
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
-
-        <nav class="nav-links" id="navLinks">
-            <a href="#quartos" onclick="toggleMobileMenu(false)">Quartos</a>
-            <a href="#diferenciais" onclick="toggleMobileMenu(false)">Infraestrutura</a>
-            <a href="#bar" onclick="toggleMobileMenu(false)">Bar & Gastronomia</a>
-            <a href="pages/login.html" class="btn-link">Entrar</a>
-            <a href="pages/reserva.html" class="btn-primary">Reservar</a>
-        </nav>
-    </header>
-
-    <!-- 2. HERO SECTION COM SLIDER -->
-    <section class="hero-section">
-        <div class="slider-container">
-            <div class="slide active">
-                <div class="slide-content">
-                    <span class="badge">E-SPORTS & CONFORTO</span>
-                    <h1>O SETUP DOS SEUS SONHOS, O DESCANSO QUE VOCÊ MERECE</h1>
-                    <p>Quartos equipados com PS5, Xbox Series X, Switch e PCs de alta performance com fibra óptica
-                        dedicada.</p>
-                </div>
-            </div>
-            <div class="slide">
-                <div class="slide-content">
-                    <span class="badge">NEXT-GEN EXCLUSIVE</span>
-                    <h1>GAMEPLAY SEM LAG, IMERSÃO TOTAL</h1>
-                    <p>Monitores 240Hz, cadeiras ergonômicas e isolamento acústico individual.</p>
-                </div>
-            </div>
-            <div class="slide">
-                <div class="slide-content">
-                    <span class="badge">GASTRONOMIA 24H</span>
-                    <h1>COQUETELARIA TEMÁTICA & ROOM SERVICE</h1>
-                    <p>Poções artesanais, hambúrgueres e snacks sem pausar a partida.</p>
-                </div>
-            </div>
+      </div>
+      <div class="slide">
+        <div class="slide-content">
+          <span class="badge">NEXT-GEN EXCLUSIVE</span>
+          <h1>GAMEPLAY SEM LAG, IMERSÃO TOTAL</h1>
+          <p>Monitores 240Hz, cadeiras ergonômicas e isolamento acústico individual.</p>
         </div>
-
-        <!-- Controles do Slide -->
-        <div class="slider-controls">
-            <button id="prevBtn" class="control-btn">&#10094;</button>
-            <button id="nextBtn" class="control-btn">&#10095;</button>
+      </div>
+      <div class="slide">
+        <div class="slide-content">
+          <span class="badge">GASTRONOMIA 24H</span>
+          <h1>COQUETELARIA TEMÁTICA & ROOM SERVICE</h1>
+          <p>Poções artesanais, hambúrgueres e snacks sem pausar a partida.</p>
         </div>
+      </div>
+    </div>
 
-        <!-- 3. BARRA DE AÇÃO DIRETA (ABOVE THE FOLD) -->
+    <!-- Controles do Slide posicionados de forma absoluta no Hero -->
+    <div class="slider-controls">
+      <button id="prevBtn" class="control-btn" aria-label="Slide anterior">&#10094;</button>
+      <button id="nextBtn" class="control-btn" aria-label="Próximo slide">&#10095;</button>
+    </div>
+
+    <!-- 3. BARRA DE AÇÃO DIRETA (ABOVE THE FOLD) -->
     <div class="quick-booking quick-booking-hero">
       <form class="booking-form" action="pages/reserva.html" method="GET">
         <div class="form-group">
@@ -105,27 +88,28 @@
         <button type="submit" class="btn-primary btn-search-hero">RESERVAR AGORA</button>
       </form>
     </div>
+  </section> <!-- FECHAMENTO CORRETO DO HERO SECTION -->
 
-    <!-- 4. DIFERENCIAIS -->
-    <section id="diferenciais" class="section">
-        <h2 class="section-title">INFRAESTRUTURA DE ALTA PERFORMANCE</h2>
-        <div class="grid-features">
-            <div class="card-feature">
-                <h3>Ping Ultrabaixo</h3>
-                <p>Links dedicados de fibra com redundância e rede interna cabeada Cat6 em todos os quartos.</p>
-            </div>
-            <div class="card-feature">
-                <h3>Isolamento Acústico</h3>
-                <p>Tratamento de estúdio para você jogar, conversar no Discord ou streamar sem ruídos.</p>
-            </div>
-            <div class="card-feature">
-                <h3>Room Service 24h</h3>
-                <p>Peça bebidas, drinks e lanches diretamente pelo terminal do seu quarto a qualquer hora.</p>
-            </div>
-        </div>
-    </section>
+  <!-- 4. DIFERENCIAIS / INFRAESTRUTURA -->
+  <section id="diferenciais" class="section">
+    <h2 class="section-title">INFRAESTRUTURA DE ALTA PERFORMANCE</h2>
+    <div class="grid-features">
+      <div class="card-feature">
+        <h3>Ping Ultrabaixo</h3>
+        <p>Links dedicados de fibra com redundância e rede interna cabeada Cat6 em todos os quartos.</p>
+      </div>
+      <div class="card-feature">
+        <h3>Isolamento Acústico</h3>
+        <p>Tratamento de estúdio para você jogar, conversar no Discord ou streamar sem ruídos.</p>
+      </div>
+      <div class="card-feature">
+        <h3>Room Service 24h</h3>
+        <p>Peça bebidas, drinks e lanches diretamente pelo terminal do seu quarto a qualquer hora.</p>
+      </div>
+    </div>
+  </section>
 
-<!-- 5. VITRINE DE QUARTOS -->
+  <!-- 5. VITRINE DE QUARTOS RIGIDAMENTE NIVELADA (3 COLUNAS) -->
   <section id="quartos" class="section">
     <h2 class="section-title">QUARTOS EM DESTAQUE</h2>
     <div class="grid-rooms">
@@ -134,10 +118,9 @@
       <div class="room-card">
         <div class="room-image-wrapper">
           <img src="https://images.unsplash.com/photo-1598550476439-6847785fcea6?q=80&w=800&auto=format&fit=crop" alt="Setup Suíte Solo Streamer" class="room-thumb" loading="lazy">
-         
         </div>
         <div class="room-info">
-          <div>
+          <div class="room-header-info">
             <h3>Suíte Solo Streamer</h3>
             <p class="specs">PC RTX 4080 240Hz &bull; Microfone Shure &bull; Cama Solteiro &bull; Isolamento</p>
           </div>
@@ -148,11 +131,10 @@
         </div>
       </div>
 
-<!-- Card 2: Suíte Duo Next-Gen -->
+      <!-- Card 2: Suíte Duo Next-Gen (Foto do Setup Personalizado) -->
       <div class="room-card">
         <div class="room-image-wrapper">
           <img src="https://6ad275ba2ff4c710e5e3ff3e.imgix.net/sandbox/Gemini_Generated_Image_4jk4v74jk4v74jk4.jfif" alt="Casal jogando console na Suíte Duo" class="room-thumb" loading="lazy">
-         
         </div>
         <div class="room-info">
           <div class="room-header-info">
@@ -170,10 +152,9 @@
       <div class="room-card">
         <div class="room-image-wrapper">
           <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=800&auto=format&fit=crop" alt="Setup Party Room Squad" class="room-thumb" loading="lazy">
-        
         </div>
         <div class="room-info">
-          <div>
+          <div class="room-header-info">
             <h3>Party Room Squad</h3>
             <p class="specs">4x Monitores 165Hz &bull; Switch Dock &bull; Sofá Modular &bull; Frigobar Duplo</p>
           </div>
@@ -187,7 +168,7 @@
     </div>
   </section>
 
-<!-- 6. BAR & GASTRONOMIA (TEXTO EM CIMA, IMAGEM EM BAIXO) -->
+  <!-- 6. BAR & GASTRONOMIA (TEXTO EM CIMA, IMAGEM EM BAIXO) -->
   <section id="bar" class="section bar-section">
     <h2 class="section-title">BAR & GASTRONOMIA 24H</h2>
     <p class="section-subtitle">Poções energéticas artesanais, smash burgers e snacks entregues sem pausar a gameplay.</p>
@@ -243,7 +224,7 @@
     </div>
   </section>
 
-<!-- 7. AVALIAÇÕES DA COMUNIDADE GAMER -->
+  <!-- 7. AVALIAÇÕES DA COMUNIDADE GAMER -->
   <section id="avaliacoes" class="section reviews-section">
     <h2 class="section-title">FEEDBACK DA COMUNIDADE</h2>
     <p class="section-subtitle">Avaliações reais de streamers, times competitivos e casais que se hospedaram na Nexus Inn.</p>
@@ -293,19 +274,18 @@
     </div>
   </section>
 
-    <!-- 8. RODAPÉ -->
-    <footer class="footer">
-        <div class="footer-content">
-            <p>&copy; 2026 Nexus Inn - A hospedaria definitiva para gamers.</p>
-            <div class="footer-links">
-                <a href="#">Termos de Uso</a>
-                <a href="#">Política de Cancelamento</a>
-                <a href="#">Contato</a>
-            </div>
-        </div>
-    </footer>
+  <!-- 8. RODAPÉ -->
+  <footer class="footer">
+    <div class="footer-content">
+      <p>&copy; 2026 Nexus Inn - A hospedaria definitiva para gamers.</p>
+      <div class="footer-links">
+        <a href="#">Termos de Uso</a>
+        <a href="#">Política de Cancelamento</a>
+        <a href="#">Contato</a>
+      </div>
+    </div>
+  </footer>
 
-    <script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
-
 </html>
