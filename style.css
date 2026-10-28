@@ -1324,7 +1324,7 @@ body {
 }
 
 /* ==========================================================================
-   12. TELA DE FINALIZAÇÃO / COMPROVANTE GAMER PASS (pages/finalizacao.html)
+   12.TELA DE FINALIZAÇÃO / COMPROVANTE GAMER PASS (pages/finalizacao.html)
    ========================================================================== */
 .success-page-container {
   min-height: calc(100vh - 75px);
@@ -1337,6 +1337,17 @@ body {
 .success-header {
   text-align: center;
   margin-bottom: 35px;
+}
+
+.success-header .page-title {
+  margin: 16px 0 10px 0 !important;
+  line-height: 1.25 !important;
+}
+
+.success-header .section-subtitle {
+  margin-top: 0 !important; /* Anula a margem negativa de -30px */
+  margin-bottom: 0 !important;
+  line-height: 1.5 !important;
 }
 
 .success-icon-badge {
@@ -1355,16 +1366,13 @@ body {
 }
 
 /* ESTRUTURA DO TICKET GAMER */
-.gamer-ticket {
-  display: flex;
-  width: 100%;
-  max-width: 860px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-glow);
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7);
-  position: relative;
+.gamer-ticket .lbl {
+  display: block !important;
+  font-size: 0.78rem;
+  font-family: var(--font-display);
+  color: var(--text-muted);
+  letter-spacing: 1px;
+  margin-bottom: 6px;
 }
 
 .ticket-main {
@@ -1462,27 +1470,40 @@ body {
 }
 
 .ticket-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: flex-end !important;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding-top: 16px;
+  padding-top: 18px;
+  gap: 20px;
+}
+
+.ticket-footer > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .price-val {
   font-family: var(--font-display);
   font-size: 1.4rem;
   color: var(--neon-cyan);
+  white-space: nowrap;
+  display: block;
 }
 
 .pay-method {
+  display: inline-flex !important;
+  align-items: center;
+  width: fit-content;
   font-family: var(--font-display);
   background: rgba(176, 38, 255, 0.15);
   border: 1px solid var(--neon-purple);
-  padding: 4px 10px;
+  padding: 6px 14px;
   border-radius: 4px;
   font-size: 0.88rem;
   color: #ffffff;
+  white-space: nowrap !important; /* Impede que o texto quebre em duas caixas */
 }
 
 /* CANHOTO COM PICOTE PONTILHADO */
