@@ -151,3 +151,100 @@ async function checkRoomAvailability(roomId, checkinStr, checkoutStr) {
     return { available: true, error: err.message };
   }
 }
+
+// ==========================================
+// AUTENTICAÇÃO E GESTÃO DE CONTAS (SUPABASE)
+// ==========================================
+
+// 5. Registar novo utilizador no banco de dados
+async function registerUserInDB(userData) {
+  if (!supabaseClient) {
+    return { success: false, message: 'Supabase não conectado.' };
+  }
+
+  const cleanEmail = userData.email.trim().toLowerCase();
+  const cleanTag = userData.gamerTag.trim();
+
+  try {
+    // Validação de unicidade de e-mail ou GamerTag
+    const { data: existingUsers, error: checkError } = await supabaseClient
+      .from('users')
+      .select('email, gamer_tag')
+      .or(`email.ilike.${cleanEmail},gamer_tag.ilike.${cleanTag}`);
+
+    if (checkError) throw checkError;
+
+    if (existingUsers && existingUsers.length > 0) {
+      const match = existingUsers[0];
+      if (match.email.toLowerCase() === cleanEmail) {
+        return { success: false, message: 'Este e-mail já está em uso por outro jogador!' };
+      }
+      return { success: false, message: 'Esta GamerTag já foi resgatada por outro player!' };
+    }
+
+    // Registo com papel padrão 'user'
+    const { data, error } = await supabaseClient
+      .from('users')
+      .insert([
+        {
+          full_name: userData.fullName,
+          gamer_tag: cleanTag,
+          email: cleanEmail,
+          password: userData.password,
+          role: 'user'
+        }
+      ])
+      .select();
+
+    if (error) throw error;
+    return { success: true, user: data[0] };
+  } catch (err) {
+    console.error('Erro no registo de utilizador:', err.message);
+    return { success: false, message: 'Erro de ligação ao servidor. Tente novamente.' };
+  }
+}
+
+// 6. Iniciar sessão validando no PostgreSQL
+async function loginUserInDB(identifier, password) {
+  if (!supabaseClient) {
+    return { success: false, message: 'Supabase não conectado.' };
+  }
+
+  const cleanId = identifier.trim().toLowerCase();
+
+  try {
+    // Procura por email ou GamerTag
+    const { data, error } = await supabaseClient
+      .from('users')
+      .select('id, full_name, gamer_tag, email, password, role')
+      .or(`email.ilike.${cleanId},gamer_tag.ilike.${cleanId}`)
+      .limit(1);
+
+    if (error) throw error;
+
+    if (!data || data.length === 0) {
+      return { success: false, message: 'Usuário ou senha inválidos.' };
+    }
+
+    const user = data[0];
+
+    // Validação de credencial
+    if (user.password !== password) {
+      return { success: false, message: 'Usuário ou senha inválidos.' };
+    }
+
+    return {
+      success: true,
+      user: {
+        id: user.id,
+        fullName: user.full_name,
+        gamerTag: user.gamer_tag,
+        email: user.email,
+        role: user.role || 'user'
+      }
+    };
+  } catch (err) {
+    console.error('Erro na autenticação:', err.message);
+    return { success: false, message: 'Falha ao autenticar no servidor.' };
+  }
+}

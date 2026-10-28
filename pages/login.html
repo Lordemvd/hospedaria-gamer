@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nexus Inn | Login do Jogador</title>
   <link rel="stylesheet" href="../style.css">
+  <!-- SDK Oficial do Supabase -->
+  <!-- NOSONAR -->
+  <script defer src="../supabase-sdk.js"></script>
+  <script defer src="../supabase.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
@@ -61,46 +65,42 @@
   <script src="../auth.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const form = document.getElementById('loginForm');
-      const feedback = document.getElementById('loginFeedback');
-      const passInput = document.getElementById('loginPass');
-      const toggleBtn = document.getElementById('togglePassBtn');
+      const loginForm = document.getElementById('loginForm');
+      const errorMsg = document.getElementById('loginErrorMsg');
+      const submitBtn = loginForm ? loginForm.querySelector('button[type="submit"]') : null;
 
-      toggleBtn.addEventListener('click', () => {
-        if (passInput.type === 'password') {
-          passInput.type = 'text';
-          toggleBtn.style.color = 'var(--neon-cyan)';
-        } else {
-          passInput.type = 'password';
-          toggleBtn.style.color = 'var(--text-muted)';
-        }
-      });
-
-      form.addEventListener('submit', (e) => {
+      loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        errorMsg.style.display = 'none';
 
-        const identifier = document.getElementById('loginEmail').value;
-        const password = passInput.value;
+        const identifier = document.getElementById('loginEmail').value.trim();
+        const password = document.getElementById('loginPass').value;
 
-        const res = loginUser(identifier, password);
-
-        if (res.success) {
-          feedback.style.display = 'block';
-          feedback.style.background = 'rgba(0, 240, 255, 0.15)';
-          feedback.style.border = '1px solid var(--neon-cyan)';
-          feedback.style.color = 'var(--neon-cyan)';
-          feedback.textContent = `Acesso autorizado! Bem-vindo, ${res.user.gamerTag}!`;
-
-          setTimeout(() => {
-            window.location.href = '../index.html';
-          }, 1000);
-        } else {
-          feedback.style.display = 'block';
-          feedback.style.background = 'rgba(255, 0, 85, 0.15)';
-          feedback.style.border = '1px solid #ff0055';
-          feedback.style.color = '#ff6b8b';
-          feedback.textContent = res.message;
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Acessando setup...';
         }
+
+        const result = await loginUserInDB(identifier, password);
+
+        if (!result.success) {
+          errorMsg.textContent = result.message;
+          errorMsg.style.display = 'block';
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Entrar no Setup';
+          }
+          return;
+        }
+
+        // Registo da sessão ativa (com suporte ao perfil admin/user)
+        localStorage.setItem('nexus_current_user', JSON.stringify(result.user));
+
+        if (result.user.role === 'admin') {
+          alert(`Sessão de Administrador iniciada: Bem-vindo, ${result.user.gamerTag}!`);
+        }
+
+        window.location.href = '../index.html';
       });
     });
   </script>

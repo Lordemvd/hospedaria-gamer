@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nexus Inn | Criar Perfil Gamer</title>
   <link rel="stylesheet" href="../style.css">
+    <!-- SDK Oficial do Supabase -->
+  <!-- NOSONAR -->
+  <script defer src="../supabase-sdk.js"></script>
+  <script defer src="../supabase.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
@@ -84,64 +88,48 @@
   <script src="../auth.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const form = document.getElementById('cadastroForm');
-      const feedback = document.getElementById('cadastroFeedback');
-      const cpfInput = document.getElementById('cadCpf');
+      const form = document.getElementById('registerForm');
+      const submitBtn = form ? form.querySelector('button[type="submit"]') : null;
 
-      // Máscara de CPF
-      cpfInput.addEventListener('input', (e) => {
-        let v = e.target.value.replace(/\D/g, '');
-        v = v.replace(/(\d{3})(\d)/, '$1.$2');
-        v = v.replace(/(\d{3})(\d)/, '$1.$2');
-        v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-        e.target.value = v.substring(0, 14);
-      });
+      if (form) {
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
 
-      form.addEventListener('submit', (e) => {
-        e.preventDefault();
+          const fullName = document.getElementById('regFullName').value.trim();
+          const gamerTag = document.getElementById('regGamerTag').value.trim();
+          const email = document.getElementById('regEmail').value.trim();
+          const pass = document.getElementById('regPass').value;
+          const confirmPass = document.getElementById('regConfirmPass').value;
 
-        const nome = document.getElementById('cadNome').value;
-        const gamerTag = document.getElementById('cadGamerTag').value;
-        const email = document.getElementById('cadEmail').value;
-        const cpf = document.getElementById('cadCpf').value;
-        const senha = document.getElementById('cadSenha').value;
-        const confSenha = document.getElementById('cadConfSenha').value;
+          if (pass !== confirmPass) {
+            alert('As senhas não coincidem!');
+            return;
+          }
 
-        if (senha !== confSenha) {
-          feedback.style.display = 'block';
-          feedback.style.background = 'rgba(255, 0, 85, 0.15)';
-          feedback.style.border = '1px solid #ff0055';
-          feedback.style.color = '#ff6b8b';
-          feedback.textContent = 'As senhas não coincidem!';
-          return;
-        }
+          if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Gravando perfil no banco...';
+          }
 
-        const res = registerUser({
-          fullName: nome,
-          gamerTag: gamerTag,
-          email: email,
-          cpf: cpf,
-          password: senha
+          const result = await registerUserInDB({
+            fullName,
+            gamerTag,
+            email,
+            password: pass
+          });
+
+          if (result.success) {
+            alert(`Conta criada com sucesso no banco de dados! Bem-vindo(a), ${gamerTag}!`);
+            window.location.href = 'login.html';
+          } else {
+            alert(result.message);
+            if (submitBtn) {
+              submitBtn.disabled = false;
+              submitBtn.textContent = 'Criar Perfil Gamer';
+            }
+          }
         });
-
-        if (res.success) {
-          feedback.style.display = 'block';
-          feedback.style.background = 'rgba(0, 240, 255, 0.15)';
-          feedback.style.border = '1px solid var(--neon-cyan)';
-          feedback.style.color = 'var(--neon-cyan)';
-          feedback.textContent = `Conta criada! Conectando como ${res.user.gamerTag}...`;
-
-          setTimeout(() => {
-            window.location.href = '../index.html';
-          }, 1200);
-        } else {
-          feedback.style.display = 'block';
-          feedback.style.background = 'rgba(255, 0, 85, 0.15)';
-          feedback.style.border = '1px solid #ff0055';
-          feedback.style.color = '#ff6b8b';
-          feedback.textContent = res.message;
-        }
-      });
+      }
     });
   </script>
 </body>
