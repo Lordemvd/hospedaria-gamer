@@ -84,3 +84,34 @@ async function saveWaitlistToDB(waitlistData) {
     return { success: false, error: err.message };
   }
 }
+
+// 3. Consultar Reservas por GamerTag ou Código de Reserva
+async function fetchUserReservations(query) {
+  if (!supabaseClient) {
+    console.warn('Supabase não conectado.');
+    return { success: false, data: [] };
+  }
+
+  const cleanQuery = query.trim();
+
+  try {
+    let request = supabaseClient
+      .from('reservations')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (cleanQuery.toUpperCase().startsWith('NX-')) {
+      request = request.eq('reservation_code', cleanQuery.toUpperCase());
+    } else {
+      request = request.ilike('guest_name', `%${cleanQuery}%`);
+    }
+
+    const { data, error } = await request;
+
+    if (error) throw error;
+    return { success: true, data };
+  } catch (err) {
+    console.error('Erro ao buscar reservas no Supabase:', err.message);
+    return { success: false, error: err.message, data: [] };
+  }
+}

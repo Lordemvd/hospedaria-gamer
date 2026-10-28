@@ -423,3 +423,133 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (e) {}
   }
 });
+
+// ==========================================
+// MODAL & CONSULTA DE RESERVAS NO SUPABASE
+// ==========================================
+document.addEventListener('DOMContentLoaded', () => {
+  // 1. Injeta o HTML do Modal de Reservas no body
+  const modalHTML = `
+    <div id="modalReservas" class="reservas-modal">
+      <div class="reservas-modal-card">
+        <div class="reservas-modal-header">
+          <div>
+            <span class="badge" style="font-size: 0.72rem; margin-bottom: 4px;">BASE DE DADOS POSTGRESQL</span>
+            <h3 style="font-family: var(--font-display); color: #fff; margin: 0;">MINHAS RESERVAS</h3>
+          </div>
+          <button type="button" id="fecharModalReservas" class="close-modal-btn">&times;</button>
+        </div>
+
+        <div class="reservas-search-bar">
+          <input type="text" id="inputBuscaReserva" placeholder="Digite sua GamerTag ou Código (ex: NX-123456)">
+          <button type="button" id="btnBuscarReserva" class="btn-primary" style="padding: 10px 18px;">Buscar</button>
+        </div>
+
+        <div id="listaReservasContainer" class="reservas-lista">
+          <p class="reservas-empty-hint">Digite sua GamerTag ou código NX para buscar registros no banco de dados.</p>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+  const modal = document.getElementById('modalReservas');
+  const fecharBtn = document.getElementById('fecharModalReservas');
+  const inputBusca = document.getElementById('inputBuscaReserva');
+  const btnBuscar = document.getElementById('btnBuscarReserva');
+  const listaContainer = document.getElementById('listaReservasContainer');
+
+  fecharBtn.addEventListener('click', () => modal.classList.remove('show'));
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) modal.classList.remove('show');
+  });
+
+  // Função para executar a busca e renderizar os cards
+  async function executarBusca(termo) {
+    if (!termo) return;
+    listaContainer.innerHTML = '<div class="spinner" style="width: 32px; height: 32px; margin: 30px auto;"></div>';
+
+    if (typeof fetchUserReservations !== 'function') {
+      listaContainer.innerHTML = '<p class="reservas-empty-hint" style="color: #ff6b8b;">SDK do Supabase não carregado nesta página.</p>';
+      return;
+    }
+
+    const res = await fetchUserReservations(termo);
+
+    if (!res.success || res.data.length === 0) {
+      listaContainer.innerHTML = `
+        <div style="text-align: center; padding: 25px 0;">
+          <p style="color: var(--text-muted); font-size: 0.95rem;">Nenhuma reserva encontrada para "<strong>${termo}</strong>".</p>
+        </div>
+      `;
+      return;
+    }
+
+    listaContainer.innerHTML = res.data.map(item => `
+      <div class="reserva-item-card">
+        <div class="reserva-item-header">
+          <span class="reserva-code">${item.reservation_code}</span>
+          <span class="reserva-status-badge">${item.status}</span>
+        </div>
+        <div class="reserva-item-body">
+          <strong style="color: #fff; font-size: 1.05rem;">${item.room_name}</strong>
+          <span style="color: var(--text-muted); font-size: 0.88rem;">Hóspede: <strong>${item.guest_name}</strong></span>
+          <span style="color: var(--neon-cyan); font-size: 0.88rem;">
+            📅 ${item.check_in.split('-').reverse().join('/')} até ${item.check_out.split('-').reverse().join('/')}
+          </span>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 8px;">
+            <span style="font-family: var(--font-display); color: #fff;">${item.total_price} <small style="color: var(--text-muted);">(${item.payment_method})</small></span>
+            <a href="pages/finalizacao.html?codigo=${item.reservation_code}&hospede=${encodeURIComponent(item.guest_name)}&quarto=${encodeURIComponent(item.room_name)}&checkin=${item.check_in}&checkout=${item.check_out}&total=${encodeURIComponent(item.total_price)}&metodo=${encodeURIComponent(item.payment_method)}" class="btn-secondary" style="padding: 6px 12px; font-size: 0.78rem;">
+              Ver Gamer Pass
+            </a>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  btnBuscar.addEventListener('click', () => executarBusca(inputBusca.value));
+  inputBusca.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') executarBusca(inputBusca.value);
+  });
+
+  // 2. Integração da Navbar com Sessão e Botão "Minhas Reservas"
+  const currentUserRaw = localStorage.getItem('nexus_current_user');
+  const loginLink = document.querySelector('.nav-links a[href*="login.html"]');
+
+  if (currentUserRaw && loginLink) {
+    try {
+      const user = JSON.parse(currentUserRaw);
+      const tag = user.gamerTag || user.fullName || 'Player';
+
+      const navActions = document.createElement('div');
+      navActions.style.display = 'inline-flex';
+      navActions.style.alignItems = 'center';
+      navActions.style.gap = '8px';
+
+      navActions.innerHTML = `
+        <button type="button" id="btnMinhasReservas" style="background: rgba(0,240,255,0.08); border: 1px solid var(--border-glow); color: var(--neon-cyan); padding: 7px 12px; border-radius: 4px; font-family: var(--font-display); font-size: 0.85rem; cursor: pointer;">
+          🎮 ${tag} &bull; Reservas
+        </button>
+        <button id="btnLogout" type="button" style="background: transparent; border: 1px solid rgba(255,0,85,0.4); color: #ff6b8b; padding: 7px 10px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; font-family: var(--font-display);">
+          Sair
+        </button>
+      `;
+
+      loginLink.replaceWith(navActions);
+
+      document.getElementById('btnMinhasReservas').addEventListener('click', () => {
+        modal.classList.add('show');
+        inputBusca.value = tag;
+        executarBusca(tag);
+      });
+
+      document.getElementById('btnLogout').addEventListener('click', () => {
+        if (confirm(`Deseja desconectar a conta de ${tag}?`)) {
+          localStorage.removeItem('nexus_current_user');
+          window.location.reload();
+        }
+      });
+    } catch (e) {}
+  }
+});

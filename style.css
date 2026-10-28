@@ -2802,3 +2802,134 @@ span.flatpickr-weekday {
     display: none !important;
   }
 }
+
+/* ==========================================================================
+   MODAL DE CONSULTA DE RESERVAS SUPABASE (script.js)
+   ========================================================================== */
+.reservas-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 9, 14, 0.88);
+  backdrop-filter: blur(8px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+  padding: 16px;
+}
+
+.reservas-modal.show {
+  display: flex;
+}
+
+.reservas-modal-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-glow);
+  box-shadow: 0 0 30px rgba(0, 240, 255, 0.25);
+  border-radius: 10px;
+  width: 100%;
+  max-width: 580px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  padding: 26px;
+}
+
+.reservas-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 14px;
+  margin-bottom: 18px;
+}
+
+.close-modal-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.8rem;
+  cursor: pointer;
+  line-height: 1;
+  transition: var(--transition);
+}
+
+.close-modal-btn:hover {
+  color: #fff;
+}
+
+.reservas-search-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.reservas-search-bar input {
+  flex: 1;
+  background: #090a10;
+  border: 1px solid #282d44;
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 4px;
+  outline: none;
+  font-size: 0.95rem;
+}
+
+.reservas-search-bar input:focus {
+  border-color: var(--neon-cyan);
+}
+
+.reservas-lista {
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-right: 4px;
+}
+
+.reservas-empty-hint {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  padding: 20px 0;
+}
+
+.reserva-item-card {
+  background: #090a10;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-left: 3px solid var(--neon-cyan);
+  border-radius: 6px;
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.reserva-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.reserva-code {
+  font-family: var(--font-display);
+  color: var(--neon-cyan);
+  font-size: 0.95rem;
+  letter-spacing: 1px;
+}
+
+.reserva-status-badge {
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  background: rgba(0, 240, 255, 0.12);
+  color: var(--neon-cyan);
+  border: 1px solid var(--border-glow);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.reserva-item-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
