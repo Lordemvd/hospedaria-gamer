@@ -263,21 +263,35 @@
         });
       });
 
-      // 6. PROCESSAMENTO E REDIRECIONAMENTO PARA O VOUCHER
+    // 6. PROCESSAMENTO E REDIRECIONAMENTO PARA O VOUCHER (INTEGRADO AO SUPABASE)
       const processingModal = document.getElementById('processingModal');
       const statusHeading = document.getElementById('statusHeading');
       const statusDesc = document.getElementById('statusDesc');
 
-      function executePayment(metodo) {
+      async function executePayment(metodo) {
         processingModal.classList.add('show');
 
+        const reservationCode = 'NX-' + Math.floor(100000 + Math.random() * 900000);
+
+        // 1. Grava os dados da reserva no PostgreSQL do Supabase
+        await saveReservationToDB({
+          codigo: reservationCode,
+          hospede: playerName,
+          quartoId: roomParam,
+          quarto: displayRoom.textContent,
+          checkin: checkinParam,
+          checkout: checkoutParam,
+          total: totalParam,
+          metodo: metodo
+        });
+
+        // 2. Feedback visual e transição para o voucher
         setTimeout(() => {
           statusHeading.textContent = 'Pagamento Confirmado!';
           statusHeading.style.color = 'var(--neon-cyan)';
-          statusDesc.textContent = 'Gerando seu Gamer Pass e chaves de acesso ao quarto...';
+          statusDesc.textContent = 'Setup reservado no banco de dados. Gerando seu Gamer Pass...';
 
           setTimeout(() => {
-            const reservationCode = 'NX-' + Math.floor(100000 + Math.random() * 900000);
             const redirectParams = new URLSearchParams({
               codigo: reservationCode,
               hospede: playerName,
@@ -288,8 +302,8 @@
               metodo: metodo
             });
             window.location.href = `finalizacao.html?${redirectParams.toString()}`;
-          }, 1400);
-        }, 1800);
+          }, 1200);
+        }, 1600);
       }
 
       document.getElementById('btnConfirmPix').addEventListener('click', () => {
@@ -302,5 +316,9 @@
       });
     });
   </script>
+
+  <!-- SDK Oficial do Supabase + Arquivo de Configuração -->
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" crossorigin="anonymous"></script>
+  <script defer src="../supabase.js"></script>
 </body>
 </html>
