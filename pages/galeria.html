@@ -1,271 +1,174 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus Inn | Galeria da Suíte Duo Next-Gen</title> 
-    <link rel="stylesheet" href="../style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap"
-        rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexus Inn | Galeria da Suíte Duo Next-Gen</title> 
+  <link rel="stylesheet" href="../style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%AE%3C/text%3E%3C/svg%3E">
 </head>
 
 <body>
 
-    <!-- NAVBAR -->
-    <header class="navbar">
-        <div class="logo">
-            <a href="../index.html" style="text-decoration: none; color: inherit;">
-                <span class="logo-highlight">NEXUS</span>INN
-            </a>
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <div class="logo">
+      <a href="../index.html" style="text-decoration: none; color: inherit;">
+        <span class="logo-highlight">NEXUS</span>INN
+      </a>
+    </div>
+    <nav class="nav-links">
+      <a href="../index.html">Início</a>
+      <a href="../index.html#quartos">Outros Quartos</a>
+      <a href="reserva.html?room=duo" class="btn-primary">Reservar Este Quarto</a>
+    </nav>
+  </header>
+
+  <main class="gallery-page-container">
+
+    <!-- CABEÇALHO DO QUARTO -->
+    <div class="room-header-details">
+      <div class="room-title-area">
+        <span class="badge">FLAGSHIP NEXT-GEN</span>
+        <h1 class="page-title">SUÍTE DUO NEXT-GEN</h1>
+        <p class="section-subtitle">O equilíbrio perfeito entre jogatina cooperativa em tela gigante e conforto de hotel 5 estrelas.</p>
+      </div>
+      <div class="room-price-tag">
+        <span class="price-lbl">Diária a partir de</span>
+        <strong class="price-val">R$ 260,00</strong>
+      </div>
+    </div>
+
+    <!-- CARROSSEL & GALERIA INTERATIVA -->
+    <section class="gallery-showcase">
+      <div class="main-display-wrapper">
+        <div class="main-image-frame" id="mainDisplay">
+          <div class="image-overlay-info" id="imageCaption">Carregando setup...</div>
         </div>
-        <nav class="nav-links">
-            <a href="../index.html">Início</a>
-            <a href="../index.html#quartos">Outros Quartos</a>
-            <a href="reserva.html" class="btn-primary">Reservar Este Quarto</a>
-        </nav>
-    </header>
+        <button id="galleryPrev" class="gallery-nav-btn prev-btn" aria-label="Foto anterior">&#10094;</button>
+        <button id="galleryNext" class="gallery-nav-btn next-btn" aria-label="Próxima foto">&#10095;</button>
+      </div>
 
-    <main class="gallery-page-container">
+      <!-- Miniaturas (Thumbnails) Navegáveis -->
+      <div class="thumbnails-track" id="thumbsTrack"></div>
+    </section>
 
-        <!-- CABEÇALHO DO QUARTO -->
-        <div class="room-header-details">
-            <div class="room-title-area">
-                <span class="badge">FLAGSHIP NEXT-GEN</span>
-                <h1 class="page-title">SUÍTE DUO NEXT-GEN</h1> <br>
-                <p class="section-subtitle">O equilíbrio perfeito entre jogatina cooperativa em tela gigante e conforto
-                    de hotel 5 estrelas.</p>
+    <!-- GRID INFERIOR: FICHA TÉCNICA + CTA LATERAL -->
+    <div class="specs-booking-grid">
+
+      <!-- COLUNA DA ESQUERDA: ESPECIFICAÇÕES TÉCNICAS E COMODIDADES -->
+      <div class="specs-container">
+
+        <!-- Bloco 1: Hardware & Telas -->
+        <div class="specs-block">
+          <h2 class="specs-block-title">&#127918; HARDWARE & DISPLAYS</h2>
+          <div class="specs-items-grid">
+            <div class="spec-card">
+              <span class="spec-label">Consoles Inclusos</span>
+              <strong class="spec-value">PS5 + Xbox Series X</strong>
+              <small class="spec-sub">Equipados com contas ativas e catálogo Game Pass / PS Plus</small>
             </div>
-            <div class="room-price-tag">
-                <span class="price-lbl">Diária a partir de</span>
-                <strong class="price-val">R$ 260,00</strong>
+            <div class="spec-card">
+              <span class="spec-label">Tela Principal</span>
+              <strong class="spec-value">LG OLED 55" 4K 120Hz</strong>
+              <small class="spec-sub">HDMI 2.1, VRR, ALLM, Dolby Vision & G-Sync ativado</small>
             </div>
-        </div>
-
-        <!-- CARROSSEL & GALERIA INTERATIVA -->
-        <section class="gallery-showcase">
-            <!-- Visor Principal da Imagem com Placeholders Ilustrados em SVG -->
-            <div class="main-display-wrapper">
-                <div class="main-image-frame" id="mainDisplay">
-                    <!-- A imagem ou ilustração dinâmica é injetada via JS -->
-                    <div class="image-overlay-info" id="imageCaption">Vista Panorâmica da Suíte & Iluminação Cyberpunk
-                    </div>
-                </div>
-                <button id="galleryPrev" class="gallery-nav-btn prev-btn">&#10094;</button>
-                <button id="galleryNext" class="gallery-nav-btn next-btn">&#10095;</button>
+            <div class="spec-card">
+              <span class="spec-label">Controles</span>
+              <strong class="spec-value">4 Controles Sem Fio</strong>
+              <small class="spec-sub">2x DualSense (Haptic feedback) + 2x Xbox Wireless com Grip</small>
             </div>
-
-            <!-- Miniaturas (Thumbnails) Navegáveis -->
-            <div class="thumbnails-track" id="thumbsTrack">
-                <!-- Renderizadas interativamente via JS -->
+            <div class="spec-card">
+              <span class="spec-label">Áudio & Headsets</span>
+              <strong class="spec-value">Dolby Atmos Soundbar</strong>
+              <small class="spec-sub">2x Headsets sem fio 7.1 isolados com cancelamento de ruído</small>
             </div>
-        </section>
-
-        <!-- GRID INFERIOR: FICHA TÉCNICA + CTA LATERAL -->
-        <div class="specs-booking-grid">
-
-            <!-- COLUNA DA ESQUERDA: ESPECIFICAÇÕES TÉCNICAS E COMODIDADES -->
-            <div class="specs-container">
-
-                <!-- Bloco 1: Hardware & Telas -->
-                <div class="specs-block">
-                    <h2 class="specs-block-title">&#127918; HARDWARE & DISPLAYS</h2>
-                    <div class="specs-items-grid">
-                        <div class="spec-card">
-                            <span class="spec-label">Consoles Inclusos</span>
-                            <strong class="spec-value">PS5 + Xbox Series X</strong>
-                            <small class="spec-sub">Equipados com contas ativas e catálogo Game Pass / PS Plus</small>
-                        </div>
-                        <div class="spec-card">
-                            <span class="spec-label">Tela Principal</span>
-                            <strong class="spec-value">LG OLED 55" 4K 120Hz</strong>
-                            <small class="spec-sub">HDMI 2.1, VRR, ALLM, Dolby Vision & G-Sync ativado</small>
-                        </div>
-                        <div class="spec-card">
-                            <span class="spec-label">Controles</span>
-                            <strong class="spec-value">4 Controles Sem Fio</strong>
-                            <small class="spec-sub">2x DualSense (Haptic feedback) + 2x Xbox Wireless com Grip</small>
-                        </div>
-                        <div class="spec-card">
-                            <span class="spec-label">Áudio & Headsets</span>
-                            <strong class="spec-value">Dolby Atmos Soundbar</strong>
-                            <small class="spec-sub">2x Headsets sem fio 7.1 isolados com cancelamento de ruído</small>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Bloco 2: Conexão e Rede -->
-                <div class="specs-block">
-                    <h2 class="specs-block-title">&#9889; REDE & INFRAESTRUTURA</h2>
-                    <div class="specs-items-grid">
-                        <div class="spec-card">
-                            <span class="spec-label">Velocidade de Conexão</span>
-                            <strong class="spec-value">1 Gbps Dedicado</strong>
-                            <small class="spec-sub">Link corporativo com download e upload síncronos</small>
-                        </div>
-                        <div class="spec-card">
-                            <span class="spec-label">Latência / Ping</span>
-                            <strong class="spec-value">&lt; 8ms (Servidores BR)</strong>
-                            <small class="spec-sub">Cabeamento Cat6 direto na TV e nos consoles + Wi-Fi 6 Mesh</small>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Bloco 3: Quarto e Conforto do Hóspede -->
-                <div class="specs-block">
-                    <h2 class="specs-block-title">&#128716; CONFORTO & HOSPEDAGEM</h2>
-                    <div class="specs-items-grid">
-                        <div class="spec-card">
-                            <span class="spec-label">Cama & Sono</span>
-                            <strong class="spec-value">Queen-Size Molas Ensacadas</strong>
-                            <small class="spec-sub">Opção de montagem para 2 camas de solteiro separadas</small>
-                        </div>
-                        <div class="spec-card">
-                            <span class="spec-label">Climatização & Acústica</span>
-                            <strong class="spec-value">Ar Inverter + Blackout 100%</strong>
-                            <small class="spec-sub">Isolamento acústico com lã de rocha de alta densidade</small>
-                        </div>
-                        <div class="spec-card">
-                            <span class="spec-label">Frigobar Gamer</span>
-                            <strong class="spec-value">Abastecido 24h</strong>
-                            <small class="spec-sub">Energéticos, cervejas artesanais, refrigerantes e snacks
-                                rápidos</small>
-                        </div>
-                        <div class="spec-card">
-                            <span class="spec-label">Banheiro Privativo</span>
-                            <strong class="spec-value">Ducha Pressurizada</strong>
-                            <small class="spec-sub">Toalhas premium, amenidades de banho e secador de cabelo</small>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- COLUNA DA DIREITA: CARD LATERAL DE RESERVA IMEDIATA -->
-            <aside class="quick-reserve-sidebar">
-                <div class="sidebar-box">
-                    <h3>GARANTA ESTE SETUP</h3>
-                    <p class="sidebar-text">Suíte com alta procura aos finais de semana. Reserve com antecedência.</p>
-
-                    <ul class="features-summary-list">
-                        <li>&#10004; Check-in às 14h / Check-out às 12h</li>
-                        <li>&#10004; Wi-Fi 6 de alta velocidade incluso</li>
-                        <li>&#10004; Acesso ilimitado à biblioteca de jogos</li>
-                        <li>&#10004; Cancelamento gratuito até 24h antes</li>
-                    </ul>
-
-                    <div class="sidebar-pricing">
-                        <span>Valor por noite:</span>
-                        <strong>R$ 260,00</strong>
-                    </div>
-
-                    <a href="reserva.html?room=duo" class="btn-primary btn-full-width">Prosseguir com a Reserva</a>
-                    <a href="ocupado.html?console=switch" class="btn-secondary btn-full-width"
-                        style="margin-top: 10px; text-align: center;">Simular Quarto Esgotado</a>
-                </div>
-            </aside>
-
+          </div>
         </div>
 
-    </main>
-
-    <footer class="footer">
-        <div class="footer-content">
-            <p>&copy; 2026 Nexus Inn - Viva sua melhor gameplay.</p>
+        <!-- Bloco 2: Conexão e Rede -->
+        <div class="specs-block">
+          <h2 class="specs-block-title">&#9889; REDE & INFRAESTRUTURA</h2>
+          <div class="specs-items-grid">
+            <div class="spec-card">
+              <span class="spec-label">Velocidade de Conexão</span>
+              <strong class="spec-value">1 Gbps Dedicado</strong>
+              <small class="spec-sub">Link corporativo com download e upload síncronos</small>
+            </div>
+            <div class="spec-card">
+              <span class="spec-label">Latência / Ping</span>
+              <strong class="spec-value">&lt; 8ms (Servidores BR)</strong>
+              <small class="spec-sub">Cabeamento Cat6 direto na TV e nos consoles + Wi-Fi 6 Mesh</small>
+            </div>
+          </div>
         </div>
-    </footer>
 
-    <!-- SCRIPT DO CARROSSEL DE FOTOS -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Base de dados das fotos/ângulos do quarto com cores temáticas representativas
-            const galleryData = [
-                {
-                    title: "Vista Panorâmica da Suíte & TV OLED 55\"",
-                    color: "radial-gradient(circle, #1a223f 0%, #0d0f19 100%)",
-                    accentText: "TV OLED 4K 120Hz & Sofá Gamer Co-op"
-                },
-                {
-                    title: "Setup de Consoles: PS5 + Xbox Series X Integrados",
-                    color: "radial-gradient(circle, #201335 0%, #0d0f19 100%)",
-                    accentText: "Dock de carregamento rápido e iluminação RGB individual"
-                },
-                {
-                    title: "Cama Queen-Size com Iluminação Noturna Cyberpunk",
-                    color: "radial-gradient(circle, #102638 0%, #0d0f19 100%)",
-                    accentText: "Colchão ortopédico com blackout e controle de temperatura"
-                },
-                {
-                    title: "Estação de Snacks, Frigobar Gamer e Cafeteira",
-                    color: "radial-gradient(circle, #2e1525 0%, #0d0f19 100%)",
-                    accentText: "Frigobar com bebidas e energéticos 24 horas"
-                },
-                {
-                    title: "Banheiro Privativo com Ducha Pressurizada",
-                    color: "radial-gradient(circle, #17282b 0%, #0d0f19 100%)",
-                    accentText: "Toalhas premium e kit de higiene completo"
-                }
-            ];
+        <!-- Bloco 3: Quarto e Conforto do Hóspede -->
+        <div class="specs-block">
+          <h2 class="specs-block-title">&#128716; CONFORTO & HOSPEDAGEM</h2>
+          <div class="specs-items-grid">
+            <div class="spec-card">
+              <span class="spec-label">Cama & Sono</span>
+              <strong class="spec-value">Queen-Size Molas Ensacadas</strong>
+              <small class="spec-sub">Opção de montagem para 2 camas de solteiro separadas</small>
+            </div>
+            <div class="spec-card">
+              <span class="spec-label">Climatização & Acústica</span>
+              <strong class="spec-value">Ar Inverter + Blackout 100%</strong>
+              <small class="spec-sub">Isolamento acústico com lã de rocha de alta densidade</small>
+            </div>
+            <div class="spec-card">
+              <span class="spec-label">Frigobar Gamer</span>
+              <strong class="spec-value">Abastecido 24h</strong>
+              <small class="spec-sub">Energéticos, cervejas artesanais, refrigerantes e snacks rápidos</small>
+            </div>
+            <div class="spec-card">
+              <span class="spec-label">Banheiro Privativo</span>
+              <strong class="spec-value">Ducha Pressurizada</strong>
+              <small class="spec-sub">Toalhas premium, amenidades de banho e secador de cabelo</small>
+            </div>
+          </div>
+        </div>
 
-            let currentIndex = 0;
-            const mainDisplay = document.getElementById('mainDisplay');
-            const imageCaption = document.getElementById('imageCaption');
-            const thumbsTrack = document.getElementById('thumbsTrack');
-            const prevBtn = document.getElementById('galleryPrev');
-            const nextBtn = document.getElementById('galleryNext');
+      </div>
 
-            // Gera as miniaturas dinamicamente
-            galleryData.forEach((item, index) => {
-                const thumb = document.createElement('div');
-                thumb.classList.add('thumb-item');
-                if (index === 0) thumb.classList.add('active');
-                thumb.style.background = item.color;
-                thumb.innerHTML = `<span class="thumb-number">0${index + 1}</span><p class="thumb-desc">${item.title.split('&')[0]}</p>`;
+      <!-- COLUNA DA DIREITA: CARD LATERAL DE RESERVA IMEDIATA -->
+      <aside class="quick-reserve-sidebar">
+        <div class="sidebar-box">
+          <h3>GARANTA ESTE SETUP</h3>
+          <p class="sidebar-text">Suíte com alta procura aos finais de semana. Reserve com antecedência.</p>
 
-                thumb.addEventListener('click', () => {
-                    updateGallery(index);
-                });
+          <ul class="features-summary-list">
+            <li>&#10004; Check-in às 14h / Check-out às 12h</li>
+            <li>&#10004; Wi-Fi 6 de alta velocidade incluso</li>
+            <li>&#10004; Acesso ilimitado à biblioteca de jogos</li>
+            <li>&#10004; Cancelamento gratuito até 24h antes</li>
+          </ul>
 
-                thumbsTrack.appendChild(thumb);
-            });
+          <div class="sidebar-pricing">
+            <span>Valor por noite:</span>
+            <strong>R$ 260,00</strong>
+          </div>
 
-            function updateGallery(index) {
-                currentIndex = (index + galleryData.length) % galleryData.length;
-                const currentData = galleryData[currentIndex];
+          <a href="reserva.html?room=duo" class="btn-primary btn-full-width">Prosseguir com a Reserva</a>
+          <a href="ocupado.html?console=switch" class="btn-secondary btn-full-width" style="margin-top: 10px; text-align: center;">Simular Quarto Esgotado</a>
+        </div>
+      </aside>
 
-                // Transição suave
-                mainDisplay.style.opacity = '0.5';
-                setTimeout(() => {
-                    mainDisplay.style.background = currentData.color;
-                    imageCaption.innerHTML = `<strong>${currentData.title}</strong><br><small style="color: var(--neon-cyan)">${currentData.accentText}</small>`;
-                    mainDisplay.style.opacity = '1';
-                }, 150);
+    </div>
 
-                // Atualiza estilo das miniaturas ativas
-                const allThumbs = document.querySelectorAll('.thumb-item');
-                allThumbs.forEach((thumb, idx) => {
-                    thumb.classList.toggle('active', idx === currentIndex);
-                });
-            }
+  </main>
 
-            prevBtn.addEventListener('click', () => updateGallery(currentIndex - 1));
-            nextBtn.addEventListener('click', () => updateGallery(currentIndex + 1));
+  <footer class="footer">
+    <div class="footer-content">
+      <p>&copy; 2026 Nexus Inn - Viva sua melhor gameplay.</p>
+    </div>
+  </footer>
 
-            // Suporte para navegação com as setas do teclado
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'ArrowLeft') updateGallery(currentIndex - 1);
-                if (e.key === 'ArrowRight') updateGallery(currentIndex + 1);
-            });
-
-            // Carregamento inicial
-            updateGallery(0);
-        });
-    </script>
-
-    <!-- SCRIPT DO CARROSSEL DE FOTOS COM IMAGENS REAIS -->
+  <!-- SCRIPT DO CARROSSEL (COM SUAS IMAGENS E AUTO-PLAY DE 10S) -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const galleryData = [
@@ -366,7 +269,6 @@
         startAutoPlay();
       }
 
-      // Eventos das setas manuais
       if (prevBtn) {
         prevBtn.addEventListener('click', () => {
           updateGallery(currentIndex - 1);
@@ -381,7 +283,6 @@
         });
       }
 
-      // Teclado (setas esquerda/direita)
       document.addEventListener('keydown', (e) => {
         if (e.key === 'ArrowLeft') {
           updateGallery(currentIndex - 1);
@@ -392,17 +293,14 @@
         }
       });
 
-      // Pausa o carrossel se o usuário estiver com o mouse sobre a imagem
       if (displayWrapper) {
         displayWrapper.addEventListener('mouseenter', stopAutoPlay);
         displayWrapper.addEventListener('mouseleave', startAutoPlay);
       }
 
-      // Inicializa exibição e auto-play
       updateGallery(0);
       startAutoPlay();
     });
   </script>
 </body>
-
 </html>
