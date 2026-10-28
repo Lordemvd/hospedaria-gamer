@@ -2399,3 +2399,204 @@ span.flatpickr-weekday {
 .flatpickr-day.nextMonthDay {
   color: rgba(255, 255, 255, 0.18) !important;
 }
+
+/* ==========================================================================
+   TELA DE PAGAMENTO (pages/pagamento.html)
+   ========================================================================== */
+.checkout-timer-badge {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  color: var(--neon-cyan);
+  background: rgba(0, 240, 255, 0.08);
+  padding: 8px 18px;
+  border-radius: 20px;
+  border: 1px solid var(--border-glow);
+}
+
+.payment-container {
+  min-height: calc(100vh - 80px);
+  padding: 120px 8% 60px 8%;
+}
+
+.payment-grid {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 40px;
+  align-items: start;
+}
+
+.payment-tabs {
+  display: flex;
+  gap: 16px;
+  margin: 25px 0;
+}
+
+.tab-btn {
+  flex: 1;
+  background: var(--bg-card);
+  border: 1px solid #282d44;
+  color: var(--text-muted);
+  font-family: var(--font-display);
+  font-size: 1rem;
+  padding: 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.tab-btn:hover {
+  border-color: rgba(0, 240, 255, 0.5);
+  color: #ffffff;
+}
+
+.tab-btn.active {
+  border-color: var(--neon-cyan);
+  color: #ffffff;
+  background: rgba(0, 240, 255, 0.08);
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+}
+
+.tab-content {
+  display: none;
+  background: var(--bg-card);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 30px;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* Área PIX */
+.pix-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 18px;
+}
+
+.qr-placeholder {
+  background: #090a10;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border-glow);
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.15);
+}
+
+.pix-instruction {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  max-width: 450px;
+  line-height: 1.5;
+}
+
+.copy-paste-group {
+  display: flex;
+  width: 100%;
+  max-width: 480px;
+  gap: 8px;
+}
+
+.copy-paste-group input {
+  flex: 1;
+  background: #090a10;
+  border: 1px solid #282d44;
+  color: var(--neon-cyan);
+  padding: 12px 14px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.85rem;
+  outline: none;
+}
+
+/* Formulário de Cartão */
+.credit-card-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.form-row-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* Resumo da Compra Lateral */
+.order-summary-card {
+  position: sticky;
+  top: 100px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-glow);
+  border-radius: 8px;
+  padding: 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.security-guarantee {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* Modal de Processamento */
+.processing-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 11, 16, 0.85);
+  backdrop-filter: blur(8px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.processing-modal.show {
+  display: flex;
+}
+
+.processing-card {
+  background: var(--bg-card);
+  border: 1px solid var(--neon-cyan);
+  border-radius: 8px;
+  padding: 40px;
+  text-align: center;
+  box-shadow: 0 0 30px rgba(0, 240, 255, 0.3);
+  max-width: 420px;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(0, 240, 255, 0.2);
+  border-top-color: var(--neon-cyan);
+  border-radius: 50%;
+  margin: 0 auto 20px auto;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 992px) {
+  .payment-grid {
+    grid-template-columns: 1fr;
+  }
+  .order-summary-card {
+    position: static;
+  }
+}
