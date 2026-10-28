@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexus Inn | Painel Administrativo</title>
+  <link rel="stylesheet" href="../style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%9B%A1%EF%B8%8F%3C/text%3E%3C/svg%3E">
+
+  <!-- SDK Oficial do Supabase + Arquivo de Conexão -->
+  <!-- NOSONAR -->
+  <script defer src="../supabase-sdk.js"></script>
+  <script defer src="../supabase.js"></script>
+
+  <style>
+    .admin-body {
+      background-color: #07080c;
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .admin-container {
+      max-width: 1280px;
+      margin: 30px auto;
+      padding: 0 20px;
+      width: 100%;
+      flex: 1;
+    }
+
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 15px;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 30px;
+    }
+
+    .kpi-card {
+      background: #0d0f18;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--neon-cyan);
+    }
+
+    .kpi-card.pink::before { background: var(--neon-pink); }
+    .kpi-card.purple::before { background: var(--neon-purple); }
+
+    .kpi-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .kpi-value {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      color: #fff;
+    }
+
+    .admin-tabs {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 10px;
+    }
+
+    .admin-tab-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .admin-tab-btn.active {
+      color: var(--neon-cyan);
+      background: rgba(0, 240, 255, 0.08);
+      border-color: var(--border-glow);
+    }
+
+    .table-controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .table-search {
+      flex: 1;
+      max-width: 360px;
+      background: #0d0f18;
+      border: 1px solid #282d44;
+      color: #fff;
+      padding: 9px 14px;
+      border-radius: 4px;
+      outline: none;
+    }
+
+    .table-search:focus { border-color: var(--neon-cyan); }
+
+    .table-wrapper {
+      background: #0d0f18;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      overflow-x: auto;
+    }
+
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+
+    .admin-table th {
+      background: rgba(255, 255, 255, 0.03);
+      padding: 14px 16px;
+      color: var(--text-muted);
+      font-family: var(--font-display);
+      font-size: 0.8rem;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .admin-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: #cbd5e1;
+    }
+
+    .admin-table tr:hover { background: rgba(255, 255, 255, 0.02); }
+
+    .status-badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-family: var(--font-display);
+      font-size: 0.72rem;
+      letter-spacing: 0.5px;
+    }
+
+    .status-badge.CONFIRMADA {
+      background: rgba(0, 240, 255, 0.12);
+      color: var(--neon-cyan);
+      border: 1px solid var(--border-glow);
+    }
+
+    .status-badge.CANCELADA {
+      background: rgba(255, 0, 85, 0.12);
+      color: #ff6b8b;
+      border: 1px solid rgba(255, 0, 85, 0.3);
+    }
+
+    .btn-action-cancel {
+      background: transparent;
+      border: 1px solid rgba(255, 0, 85, 0.4);
+      color: #ff6b8b;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.75rem;
+      font-family: var(--font-display);
+      transition: var(--transition);
+    }
+
+    .btn-action-cancel:hover {
+      background: var(--neon-pink);
+      color: #fff;
+    }
+  </style>
+</head>
+<body class="admin-body">
+
+  <header class="navbar">
+    <div class="logo">
+      <a href="../index.html" style="text-decoration: none; color: inherit;">
+        <span class="logo-highlight">NEXUS</span>INN
+      </a>
+      <span style="font-family: var(--font-display); font-size: 0.8rem; color: #ff6b8b; background: rgba(255,0,85,0.12); padding: 3px 8px; border-radius: 4px; margin-left: 10px; border: 1px solid rgba(255,0,85,0.3);">
+        MASTER ADMIN
+      </span>
+    </div>
+    <nav class="nav-links">
+      <a href="../index.html">Página Principal</a>
+      <button type="button" id="adminLogout" style="background: transparent; border: 1px solid rgba(255,255,255,0.2); color: var(--text-muted); padding: 6px 12px; border-radius: 4px; cursor: pointer;">
+        Sair
+      </button>
+    </nav>
+  </header>
+
+  <main class="admin-container">
+    
+    <div class="admin-header">
+      <div>
+        <span class="badge" style="font-size: 0.75rem;">POSTGRESQL LIVE MONITOR</span>
+        <h1 style="font-family: var(--font-display); color: #fff; margin: 4px 0 0 0;">PAINEL OPERACIONAL</h1>
+      </div>
+      <button type="button" id="btnRefresh" class="btn-secondary" style="padding: 8px 16px; font-size: 0.85rem;">
+        🔄 Atualizar Dados
+      </button>
+    </div>
+
+    <!-- CARDS DE MÉTRICAS / KPIS -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Total de Reservas</div>
+        <div class="kpi-value" id="kpiTotalReservas">0</div>
+      </div>
+      <div class="kpi-card purple">
+        <div class="kpi-label">Faturamento Total</div>
+        <div class="kpi-value" id="kpiFaturamento">R$ 0,00</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Reservas Confirmadas</div>
+        <div class="kpi-value" id="kpiConfirmadas">0</div>
+      </div>
+      <div class="kpi-card pink">
+        <div class="kpi-label">Fila de Espera (Waitlist)</div>
+        <div class="kpi-value" id="kpiWaitlist">0</div>
+      </div>
+    </div>
+
+    <!-- ABAS -->
+    <div class="admin-tabs">
+      <button type="button" class="admin-tab-btn active" id="tabReservas">
+        📋 Reservas do Sistema
+      </button>
+      <button type="button" class="admin-tab-btn" id="tabWaitlist">
+        ⏳ Fila de Espera (Drops)
+      </button>
+    </div>
+
+    <!-- SEÇÃO 1: TABELA DE RESERVAS -->
+      <section id="sectionReservas">
+        <div class="table-controls">
+          <input type="text" id="searchReservas" class="table-search" placeholder="Buscar por código, hóspede ou quarto..." aria-label="Buscar por código, hóspede ou quarto">
+          <select id="filterStatus" class="table-search" style="max-width: 180px;" aria-label="Filtrar por status da reserva">
+            <option value="ALL">Todos os Status</option>
+            <option value="CONFIRMADA">Confirmadas</option>
+            <option value="CANCELADA">Canceladas</option>
+          </select>
+        </div>
+
+      <div class="table-wrapper">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>CÓDIGO</th>
+              <th>HÓSPEDE</th>
+              <th>QUARTO</th>
+              <th>CHECK-IN / OUT</th>
+              <th>VALOR</th>
+              <th>MÉTODO</th>
+              <th>STATUS</th>
+              <th>AÇÕES</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyReservas">
+            <tr>
+              <td colspan="8" style="text-align: center; padding: 30px;">Carregando dados da tabela PostgreSQL...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SEÇÃO 2: TABELA DE FILA DE ESPERA -->
+    <section id="sectionWaitlist" style="display: none;">
+      <div class="table-wrapper">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>CONTATO (EMAIL / DISCORD)</th>
+              <th>QUARTO DESEJADO</th>
+              <th>PERÍODO SOLICITADO</th>
+              <th>DATA DO REGISTRO</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyWaitlist">
+            <tr>
+              <td colspan="5" style="text-align: center; padding: 30px;">Carregando contatos em espera...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      // 1. TRAVA DE SEGURANÇA: Somente perfil 'admin' pode acessar
+      const currentUserRaw = localStorage.getItem('nexus_current_user');
+      if (!currentUserRaw) {
+        alert('Acesso restrito: faça login como administrador.');
+        window.location.href = 'login.html';
+        return;
+      }
+
+      try {
+        const user = JSON.parse(currentUserRaw);
+        if (user.role !== 'admin') {
+          alert('Acesso negado: sua conta não possui privilégios de administrador.');
+          window.location.href = '../index.html';
+          return;
+        }
+      } catch (e) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      // Logout Admin
+      document.getElementById('adminLogout').addEventListener('click', () => {
+        localStorage.removeItem('nexus_current_user');
+        window.location.href = '../index.html';
+      });
+
+      // Elementos do DOM
+      const tbodyReservas = document.getElementById('tbodyReservas');
+      const tbodyWaitlist = document.getElementById('tbodyWaitlist');
+      const kpiTotalReservas = document.getElementById('kpiTotalReservas');
+      const kpiFaturamento = document.getElementById('kpiFaturamento');
+      const kpiConfirmadas = document.getElementById('kpiConfirmadas');
+      const kpiWaitlist = document.getElementById('kpiWaitlist');
+
+      const searchInput = document.getElementById('searchReservas');
+      const filterStatus = document.getElementById('filterStatus');
+      const btnRefresh = document.getElementById('btnRefresh');
+
+      let allReservations = [];
+      let allWaitlistData = [];
+
+      // 2. Carregar dados do Supabase
+      async function carregarPainel() {
+        tbodyReservas.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 30px;">Carregando banco de dados...</td></tr>';
+        
+        if (typeof fetchAllReservations !== 'function') {
+          setTimeout(carregarPainel, 400);
+          return;
+        }
+
+        const [resReservas, resWaitlist] = await Promise.all([
+          fetchAllReservations(),
+          fetchAllWaitlist()
+        ]);
+
+        allReservations = resReservas.success ? resReservas.data : [];
+        allWaitlistData = resWaitlist.success ? resWaitlist.data : [];
+
+        atualizarKPIs();
+        renderizarReservas();
+        renderizarWaitlist();
+      }
+
+      // 3. Atualizar Indicadores (KPIs)
+      function atualizarKPIs() {
+        kpiTotalReservas.textContent = allReservations.length;
+        kpiWaitlist.textContent = allWaitlistData.length;
+
+        const confirmadas = allReservations.filter(r => r.status !== 'CANCELADA');
+        kpiConfirmadas.textContent = confirmadas.length;
+
+        let totalFaturado = 0;
+        confirmadas.forEach(r => {
+          if (r.total_price) {
+            const limpo = parseFloat(
+              r.total_price.toString().replace('R$', '').replace('.', '').replace(',', '.').trim()
+            ) || 0;
+            totalFaturado += limpo;
+          }
+        });
+
+        kpiFaturamento.textContent = `R$ ${totalFaturado.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      }
+
+      // 4. Renderizar Tabela de Reservas com Filtro
+      function renderizarReservas() {
+        const termo = searchInput.value.toLowerCase().trim();
+        const statusFiltro = filterStatus.value;
+
+        const filtradas = allReservations.filter(item => {
+          const matchBusca = 
+            item.reservation_code?.toLowerCase().includes(termo) ||
+            item.guest_name?.toLowerCase().includes(termo) ||
+            item.room_name?.toLowerCase().includes(termo);
+
+          const matchStatus = statusFiltro === 'ALL' || item.status === statusFiltro;
+
+          return matchBusca && matchStatus;
+        });
+
+        if (filtradas.length === 0) {
+          tbodyReservas.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 25px; color: var(--text-muted);">Nenhum registro encontrado.</td></tr>';
+          return;
+        }
+
+        tbodyReservas.innerHTML = filtradas.map(r => `
+          <tr>
+            <td><strong style="color: var(--neon-cyan); font-family: var(--font-display);">${r.reservation_code}</strong></td>
+            <td><strong>${r.guest_name}</strong></td>
+            <td>${r.room_name}</td>
+            <td>${r.check_in?.split('-').reverse().join('/')} até ${r.check_out?.split('-').reverse().join('/')}</td>
+            <td style="font-family: var(--font-display); color: #fff;">${r.total_price}</td>
+            <td><small style="color: var(--text-muted);">${r.payment_method}</small></td>
+            <td><span class="status-badge ${r.status}">${r.status}</span></td>
+            <td>
+              ${r.status !== 'CANCELADA' ? `
+                <button type="button" class="btn-action-cancel" onclick="cancelarReserva('${r.id}', '${r.reservation_code}')">
+                  Cancelar
+                </button>
+              ` : '<span style="color: var(--text-muted); font-size: 0.8rem;">Inativa</span>'}
+            </td>
+          </tr>
+        `).join('');
+      }
+
+      // 5. Renderizar Tabela da Fila de Espera
+      function renderizarWaitlist() {
+        if (allWaitlistData.length === 0) {
+          tbodyWaitlist.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 25px; color: var(--text-muted);">Fila de espera vazia no momento.</td></tr>';
+          return;
+        }
+
+        tbodyWaitlist.innerHTML = allWaitlistData.map((w, index) => `
+          <tr>
+            <td>#${index + 1}</td>
+            <td><strong style="color: var(--neon-cyan);">${w.contact}</strong></td>
+            <td>${w.room_name || 'Geral'}</td>
+            <td>${w.check_in || '-'} até ${w.check_out || '-'}</td>
+            <td>${w.created_at ? new Date(w.created_at).toLocaleDateString('pt-BR') : 'Recente'}</td>
+          </tr>
+        `).join('');
+      }
+
+      // 6. Ação de Cancelamento
+      window.cancelarReserva = async (id, code) => {
+        if (confirm(`Tem certeza que deseja cancelar a reserva ${code}? O quarto será liberado no banco de dados.`)) {
+          const res = await updateReservationStatus(id, 'CANCELADA');
+          if (res.success) {
+            alert(`Reserva ${code} cancelada com sucesso.`);
+            carregarPainel();
+          } else {
+            alert('Erro ao atualizar status da reserva no Supabase.');
+          }
+        }
+      };
+
+      // Listeners
+      searchInput.addEventListener('input', renderizarReservas);
+      filterStatus.addEventListener('change', renderizarReservas);
+      btnRefresh.addEventListener('click', carregarPainel);
+
+      // Alternância de Abas
+      const tabReservas = document.getElementById('tabReservas');
+      const tabWaitlist = document.getElementById('tabWaitlist');
+      const secReservas = document.getElementById('sectionReservas');
+      const secWaitlist = document.getElementById('sectionWaitlist');
+
+      tabReservas.addEventListener('click', () => {
+        tabReservas.classList.add('active');
+        tabWaitlist.classList.remove('active');
+        secReservas.style.display = 'block';
+        secWaitlist.style.display = 'none';
+      });
+
+      tabWaitlist.addEventListener('click', () => {
+        tabWaitlist.classList.add('active');
+        tabReservas.classList.remove('active');
+        secWaitlist.style.display = 'block';
+        secReservas.style.display = 'none';
+      });
+
+      // Inicialização
+      carregarPainel();
+    });
+  </script>
+</body>
+</html>

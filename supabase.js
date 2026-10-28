@@ -248,3 +248,68 @@ async function loginUserInDB(identifier, password) {
     return { success: false, message: 'Falha ao autenticar no servidor.' };
   }
 }
+
+// ==========================================
+// FUNÇÕES ADMINISTRATIVAS (PAINEL MASTER ADM)
+// ==========================================
+
+// 7. Buscar todas as reservas cadastradas
+async function fetchAllReservations() {
+  if (!supabaseClient) {
+    return { success: false, data: [] };
+  }
+
+  try {
+    const { data, error } = await supabaseClient
+      .from('reservations')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return { success: true, data: data || [] };
+  } catch (err) {
+    console.error('Erro ao buscar todas as reservas:', err.message);
+    return { success: false, error: err.message, data: [] };
+  }
+}
+
+// 8. Atualizar status de uma reserva (ex: 'CANCELADA', 'CONFIRMADA')
+async function updateReservationStatus(id, newStatus) {
+  if (!supabaseClient) {
+    return { success: false };
+  }
+
+  try {
+    const { data, error } = await supabaseClient
+      .from('reservations')
+      .update({ status: newStatus })
+      .eq('id', id)
+      .select();
+
+    if (error) throw error;
+    return { success: true, data };
+  } catch (err) {
+    console.error('Erro ao atualizar status da reserva:', err.message);
+    return { success: false, error: err.message };
+  }
+}
+
+// 9. Buscar todos os registros da lista de espera
+async function fetchAllWaitlist() {
+  if (!supabaseClient) {
+    return { success: false, data: [] };
+  }
+
+  try {
+    const { data, error } = await supabaseClient
+      .from('waitlist')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return { success: true, data: data || [] };
+  } catch (err) {
+    console.error('Erro ao buscar fila de espera:', err.message);
+    return { success: false, error: err.message, data: [] };
+  }
+}
