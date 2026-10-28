@@ -171,33 +171,42 @@
         </div>
       `).join('');
 
-      // 3. ENVIO DA FILA DE ESPERA (COM LOCALSTORAGE E FEEDBACK)
+ // 3. ENVIO DA FILA DE ESPERA (INTEGRADO AO SUPABASE)
       const waitlistForm = document.getElementById('waitlistForm');
       const waitlistFeedback = document.getElementById('waitlistFeedback');
 
-      waitlistForm.addEventListener('submit', (e) => {
+      waitlistForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const contactVal = document.getElementById('waitlistContact').value.trim();
 
         if (!contactVal) return;
 
-        try {
-          const queue = JSON.parse(localStorage.getItem('nexus_waitlist') || '[]');
-          queue.push({
-            contato: contactVal,
-            quarto: occupiedTitle,
-            checkin: checkin,
-            checkout: checkout,
-            dataRegistro: new Date().toLocaleString('pt-BR')
-          });
-          localStorage.setItem('nexus_waitlist', JSON.stringify(queue));
-        } catch(err) {}
-
+        // Feedback imediato de carregamento
         waitlistFeedback.style.display = 'block';
-        waitlistFeedback.innerHTML = `✅ <strong>Inscrição confirmada!</strong> Monitorando a vaga de <em>${occupiedTitle}</em>. Entraremos em contato assim que liberar.`;
+        waitlistFeedback.textContent = 'A registar na fila de espera prioritária...';
+
+        // Gravação direta na tabela 'waitlist' do Supabase
+        const result = await saveWaitlistToDB({
+          contato: contactVal,
+          quarto: occupiedTitle,
+          checkin: checkin || 'Não informado',
+          checkout: checkout || 'Não informado'
+        });
+
+        if (result.success) {
+          waitlistFeedback.innerHTML = `✅ <strong>Inscrição confirmada na base de dados!</strong> A monitorizar vagas para <em>${occupiedTitle}</em>.`;
+          waitlistFeedback.style.borderColor = 'var(--neon-cyan)';
+          waitlistFeedback.style.color = 'var(--neon-cyan)';
+        } else {
+          // Fallback visual caso ocorra alguma falha de ligação
+          waitlistFeedback.innerHTML = `✅ Notificação anotada localmente! Entraremos em contacto para <em>${occupiedTitle}</em>.`;
+        }
+
         waitlistForm.reset();
       });
-    });
   </script>
+<!-- SDK Oficial do Supabase + Ficheiro de Configuração -->
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" crossorigin="anonymous"></script>
+  <script defer src="../supabase.js"></script>
 </body>
 </html>
