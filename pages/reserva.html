@@ -9,9 +9,15 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%AE%3C/text%3E%3C/svg%3E">
-    <!-- Flatpickr (Calendário Customizável) -->
+
+  <!-- Flatpickr (Calendário Customizável) -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+
+  <!-- SDK Oficial do Supabase + Arquivo de Conexão -->
+  <!-- NOSONAR -->
+  <script defer src="../supabase-sdk.js"></script>
+  <script defer src="../supabase.js"></script>
 </head>
 <body>
 
@@ -66,7 +72,7 @@
 
           <!-- Customização de Consoles e Periféricos -->
           <div class="addons-group">   
-             <h4 class="group-label">Periféricos & Controles Extras</h4>
+            <h4 class="group-label">Periféricos & Controles Extras</h4>
             <div class="addons-list">
               <label class="addon-checkbox">
                 <input type="checkbox" class="addon-input" data-name="Controle Pro Sem Fio Extra" data-price="25">
@@ -173,7 +179,7 @@
     </div>
   </footer>
 
-  <!-- SCRIPT DE CÁLCULO E PERSISTÊNCIA -->
+  <!-- SCRIPT DE CÁLCULO, PARÂMETROS E VALIDAÇÃO SUPABASE -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const roomSelect = document.getElementById('roomSelect');
@@ -210,11 +216,21 @@
       checkoutInput.min = toISO(tomorrow);
       checkoutInput.value = toISO(tomorrow);
 
-      // 3. Lê parâmetros da URL (ex: ?room=solo ou ?room=squad)
+      // 3. Lê parâmetros passados pela URL (Home, Cards ou Galeria)
       const urlParams = new URLSearchParams(window.location.search);
       const roomParam = urlParams.get('room');
+      const checkinParam = urlParams.get('checkin');
+      const checkoutParam = urlParams.get('checkout');
+
       if (roomParam && ['solo', 'duo', 'squad'].includes(roomParam)) {
         roomSelect.value = roomParam;
+      }
+      if (checkinParam) {
+        checkinInput.value = checkinParam;
+        checkoutInput.min = checkinParam;
+      }
+      if (checkoutParam) {
+        checkoutInput.value = checkoutParam;
       }
 
       // 4. Cálculo dinâmico
@@ -223,7 +239,6 @@
         const pricePerNight = parseFloat(selectedOption.getAttribute('data-price')) || 260;
         summaryRoomTitle.textContent = selectedOption.text.split('—')[0].trim();
 
-        // Cálculo de noites
         const checkinDate = new Date(checkinInput.value);
         const checkoutDate = new Date(checkoutInput.value);
         let diffDays = Math.ceil((checkoutDate - checkinDate) / (1000 * 60 * 60 * 24));
@@ -235,7 +250,6 @@
         const baseTotal = pricePerNight * diffDays;
         summaryBasePrice.textContent = `R$ ${baseTotal.toFixed(2).replace('.', ',')}`;
 
-        // Soma opcionais
         let addonsTotal = 0;
         addonCheckboxes.forEach(cb => {
           if (cb.checked) {
@@ -257,7 +271,7 @@
         };
       }
 
-      // Listeners
+      // Listeners de alteração
       roomSelect.addEventListener('change', calculateTotal);
       checkinInput.addEventListener('change', () => {
         checkoutInput.min = checkinInput.value;
@@ -271,10 +285,33 @@
       checkoutInput.addEventListener('change', calculateTotal);
       addonCheckboxes.forEach(cb => cb.addEventListener('change', calculateTotal));
 
-      // 5. Envio para a tela de pagamento
-      reservationForm.addEventListener('submit', (e) => {
+      // 5. Envio com validação real Anti-Overbooking no Supabase
+      reservationForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        const submitBtn = reservationForm.querySelector('button[type="submit"]');
+        const originalText = submitBtn.textContent;
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Checando disponibilidade no banco...';
+
         const data = calculateTotal();
+
+        // Consulta a disponibilidade real no banco PostgreSQL
+        if (typeof checkRoomAvailability === 'function') {
+          const check = await checkRoomAvailability(data.room, data.checkin, data.checkout);
+          if (!check.available) {
+            alert('Atenção: Este setup acabou de ser reservado nas datas selecionadas! Redirecionando para a lista de espera...');
+            const params = new URLSearchParams({
+              room: data.room,
+              checkin: data.checkin,
+              checkout: data.checkout,
+              console: data.room
+            });
+            window.location.href = `ocupado.html?${params.toString()}`;
+            return;
+          }
+        }
+
+        // Se estiver liberado, avança para o pagamento com os dados calculados
         const params = new URLSearchParams({
           room: data.room,
           checkin: data.checkin,
@@ -287,7 +324,7 @@
       calculateTotal();
     });
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js" crossorigin="anonymous"></script>
 </body>
 </html>
