@@ -1,112 +1,203 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus Inn | Quarto Ocupado</title>
-    <link rel="stylesheet" href="../style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap"
-        rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexus Inn | Setup Indisponível / Fila de Espera</title>
+  <link rel="stylesheet" href="../style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%AE%3C/text%3E%3C/svg%3E">
 </head>
-
 <body>
 
-    <!-- NAVBAR SIMPLIFICADA -->
-    <header class="navbar">
-        <div class="logo">
-            <a href="../index.html" style="text-decoration: none; color: inherit;">
-                <span class="logo-highlight">NEXUS</span>INN
-            </a>
-        </div>
-        <nav class="nav-links">
-            <a href="../index.html">Voltar ao Início</a>
-        </nav>
-    </header>
+  <!-- NAVBAR SIMPLIFICADA -->
+  <header class="navbar">
+    <div class="logo">
+      <a href="../index.html" style="text-decoration: none; color: inherit;">
+        <span class="logo-highlight">NEXUS</span>INN
+      </a>
+    </div>
+    <nav class="nav-links">
+      <a href="../index.html">Início</a>
+      <a href="reserva.html">Reservar Outro Quarto</a>
+    </nav>
+  </header>
 
-    <main class="occupied-container">
-        <!-- BLOCO DE ALERTA GAMER -->
-        <section class="alert-box">
-            <span class="status-badge">ZONE FULL / COOLDOWN</span>
-            <h1 class="alert-title">QUARTO INDISPONÍVEL NESTAS DATAS</h1>
-            <p class="alert-description">
-                Todos os slots com essa configuração já foram ocupados para o período solicitado
-                (<span id="display-dates" class="highlight-text">Carregando período...</span>).
-            </p>
+  <main class="occupied-container">
+    
+    <!-- BANNER DE STATUS / COOLDOWN -->
+    <section class="alert-box">
+      <span class="status-badge">ZONE FULL &bull; COOLDOWN</span>
+      <h1 class="alert-title">SLOT INDISPONÍVEL NESTAS DATAS</h1>
+      <p class="alert-description">
+        Todos os quartos da categoria <strong id="occupiedRoomName" class="highlight-text">Suíte Duo Next-Gen</strong> já foram reservados para o período de 
+        <span id="occupiedDates" class="highlight-text">carregando datas...</span>.
+      </p>
+      
+      <div class="action-buttons">
+        <a href="reserva.html" class="btn-secondary" id="btnChangeDates">Alterar Período</a>
+        <a href="#fila-espera" class="btn-primary">Entrar na Fila de Prioridade</a>
+      </div>
+    </section>
 
-            <div class="action-buttons">
-                <a href="../index.html" class="btn-secondary">Alterar Datas</a>
-                <a href="#lista-espera" class="btn-primary">Entrar na Fila de Espera</a>
+    <!-- ALTERNATIVAS DISPONÍVEIS NAS MESMAS DATAS -->
+    <section class="suggestions-section">
+      <div class="suggestions-header">
+        <span class="badge">DISPONIBILIDADE IMEDIATA</span>
+        <h2 class="sub-heading">SELECIONE UM SETUP ALTERNATIVO</h2>
+        <p class="helper-text">Estes quartos possuem vagas garantidas exatamente para o seu período selecionado:</p>
+      </div>
+
+      <div class="grid-rooms suggestions-grid" id="suggestionsContainer">
+        <!-- Renderizado dinamicamente via JS com base no quarto que esgotou -->
+      </div>
+    </section>
+
+    <!-- SEÇÃO DA LISTA DE ESPERA GAMER -->
+    <section id="fila-espera" class="waitlist-card">
+      <div class="waitlist-header">
+        <span class="waitlist-icon">🔔</span>
+        <h3 class="waitlist-title">Alerta de Drop / Desistência</h3>
+        <p class="waitlist-subtitle">
+          Se algum player cancelar a reserva deste quarto nas suas datas, nosso bot enviará um ping prioritário no seu e-mail ou Discord com <strong>15 minutos de exclusividade</strong>.
+        </p>
+      </div>
+
+      <form id="waitlistForm" class="waitlist-form">
+        <input 
+          type="text" 
+          id="waitlistContact" 
+          placeholder="Seu e-mail ou Tag Discord (ex: player#0001)" 
+          required
+          aria-label="Contato para lista de espera"
+        >
+        <button type="submit" class="btn-primary">Ativar Notificação</button>
+      </form>
+
+      <div id="waitlistFeedback" class="waitlist-feedback"></div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <div class="footer-content">
+      <p>&copy; 2026 Nexus Inn - Infraestrutura gamer com monitoramento em tempo real.</p>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1. LER PARÂMETROS DA URL
+      const params = new URLSearchParams(window.location.search);
+      const roomParam = params.get('room') || params.get('console') || 'duo';
+      let checkin = params.get('checkin') || '';
+      let checkout = params.get('checkout') || '';
+
+      const roomMap = {
+        'solo': 'Suíte Solo Streamer',
+        'duo': 'Suíte Duo Next-Gen',
+        'squad': 'Party Room Squad',
+        'ps5': 'Suíte Duo Next-Gen',
+        'switch': 'Party Room Squad',
+        'pc': 'Suíte Solo Streamer'
+      };
+
+      const occupiedTitle = roomMap[roomParam] || 'Acomodação Gamer';
+      document.getElementById('occupiedRoomName').textContent = occupiedTitle;
+
+      // Formatar datas para exibição
+      if (checkin && checkout) {
+        const fmtIn = checkin.includes('-') ? checkin.split('-').reverse().join('/') : checkin;
+        const fmtOut = checkout.includes('-') ? checkout.split('-').reverse().join('/') : checkout;
+        document.getElementById('occupiedDates').textContent = `${fmtIn} até ${fmtOut}`;
+        document.getElementById('btnChangeDates').href = `reserva.html?checkin=${checkin}&checkout=${checkout}`;
+      } else {
+        document.getElementById('occupiedDates').textContent = 'datas consultadas';
+      }
+
+      // 2. EXIBIR CARDS ALTERNATIVOS
+      const roomsDatabase = [
+        {
+          id: 'solo',
+          name: 'Suíte Solo Streamer',
+          specs: 'PC RTX 4080 240Hz &bull; Microfone Shure &bull; Isolamento acústico',
+          price: 'R$ 180',
+          image: 'https://images.unsplash.com/photo-1598550476439-6847785fcea6?q=80&w=800&auto=format&fit=crop',
+          badge: '2 VAGAS LIVRES'
+        },
+        {
+          id: 'duo',
+          name: 'Suíte Duo Next-Gen',
+          specs: 'PS5 + Xbox Series X &bull; TV OLED 55" 120Hz &bull; Cama Queen',
+          price: 'R$ 260',
+          image: 'https://6ad275ba2ff4c710e5e3ff3e.imgix.net/sandbox/Gemini_Generated_Image_4jk4v74jk4v74jk4.jfif',
+          badge: 'ÚLTIMA UNIDADE'
+        },
+        {
+          id: 'squad',
+          name: 'Party Room Squad',
+          specs: '4x Monitores 165Hz &bull; Switch Dock &bull; Frigobar Duplo',
+          price: 'R$ 340',
+          image: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=800&auto=format&fit=crop',
+          badge: 'LIVRE PARA O PERÍODO'
+        }
+      ];
+
+      // Filtra para exibir apenas os quartos que NÃO são o que está lotado
+      const currentKey = roomParam.toLowerCase();
+      const alternatives = roomsDatabase.filter(r => !occupiedTitle.toLowerCase().includes(r.id));
+
+      const container = document.getElementById('suggestionsContainer');
+      container.innerHTML = alternatives.map(room => `
+        <div class="room-card">
+          <div class="room-image-wrapper">
+            <img src="${room.image}" alt="${room.name}" class="room-thumb" loading="lazy">
+            <span class="badge-tag">${room.badge}</span>
+          </div>
+          <div class="room-info">
+            <div class="room-header-info">
+              <h3>${room.name}</h3>
+              <p class="specs">${room.specs}</p>
             </div>
-        </section>
-
-        <!-- ALTERNATIVAS DISPONÍVEIS -->
-        <section class="suggestions-section">
-            <h2 class="sub-heading">QUARTOS DISPONÍVEIS NAS MESMAS DATAS</h2>
-            <p class="helper-text">Você pode reservar um destes setups alternativos agora mesmo:</p>
-
-            <div class="grid-rooms">
-                <div class="room-card suggestion-card">
-                    <div class="room-info">
-                        <span class="badge-avail">2 VAGAS LIVRES</span>
-                        <h3>Suíte Solo Streamer</h3>
-                        <p class="specs">PC 240Hz | RTX 4080 | Fibra Dedicada</p>
-                        <span class="price">R$ 180 / noite</span>
-                        <a href="reserva.html" class="btn-primary">Reservar Este Setup</a>
-                    </div>
-                </div>
-
-                <div class="room-card suggestion-card">
-                    <div class="room-info">
-                        <span class="badge-avail">ÚLTIMA VAGA</span>
-                        <h3>Party Room / Squad</h3>
-                        <p class="specs">4x Monitores | Switch + PS5 | Sofá Co-op</p>
-                        <span class="price">R$ 310 / noite</span>
-                        <a href="reserva.html" class="btn-primary">Reservar Este Setup</a>
-                    </div>
-                </div>
+            <div class="room-footer-card">
+              <span class="price">${room.price} <small>/ noite</small></span>
+              <a href="reserva.html?room=${room.id}&checkin=${encodeURIComponent(checkin)}&checkout=${encodeURIComponent(checkout)}" class="btn-primary">
+                Reservar Este
+              </a>
             </div>
-        </section>
-
-        <!-- FORMULÁRIO DE LISTA DE ESPERA -->
-        <section id="lista-espera" class="waitlist-card">
-            <h3 class="waitlist-title">Quer ser avisado se alguém cancelar?</h3>
-            <p class="waitlist-subtitle">Insira seu e-mail ou Discord tag. Caso haja cancelamento, você recebe um alerta
-                na hora com 15 minutos de prioridade.</p>
-
-            <form class="waitlist-form"
-                onsubmit="event.preventDefault(); alert('Você está na fila! Avisaremos assim que o quarto liberar.');">
-                <label for="contato-espera" class="sr-only">E-mail ou Discord Tag</label>
-                <input type="text" id="contato-espera" name="contato" placeholder="Seu e-mail ou Discord Tag (ex: player#1234)" required>
-                <button type="submit" class="btn-secondary">Notificar-me</button>
-            </form>
-        </section>
-    </main>
-
-    <footer class="footer">
-        <div class="footer-content">
-            <p>&copy; 2026 Nexus Inn - Todos os direitos reservados.</p>
+          </div>
         </div>
-    </footer>
+      `).join('');
 
-    <script>
-        // Recupera parâmetros da URL (checkin, checkout, console) para exibir na tela
-        document.addEventListener('DOMContentLoaded', () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const checkin = urlParams.get('checkin');
-            const checkout = urlParams.get('checkout');
-            const datesDisplay = document.getElementById('display-dates');
+      // 3. ENVIO DA FILA DE ESPERA (COM LOCALSTORAGE E FEEDBACK)
+      const waitlistForm = document.getElementById('waitlistForm');
+      const waitlistFeedback = document.getElementById('waitlistFeedback');
 
-            if (checkin && checkout) {
-                datesDisplay.textContent = `${checkin} até ${checkout}`;
-            } else {
-                datesDisplay.textContent = 'datas selecionadas';
-            }
-        });
-    </script>
+      waitlistForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const contactVal = document.getElementById('waitlistContact').value.trim();
+
+        if (!contactVal) return;
+
+        try {
+          const queue = JSON.parse(localStorage.getItem('nexus_waitlist') || '[]');
+          queue.push({
+            contato: contactVal,
+            quarto: occupiedTitle,
+            checkin: checkin,
+            checkout: checkout,
+            dataRegistro: new Date().toLocaleString('pt-BR')
+          });
+          localStorage.setItem('nexus_waitlist', JSON.stringify(queue));
+        } catch(err) {}
+
+        waitlistFeedback.style.display = 'block';
+        waitlistFeedback.innerHTML = `✅ <strong>Inscrição confirmada!</strong> Monitorando a vaga de <em>${occupiedTitle}</em>. Entraremos em contato assim que liberar.`;
+        waitlistForm.reset();
+      });
+    });
+  </script>
 </body>
-
 </html>
