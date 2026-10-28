@@ -285,43 +285,60 @@
       checkoutInput.addEventListener('change', calculateTotal);
       addonCheckboxes.forEach(cb => cb.addEventListener('change', calculateTotal));
 
-      // 5. Envio com validação real Anti-Overbooking no Supabase
+     // 5. Envio com validação real Anti-Overbooking e Proteção contra Travamento
       reservationForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const submitBtn = reservationForm.querySelector('button[type="submit"]');
-        const originalText = submitBtn.textContent;
+        const originalText = 'Avançar para Pagamento Seguro';
+        
         submitBtn.disabled = true;
         submitBtn.textContent = 'Checando disponibilidade no banco...';
 
-        const data = calculateTotal();
+        try {
+          const data = calculateTotal();
 
-        // Consulta a disponibilidade real no banco PostgreSQL
-        if (typeof checkRoomAvailability === 'function') {
-          const check = await checkRoomAvailability(data.room, data.checkin, data.checkout);
-          if (!check.available) {
-            alert('Atenção: Este setup acabou de ser reservado nas datas selecionadas! Redirecionando para a lista de espera...');
-            const params = new URLSearchParams({
-              room: data.room,
-              checkin: data.checkin,
-              checkout: data.checkout,
-              console: data.room
-            });
-            window.location.href = `ocupado.html?${params.toString()}`;
-            return;
+          // 1. Checagem com timeout de segurança (máximo de 3.5s para nunca travar a tela)
+          if (typeof checkRoomAvailability === 'function') {
+            const timeoutPromise = new Promise((resolve) =>
+              setTimeout(() => resolve({ available: true, timeout: true }), 3500)
+            );
+
+            // Disputa entre a resposta do Supabase e o limite de tempo
+            const check = await Promise.race([
+              checkRoomAvailability(data.room, data.checkin, data.checkout),
+              timeoutPromise
+            ]);
+
+            if (check && !check.available) {
+              alert('Atenção: Este setup já está reservado nas datas selecionadas! Redirecionando para a lista de espera...');
+              const params = new URLSearchParams({
+                room: data.room,
+                checkin: data.checkin,
+                checkout: data.checkout,
+                console: data.room
+              });
+              window.location.href = `ocupado.html?${params.toString()}`;
+              return;
+            }
           }
+
+          // 2. Se liberado (ou se atingiu timeout de conexão), avança normalmente
+          const params = new URLSearchParams({
+            room: data.room,
+            checkin: data.checkin,
+            checkout: data.checkout,
+            total: data.total
+          });
+          window.location.href = `pagamento.html?${params.toString()}`;
+
+        } catch (err) {
+          console.error('Falha na verificação de reserva:', err);
+          // Em caso de qualquer erro imprevisto, restaura o botão na hora
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalText;
+          alert('Houve uma oscilação momentânea na checagem. Tente clicar em avançar novamente.');
         }
-
-        // Se estiver liberado, avança para o pagamento com os dados calculados
-        const params = new URLSearchParams({
-          room: data.room,
-          checkin: data.checkin,
-          checkout: data.checkout,
-          total: data.total
-        });
-        window.location.href = `pagamento.html?${params.toString()}`;
       });
-
-      calculateTotal();
     });
   </script>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr" crossorigin="anonymous"></script>

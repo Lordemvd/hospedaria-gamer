@@ -119,28 +119,22 @@ async function fetchUserReservations(query) {
 // 4. Verificar Disponibilidade Real de Quarto (Anti-Overbooking)
 async function checkRoomAvailability(roomId, checkinStr, checkoutStr) {
   if (!supabaseClient) {
-    console.warn('Supabase não conectado. Ignorando validação de conflito.');
+    console.warn('Supabase não conectado. Ignorando validação.');
     return { available: true };
   }
 
   try {
-    // Normaliza datas para YYYY-MM-DD
-    const normalize = (d) => d.includes('/') ? d.split('/').reverse().join('-') : d;
+    const normalize = (d) => (d && d.includes('/')) ? d.split('/').reverse().join('-') : d;
     const checkin = normalize(checkinStr);
     const checkout = normalize(checkoutStr);
 
-    // Mapeia console ou apelido para o ID oficial do quarto
     let targetRoomId = roomId;
-    if (roomId === 'switch' || roomId === 'ps5' || roomId === 'xbox') {
-      targetRoomId = 'duo';
-    } else if (roomId === 'pc') {
-      targetRoomId = 'solo';
-    }
+    if (['switch', 'ps5', 'xbox'].includes(roomId)) targetRoomId = 'duo';
+    if (roomId === 'pc') targetRoomId = 'solo';
 
-    // Busca se existe alguma reserva confirmada com choque de datas
     const { data, error } = await supabaseClient
       .from('reservations')
-      .select('id, reservation_code, check_in, check_out, room_id, room_name')
+      .select('id, reservation_code, check_in, check_out, room_id')
       .eq('room_id', targetRoomId)
       .neq('status', 'CANCELADA')
       .lt('check_in', checkout)
@@ -148,14 +142,12 @@ async function checkRoomAvailability(roomId, checkinStr, checkoutStr) {
 
     if (error) throw error;
 
-    const isAvailable = (!data || data.length === 0);
     return {
-      available: isAvailable,
-      conflicts: data || [],
-      roomId: targetRoomId
+      available: (!data || data.length === 0),
+      conflicts: data || []
     };
   } catch (err) {
-    console.error('Erro ao verificar disponibilidade no Supabase:', err.message);
+    console.error('Erro na checagem Supabase:', err.message);
     return { available: true, error: err.message };
   }
 }
