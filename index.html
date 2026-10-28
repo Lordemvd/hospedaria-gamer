@@ -171,6 +171,28 @@
     </div>
   </section>
 
+  <!-- FORMULÁRIO DE LISTA DE ESPERA -->
+<section id="lista-espera" class="waitlist-card">
+  <h3 class="waitlist-title">Quer ser avisado se alguém cancelar?</h3>
+  <p class="waitlist-subtitle">
+    Insira seu e-mail ou Discord tag. Caso haja cancelamento, você recebe um alerta na hora com 15 minutos de prioridade.
+  </p>
+
+  <form class="waitlist-form" id="form-espera">
+    <input 
+      type="text" 
+      id="contato-espera" 
+      name="contato" 
+      aria-label="E-mail ou Discord Tag" 
+      placeholder="Seu e-mail ou Discord Tag (ex: player#1234)" 
+      required>
+    <button type="submit" class="btn-secondary">Notificar-me</button>
+  </form>
+
+  <!-- Mensagem de estado dinâmica -->
+  <p id="feedback-espera" class="feedback-msg" hidden></p>
+</section>
+
   <!-- 6. BAR & GASTRONOMIA (TEXTO EM CIMA, IMAGEM EM BAIXO) -->
   <section id="bar" class="section bar-section">
     <h2 class="section-title">BAR & GASTRONOMIA 24H</h2>

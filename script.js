@@ -355,3 +355,71 @@ document.addEventListener('DOMContentLoaded', () => {
       disableMobile: true // Garante o visual gamer mesmo em smartphones
     });
   }
+
+  const formEspera = document.getElementById('form-espera');
+const feedback = document.getElementById('feedback-espera');
+
+formEspera.addEventListener('submit', async (event) => {
+  event.preventDefault();
+
+  const inputContato = document.getElementById('contato-espera');
+  const valorContato = inputContato.value.trim();
+
+  if (!valorContato) return;
+
+  // Simulação de persistência local / envio
+  console.log('Registo na lista de espera:', valorContato);
+
+  // Feedback visual ao utilizador
+  feedback.textContent = 'Você está na fila! Avisaremos assim que o quarto liberar.';
+  feedback.classList.remove('erro');
+  feedback.classList.add('sucesso');
+  feedback.hidden = false;
+
+  // Limpa o formulário
+  formEspera.reset();
+
+  // Oculta a mensagem após 5 segundos
+  setTimeout(() => {
+    feedback.hidden = true;
+  }, 5000);
+});
+
+// ==========================================
+// RENDERIZAÇÃO DA SESSÃO GAMER NA NAVBAR
+// ==========================================
+document.addEventListener('DOMContentLoaded', () => {
+  const currentUserRaw = localStorage.getItem('nexus_current_user');
+  const loginLink = document.querySelector('.nav-links a[href*="login.html"]');
+
+  if (currentUserRaw && loginLink) {
+    try {
+      const user = JSON.parse(currentUserRaw);
+      const gamerTag = user.gamerTag || user.fullName || 'Player';
+
+      // Substitui o link de login por um badge interativo do jogador
+      const profileContainer = document.createElement('div');
+      profileContainer.style.display = 'inline-flex';
+      profileContainer.style.alignItems = 'center';
+      profileContainer.style.gap = '8px';
+
+      profileContainer.innerHTML = `
+        <span style="color: var(--neon-cyan); font-family: var(--font-display); font-size: 0.9rem; background: rgba(0,240,255,0.08); padding: 6px 12px; border-radius: 4px; border: 1px solid var(--border-glow);">
+          🎮 ${gamerTag}
+        </span>
+        <button id="btnLogout" type="button" style="background: transparent; border: 1px solid rgba(255,0,85,0.4); color: #ff6b8b; padding: 6px 10px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; font-family: var(--font-display);">
+          Sair
+        </button>
+      `;
+
+      loginLink.replaceWith(profileContainer);
+
+      document.getElementById('btnLogout').addEventListener('click', () => {
+        if (confirm(`Deseja desconectar a conta de ${gamerTag}?`)) {
+          localStorage.removeItem('nexus_current_user');
+          window.location.reload();
+        }
+      });
+    } catch (e) {}
+  }
+});

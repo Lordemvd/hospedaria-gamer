@@ -79,7 +79,8 @@
 
             <form class="waitlist-form"
                 onsubmit="event.preventDefault(); alert('Você está na fila! Avisaremos assim que o quarto liberar.');">
-                <input type="text" placeholder="Seu e-mail ou Discord Tag (ex: player#1234)" required>
+                <label for="contato-espera" class="sr-only">E-mail ou Discord Tag</label>
+                <input type="text" id="contato-espera" name="contato" placeholder="Seu e-mail ou Discord Tag (ex: player#1234)" required>
                 <button type="submit" class="btn-secondary">Notificar-me</button>
             </form>
         </section>

@@ -1,39 +1,39 @@
 // ==========================================
-// GERENCIADOR DE AUTENTICAÇÃO E PERSISTÊNCIA
+// GERENCIADOR DE AUTENTICAÇÃO NEXUS INN
 // ==========================================
-
 const USERS_STORAGE_KEY = 'nexus_users';
 const CURRENT_USER_KEY = 'nexus_current_user';
 
-// 1. Obter todos os usuários salvos no LocalStorage
+// Retorna lista de usuários cadastrados
 function getRegisteredUsers() {
-  const users = localStorage.getItem(USERS_STORAGE_KEY);
-  return users ? JSON.parse(users) : [];
+  try {
+    const data = localStorage.getItem(USERS_STORAGE_KEY);
+    return data ? JSON.parse(data) : [];
+  } catch (e) {
+    return [];
+  }
 }
 
-// 2. Salvar novo usuário com validações de unicidade
+// Cadastra um novo jogador com validações
 function registerUser(userData) {
   const users = getRegisteredUsers();
 
-  // Verifica se o e-mail já foi registrado
-  const emailExists = users.some(u => u.email.toLowerCase() === userData.email.toLowerCase());
+  const emailExists = users.some(u => u.email.toLowerCase() === userData.email.trim().toLowerCase());
   if (emailExists) {
-    return { success: false, message: 'Este e-mail já está em uso por outro jogador!' };
+    return { success: false, message: 'Este e-mail já está em uso por outro jogador.' };
   }
 
-  // Verifica se a GamerTag já foi registrada
-  const tagExists = users.some(u => u.gamerTag.toLowerCase() === userData.gamerTag.toLowerCase());
+  const tagExists = users.some(u => u.gamerTag.toLowerCase() === userData.gamerTag.trim().toLowerCase());
   if (tagExists) {
-    return { success: false, message: 'Esta GamerTag já foi resgatada por outro player!' };
+    return { success: false, message: 'Esta GamerTag já foi resgatada por outro player.' };
   }
 
-  // Cria objeto completo do usuário
   const newUser = {
     id: 'usr_' + Date.now(),
-    fullName: userData.fullName,
-    gamerTag: userData.gamerTag,
-    email: userData.email,
-    cpf: userData.cpf,
+    fullName: userData.fullName.trim(),
+    gamerTag: userData.gamerTag.trim(),
+    email: userData.email.trim().toLowerCase(),
+    cpf: userData.cpf.trim(),
     password: userData.password,
     createdAt: new Date().toISOString()
   };
@@ -41,25 +41,32 @@ function registerUser(userData) {
   users.push(newUser);
   localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
 
-  return { success: true, user: newUser };
+  // Inicia sessão automaticamente após cadastro
+  const sessionUser = {
+    id: newUser.id,
+    fullName: newUser.fullName,
+    gamerTag: newUser.gamerTag,
+    email: newUser.email
+  };
+  localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(sessionUser));
+
+  return { success: true, user: sessionUser };
 }
 
-// 3. Fazer login validando credenciais
+// Autentica o jogador via e-mail ou GamerTag
 function loginUser(identifier, password) {
   const users = getRegisteredUsers();
   const cleanId = identifier.trim().toLowerCase();
 
-  // Permite logar tanto com e-mail quanto com a GamerTag
   const foundUser = users.find(u => 
     (u.email.toLowerCase() === cleanId || u.gamerTag.toLowerCase() === cleanId) &&
     u.password === password
   );
 
   if (!foundUser) {
-    return { success: false, message: 'E-mail/GamerTag ou senha incorretos!' };
+    return { success: false, message: 'E-mail/GamerTag ou senha incorretos.' };
   }
 
-  // Salva a sessão ativa (sem a senha, por boas práticas)
   const sessionUser = {
     id: foundUser.id,
     fullName: foundUser.fullName,
@@ -71,13 +78,17 @@ function loginUser(identifier, password) {
   return { success: true, user: sessionUser };
 }
 
-// 4. Obter usuário logado atualmente
+// Retorna o jogador logado no momento
 function getCurrentUser() {
-  const current = localStorage.getItem(CURRENT_USER_KEY);
-  return current ? JSON.parse(current) : null;
+  try {
+    const data = localStorage.getItem(CURRENT_USER_KEY);
+    return data ? JSON.parse(data) : null;
+  } catch (e) {
+    return null;
+  }
 }
 
-// 5. Encerrar sessão (Logout)
+// Encerra a sessão
 function logoutUser() {
   localStorage.removeItem(CURRENT_USER_KEY);
   window.location.reload();

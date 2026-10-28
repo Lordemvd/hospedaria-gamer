@@ -1,141 +1,148 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus Inn | Novo Cadastro</title>
-    <link rel="stylesheet" href="../style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap"
-        rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexus Inn | Criar Perfil Gamer</title>
+  <link rel="stylesheet" href="../style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%AE%3C/text%3E%3C/svg%3E">
 </head>
-
 <body class="auth-page-body">
 
-    <header class="navbar">
-        <div class="logo">
-            <a href="../index.html" style="text-decoration: none; color: inherit;">
-                <span class="logo-highlight">NEXUS</span>INN
-            </a>
+  <header class="navbar">
+    <div class="logo">
+      <a href="../index.html" style="text-decoration: none; color: inherit;">
+        <span class="logo-highlight">NEXUS</span>INN
+      </a>
+    </div>
+    <nav class="nav-links">
+      <a href="../index.html">Voltar ao Início</a>
+    </nav>
+  </header>
+
+  <main class="auth-wrapper">
+    <div class="auth-card">
+      <div class="auth-card-header">
+        <span class="badge">NOVA CONTA</span>
+        <h1 class="auth-title">CRIE SUA GAMERTAG</h1>
+        <p class="auth-subtitle">Garanta vantagens VIP, ping prioritário e agilidade no check-in.</p>
+      </div>
+
+      <div id="cadastroFeedback" style="display: none; padding: 10px; margin-bottom: 16px; border-radius: 4px; font-size: 0.9rem; text-align: center;"></div>
+
+      <form id="cadastroForm" class="auth-form">
+        <div class="form-group">
+          <label for="cadNome">Nome Completo</label>
+          <input type="text" id="cadNome" placeholder="Ex: Alex Mercer" required>
         </div>
-        <nav class="nav-links">
-            <a href="../index.html">Voltar ao Início</a>
-        </nav>
-    </header>
 
-    <main class="auth-wrapper">
-        <div class="auth-card auth-card-wide">
-            <div class="auth-card-header">
-                <span class="badge">NOVO JOGADOR</span>
-                <h1 class="auth-title">CRIE SUA GAMER TAG</h1>
-                <p class="auth-subtitle">Crie a sua conta para aceder aos quartos e configurações exclusivas.</p>
-            </div>
-
-            <form id="signupForm" class="auth-form">
-                <div class="form-row-2">
-                    <div class="form-group">
-                        <label for="fullName">Nome Completo</label>
-                        <input type="text" id="fullName" placeholder="Lucas Silva" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="gamerTag">Gamer Tag</label>
-                        <input type="text" id="gamerTag" placeholder="ShadowStriker" required>
-                    </div>
-                </div>
-
-                <div class="form-row-2">
-                    <div class="form-group">
-                        <label for="signupEmail">E-mail</label>
-                        <input type="email" id="signupEmail" placeholder="player@nexusinn.com" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="cpf">CPF ou Documento</label>
-                        <input type="text" id="cpf" placeholder="000.000.000-00" required>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="newPass">Senha</label>
-                    <input type="password" id="newPass" placeholder="Mínimo de 6 caracteres" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="confirmPass">Confirmar Senha</label>
-                    <input type="password" id="confirmPass" placeholder="Repita a senha" required>
-                    <small id="passError" class="input-error-msg" style="display: none;"></small>
-                </div>
-
-                <button type="submit" class="btn-primary btn-full-width">Concluir Registo</button>
-            </form>
-
-            <div class="auth-card-footer">
-                <p>Já possui cadastro? <a href="login.html" class="link-highlight">Entrar na sua conta</a></p>
-            </div>
+        <div class="form-group">
+          <label for="cadGamerTag">GamerTag (Apelido Público)</label>
+          <input type="text" id="cadGamerTag" placeholder="Ex: ShadowStriker" required>
         </div>
-    </main>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const signupForm = document.getElementById('signupForm');
-            const passError = document.getElementById('passError');
+        <div class="form-group">
+          <label for="cadEmail">E-mail</label>
+          <input type="email" id="cadEmail" placeholder="player@nexusinn.com" required>
+        </div>
 
-            signupForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                passError.style.display = 'none';
+        <div class="form-group">
+          <label for="cadCpf">CPF</label>
+          <input type="text" id="cadCpf" placeholder="000.000.000-00" maxlength="14" required>
+        </div>
 
-                const pass = document.getElementById('newPass').value;
-                const confirm = document.getElementById('confirmPass').value;
+        <div class="form-row-card">
+          <div class="form-group">
+            <label for="cadSenha">Senha</label>
+            <input type="password" id="cadSenha" placeholder="••••••••" required>
+          </div>
+          <div class="form-group">
+            <label for="cadConfSenha">Confirmar Senha</label>
+            <input type="password" id="cadConfSenha" placeholder="••••••••" required>
+          </div>
+        </div>
 
-                if (pass !== confirm) {
-                    passError.textContent = 'As senhas não coincidem!';
-                    passError.style.display = 'block';
-                    return;
-                }
+        <div class="form-options">
+          <label class="remember-me">
+            <input type="checkbox" id="cadTermos" required>
+            <span>Concordo com os Termos de Uso e Políticas da Nexus Inn</span>
+          </label>
+        </div>
 
-                const fullName = document.getElementById('fullName').value.trim();
-                const gamerTag = document.getElementById('gamerTag').value.trim();
-                const email = document.getElementById('signupEmail').value.trim();
-                const cpf = document.getElementById('cpf').value.trim();
+        <button type="submit" class="btn-primary btn-full-width">Criar Perfil Gamer</button>
+      </form>
 
-                let users = [];
-                try {
-                    const stored = localStorage.getItem('nexus_users');
-                    users = stored ? JSON.parse(stored) : [];
-                } catch (err) {
-                    users = [];
-                }
+      <div class="auth-card-footer">
+        <p>Já possui GamerTag? <a href="login.html" class="link-highlight">Fazer Login</a></p>
+      </div>
+    </div>
+  </main>
 
-                if (users.some(u => u.email.toLowerCase() === email.toLowerCase())) {
-                    passError.textContent = 'Este e-mail já se encontra registado!';
-                    passError.style.display = 'block';
-                    return;
-                }
+  <script src="../auth.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('cadastroForm');
+      const feedback = document.getElementById('cadastroFeedback');
+      const cpfInput = document.getElementById('cadCpf');
 
-                if (users.some(u => u.gamerTag.toLowerCase() === gamerTag.toLowerCase())) {
-                    passError.textContent = 'Esta GamerTag já está em uso!';
-                    passError.style.display = 'block';
-                    return;
-                }
+      // Máscara de CPF
+      cpfInput.addEventListener('input', (e) => {
+        let v = e.target.value.replace(/\D/g, '');
+        v = v.replace(/(\d{3})(\d)/, '$1.$2');
+        v = v.replace(/(\d{3})(\d)/, '$1.$2');
+        v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+        e.target.value = v.substring(0, 14);
+      });
 
-                users.push({
-                    id: 'usr_' + Date.now(),
-                    fullName,
-                    gamerTag,
-                    email,
-                    cpf,
-                    password: pass
-                });
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
 
-                localStorage.setItem('nexus_users', JSON.stringify(users));
+        const nome = document.getElementById('cadNome').value;
+        const gamerTag = document.getElementById('cadGamerTag').value;
+        const email = document.getElementById('cadEmail').value;
+        const cpf = document.getElementById('cadCpf').value;
+        const senha = document.getElementById('cadSenha').value;
+        const confSenha = document.getElementById('cadConfSenha').value;
 
-                alert(`Conta criada com sucesso, ${gamerTag}! A redirecionar para a página de login...`);
-                window.location.href = 'login.html';
-            });
+        if (senha !== confSenha) {
+          feedback.style.display = 'block';
+          feedback.style.background = 'rgba(255, 0, 85, 0.15)';
+          feedback.style.border = '1px solid #ff0055';
+          feedback.style.color = '#ff6b8b';
+          feedback.textContent = 'As senhas não coincidem!';
+          return;
+        }
+
+        const res = registerUser({
+          fullName: nome,
+          gamerTag: gamerTag,
+          email: email,
+          cpf: cpf,
+          password: senha
         });
-    </script>
-</body>
 
+        if (res.success) {
+          feedback.style.display = 'block';
+          feedback.style.background = 'rgba(0, 240, 255, 0.15)';
+          feedback.style.border = '1px solid var(--neon-cyan)';
+          feedback.style.color = 'var(--neon-cyan)';
+          feedback.textContent = `Conta criada! Conectando como ${res.user.gamerTag}...`;
+
+          setTimeout(() => {
+            window.location.href = '../index.html';
+          }, 1200);
+        } else {
+          feedback.style.display = 'block';
+          feedback.style.background = 'rgba(255, 0, 85, 0.15)';
+          feedback.style.border = '1px solid #ff0055';
+          feedback.style.color = '#ff6b8b';
+          feedback.textContent = res.message;
+        }
+      });
+    });
+  </script>
+</body>
 </html>

@@ -1,112 +1,108 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus Inn | Login do Jogador</title>
-    <link rel="stylesheet" href="../style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap"
-        rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexus Inn | Login do Jogador</title>
+  <link rel="stylesheet" href="../style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%AE%3C/text%3E%3C/svg%3E">
 </head>
-
 <body class="auth-page-body">
 
-    <header class="navbar">
-        <div class="logo">
-            <a href="../index.html" style="text-decoration: none; color: inherit;">
-                <span class="logo-highlight">NEXUS</span>INN
-            </a>
+  <header class="navbar">
+    <div class="logo">
+      <a href="../index.html" style="text-decoration: none; color: inherit;">
+        <span class="logo-highlight">NEXUS</span>INN
+      </a>
+    </div>
+    <nav class="nav-links">
+      <a href="../index.html">Voltar ao Início</a>
+    </nav>
+  </header>
+
+  <main class="auth-wrapper">
+    <div class="auth-card">
+      <div class="auth-card-header">
+        <span class="badge">PLAYER ACCESS</span>
+        <h1 class="auth-title">FAÇA SEU LOGIN</h1>
+        <p class="auth-subtitle">Acesse suas reservas, histórico de estadias e pedidos do bar.</p>
+      </div>
+
+      <div id="loginFeedback" style="display: none; padding: 10px; margin-bottom: 16px; border-radius: 4px; font-size: 0.9rem; text-align: center;"></div>
+
+      <form id="loginForm" class="auth-form">
+        <div class="form-group">
+          <label for="loginEmail">E-mail ou GamerTag</label>
+          <input type="text" id="loginEmail" placeholder="player@nexusinn.com ou GamerTag" required>
         </div>
-        <nav class="nav-links">
-            <a href="../index.html">Voltar ao Início</a>
-        </nav>
-    </header>
 
-    <main class="auth-wrapper">
-        <div class="auth-card">
-            <div class="auth-card-header">
-                <span class="badge">PLAYER ACCESS</span>
-                <h1 class="auth-title">BEM-VINDO DE VOLTA</h1>
-                <p class="auth-subtitle">Acesse o seu setup e gerencie as suas reservas.</p>
-            </div>
-
-            <form id="loginForm" class="auth-form">
-                <div class="form-group">
-                    <label for="loginEmail">E-mail ou GamerTag</label>
-                    <input type="text" id="loginEmail" placeholder="player@nexusinn.com ou GamerTag" required
-                        autocomplete="username">
-                </div>
-
-                <div class="form-group">
-                    <label for="loginPass">Senha</label>
-                    <input type="password" id="loginPass" placeholder="••••••••" required
-                        autocomplete="current-password">
-                </div>
-
-                <!-- MENSAGEM FIXA DE ERRO EM VERMELHO/NEON -->
-                <div id="loginErrorMsg" class="input-error-msg"
-                    style="display: none; text-align: center; font-size: 1rem; margin-top: 6px;">
-                    Usuário ou senha inválidos.
-                </div>
-
-                <button type="submit" class="btn-primary btn-full-width" style="margin-top: 10px;">Entrar no
-                    Setup</button>
-            </form>
-
-            <div class="auth-card-footer">
-                <p>Ainda não tem conta? <a href="cadastro.html" class="link-highlight">Criar Gamer Tag</a></p>
-            </div>
+        <div class="form-group">
+          <div class="label-with-link">
+            <label for="loginPass">Senha</label>
+          </div>
+          <div class="input-password-wrapper">
+            <input type="password" id="loginPass" placeholder="••••••••" required>
+            <button type="button" class="toggle-pass-btn" id="togglePassBtn" aria-label="Mostrar ou ocultar senha">👁</button>
+          </div>
         </div>
-    </main>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const loginForm = document.getElementById('loginForm');
-            const errorMsg = document.getElementById('loginErrorMsg');
+        <button type="submit" class="btn-primary btn-full-width">Iniciar Sessão</button>
+      </form>
 
-            loginForm.addEventListener('submit', (e) => {
-                e.preventDefault(); // Impede recarregar a tela
+      <div class="auth-card-footer">
+        <p>Ainda não tem conta? <a href="cadastro.html" class="link-highlight">Criar GamerTag</a></p>
+      </div>
+    </div>
+  </main>
 
-                const identifier = document.getElementById('loginEmail').value.trim().toLowerCase();
-                const password = document.getElementById('loginPass').value;
+  <script src="../auth.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('loginForm');
+      const feedback = document.getElementById('loginFeedback');
+      const passInput = document.getElementById('loginPass');
+      const toggleBtn = document.getElementById('togglePassBtn');
 
-                const stored = localStorage.getItem('nexus_users');
-                let users = [];
-                try {
-                    users = stored ? JSON.parse(stored) : [];
-                } catch (err) {
-                    users = [];
-                }
+      toggleBtn.addEventListener('click', () => {
+        if (passInput.type === 'password') {
+          passInput.type = 'text';
+          toggleBtn.style.color = 'var(--neon-cyan)';
+        } else {
+          passInput.type = 'password';
+          toggleBtn.style.color = 'var(--text-muted)';
+        }
+      });
 
-                // Procura usuário correspondente
-                const matchedUser = users.find(u =>
-                    (u.email && u.email.toLowerCase() === identifier) ||
-                    (u.gamerTag && u.gamerTag.toLowerCase() === identifier)
-                );
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
 
-                // Se errar usuário ou senha: APENAS MOSTRA O AVISO E FICA NA PÁGINA
-                if (!matchedUser || matchedUser.password !== password) {
-                    errorMsg.textContent = 'Usuário ou senha inválidos.';
-                    errorMsg.style.display = 'block';
-                    return; // Para aqui, sem trocar de página
-                }
+        const identifier = document.getElementById('loginEmail').value;
+        const password = passInput.value;
 
-                // Se acertou: limpa erro, guarda sessão e vai para a home
-                errorMsg.style.display = 'none';
-                localStorage.setItem('nexus_current_user', JSON.stringify({
-                    fullName: matchedUser.fullName,
-                    gamerTag: matchedUser.gamerTag,
-                    email: matchedUser.email
-                }));
+        const res = loginUser(identifier, password);
 
-                window.location.href = '../index.html';
-            });
-        });
-    </script>
+        if (res.success) {
+          feedback.style.display = 'block';
+          feedback.style.background = 'rgba(0, 240, 255, 0.15)';
+          feedback.style.border = '1px solid var(--neon-cyan)';
+          feedback.style.color = 'var(--neon-cyan)';
+          feedback.textContent = `Acesso autorizado! Bem-vindo, ${res.user.gamerTag}!`;
+
+          setTimeout(() => {
+            window.location.href = '../index.html';
+          }, 1000);
+        } else {
+          feedback.style.display = 'block';
+          feedback.style.background = 'rgba(255, 0, 85, 0.15)';
+          feedback.style.border = '1px solid #ff0055';
+          feedback.style.color = '#ff6b8b';
+          feedback.textContent = res.message;
+        }
+      });
+    });
+  </script>
 </body>
-
 </html>
