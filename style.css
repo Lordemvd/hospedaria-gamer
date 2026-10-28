@@ -995,8 +995,16 @@ body {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
 }
 
-.booking-header {
-  margin-bottom: 28px;
+.booking-header .page-title {
+  margin: 16px 0 8px 0 !important;
+  line-height: 1.2 !important;
+}
+
+.booking-header .section-subtitle {
+  margin-top: 0 !important; /* Anula o margin-top: -30px global */
+  margin-bottom: 0 !important;
+  line-height: 1.5 !important;
+  color: var(--text-muted);
 }
 
 .booking-custom-form {
