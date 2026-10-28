@@ -138,89 +138,72 @@ document.addEventListener('DOMContentLoaded', () => {
     startSlideTimer();
   }
 
-  // ==========================================
-  // 2. LÓGICA DA BUSCA RÁPIDA DE RESERVA
+ // ==========================================
+  // 2. BUSCA RÁPIDA COM VALIDAÇÃO REAL SUPABASE
   // ==========================================
   const bookingForm = document.querySelector('.booking-form');
   const checkinInput = document.getElementById('checkin');
   const checkoutInput = document.getElementById('checkout');
   const consoleSelect = document.getElementById('console');
-
-  // Define a data mínima de check-in como hoje
-  const today = new Date().toISOString().split('T')[0];
-  if (checkinInput) {
-    checkinInput.setAttribute('min', today);
-
-    // Ajusta o check-out mínimo dinamicamente ao escolher o check-in
-    checkinInput.addEventListener('change', () => {
-      const selectedCheckin = checkinInput.value;
-      if (selectedCheckin) {
-        checkoutInput.setAttribute('min', selectedCheckin);
-
-        // Se a data de check-out atual for menor que o novo check-in, reseta o check-out
-        if (checkoutInput.value && checkoutInput.value <= selectedCheckin) {
-          checkoutInput.value = '';
-        }
-      }
-    });
-  }
+  const submitBtn = bookingForm ? bookingForm.querySelector('button[type="submit"]') : null;
 
   if (bookingForm) {
-    bookingForm.addEventListener('submit', (event) => {
+    bookingForm.addEventListener('submit', async (event) => {
       event.preventDefault();
 
-      const checkinDate = new Date(checkinInput.value);
-      const checkoutDate = new Date(checkoutInput.value);
+      const checkinVal = checkinInput.value;
+      const checkoutVal = checkoutInput.value;
 
-      // Validação de intervalo de datas
+      if (!checkinVal || !checkoutVal) {
+        alert('Por favor, selecione as datas de entrada e saída.');
+        return;
+      }
+
+      const checkinDate = new Date(checkinVal);
+      const checkoutDate = new Date(checkoutVal);
+
       if (checkoutDate <= checkinDate) {
         alert('A data de check-out deve ser posterior à data de check-in.');
         return;
       }
 
-      // Parâmetros para enviar à próxima etapa
+      // Feedback visual no botão
+      const originalBtnText = submitBtn ? submitBtn.innerHTML : 'Buscar';
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = 'Verificando...';
+      }
+
       const selectedConsole = consoleSelect ? consoleSelect.value : 'all';
+      
+      // Mapeia o quarto alvo para a consulta
+      let roomId = 'duo';
+      if (selectedConsole === 'pc') roomId = 'solo';
+      if (selectedConsole === 'switch') roomId = 'squad';
+
+      // Consulta a disponibilidade real no PostgreSQL
+      let isAvailable = true;
+      if (typeof checkRoomAvailability === 'function') {
+        const check = await checkRoomAvailability(roomId, checkinVal, checkoutVal);
+        isAvailable = check.available;
+      }
+
       const params = new URLSearchParams({
-        checkin: checkinInput.value,
-        checkout: checkoutInput.value,
+        room: roomId,
+        checkin: checkinVal,
+        checkout: checkoutVal,
         console: selectedConsole
       });
 
-      /*
-        LÓGICA DE SIMULAÇÃO DIDÁTICA:
-        Para testar o fluxo de "Quarto Ocupado" no trabalho, você pode
-        simular que uma data ou opção específica cai na tela de ocupado.
-        Exemplo: se escolher 'switch', simula ocupação.
-      */
-      const simularOcupado = selectedConsole === 'switch';
-
-      if (simularOcupado) {
+      if (!isAvailable) {
+        // Redireciona para ocupado caso o quarto já esteja reservado nessas datas
         window.location.href = `pages/ocupado.html?${params.toString()}`;
       } else {
+        // Libera a tela de reserva com as datas validadas
         window.location.href = `pages/reserva.html?${params.toString()}`;
       }
     });
   }
-  // Exibe o nome do usuário logado na Navbar do Index
-const currentUser = localStorage.getItem('nexus_current_user');
-if (currentUser) {
-  const user = JSON.parse(currentUser);
-  const navLinks = document.querySelector('.nav-links');
-  const loginBtn = document.querySelector('.nav-links .btn-link');
-
-  if (loginBtn) {
-    loginBtn.innerHTML = `🎮 ${user.gamerTag}`;
-    loginBtn.href = '#';
-    loginBtn.onclick = (e) => {
-      e.preventDefault();
-      if (confirm(`Deseja desconectar a conta de ${user.gamerTag}?`)) {
-        localStorage.removeItem('nexus_current_user');
-        window.location.reload();
-      }
-    };
-  }
-}
-;
 
 // ==========================================
 // 3. GERENCIAMENTO VISUAL DA SESSÃO DO USUÁRIO (ROBUSTO)
