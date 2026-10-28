@@ -1,165 +1,181 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus Inn | Reserva Confirmada</title>
-    <link rel="stylesheet" href="../style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap"
-        rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexus Inn | Reserva Confirmada & Gamer Pass</title>
+  <link rel="stylesheet" href="../style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%AE%3C/text%3E%3C/svg%3E">
 </head>
-
 <body>
 
-    <!-- NAVBAR SIMPLES -->
-    <header class="navbar no-print">
-        <div class="logo">
-            <a href="../index.html" style="text-decoration: none; color: inherit;">
-                <span class="logo-highlight">NEXUS</span>INN
-            </a>
+  <!-- NAVBAR SIMPLES (OCULTA NA IMPRESSÃO) -->
+  <header class="navbar no-print">
+    <div class="logo">
+      <a href="../index.html" style="text-decoration: none; color: inherit;">
+        <span class="logo-highlight">NEXUS</span>INN
+      </a>
+    </div>
+    <nav class="nav-links">
+      <a href="../index.html">Início</a>
+    </nav>
+  </header>
+
+  <main class="success-page-container">
+    
+    <!-- CABEÇALHO DE CONQUISTA / SUCESSO -->
+    <div class="success-header no-print">
+      <div class="success-icon-badge">✓</div>
+      <span class="badge">QUEST COMPLETED</span>
+      <h1 class="page-title">SETUP CONFIRMADO COM SUCESSO!</h1>
+      <p class="section-subtitle">Apresente este Gamer Pass no balcão da Nexus Inn para retirar as chaves e credenciais de rede.</p>
+    </div>
+
+    <!-- O PASSE GAMER / TICKET VIP -->
+    <div class="gamer-ticket" id="ticket">
+      
+      <!-- CORPO PRINCIPAL DO TICKET -->
+      <div class="ticket-main">
+        <div class="ticket-header">
+          <div class="brand">
+            <span class="logo-highlight">NEXUS</span>INN &bull; VIP ACCESS PASS
+          </div>
+          <div class="ticket-code">
+            <span>CÓDIGO DE CHECK-IN</span>
+            <strong id="resCode">NX-000000</strong>
+          </div>
         </div>
-        <nav class="nav-links">
-            <a href="../index.html">Início</a>
-        </nav>
-    </header>
 
-    <main class="success-page-container">
-
-        <!-- CABEÇALHO DE VITÓRIA / SUCESSO -->
-        <div class="success-header no-print">
-            <div class="success-icon-badge">&#10004;</div>
-            <span class="badge">QUEST COMPLETE!</span>
-            <h1 class="page-title">RESERVA CONFIRMADA COM SUCESSO</h1>
-            <p class="section-subtitle">Seu setup está reservado e estará pronto para uso assim que você chegar.</p>
-        </div>
-
-        <!-- O PASSE GAMER / VOUCHER -->
-        <div class="gamer-ticket" id="ticket">
-
-            <!-- LADO ESQUERDO DO TICKET -->
-            <div class="ticket-main">
-                <div class="ticket-header">
-                    <div class="brand">
-                        <span class="logo-highlight">NEXUS</span>INN &bull; PASS VIP
-                    </div>
-                    <div class="ticket-code">
-                        <span>CÓDIGO DA RESERVA</span>
-                        <strong id="resCode">NX-998877</strong>
-                    </div>
-                </div>
-
-                <div class="ticket-body">
-                    <div class="ticket-row">
-                        <div class="ticket-col">
-                            <span class="lbl">HÓSPEDE / PLAYER</span>
-                            <strong class="val">Player Convidado</strong>
-                        </div>
-                        <div class="ticket-col">
-                            <span class="lbl">QUARTO SELECIONADO</span>
-                            <strong class="val" id="resRoom">Suíte Solo Streamer</strong>
-                        </div>
-                    </div>
-
-                    <div class="ticket-row">
-                        <div class="ticket-col">
-                            <span class="lbl">CHECK-IN</span>
-                            <strong class="val" id="resCheckin">2026-10-15</strong>
-                            <small class="hint">A partir das 14:00h</small>
-                        </div>
-                        <div class="ticket-col">
-                            <span class="lbl">CHECK-OUT</span>
-                            <strong class="val" id="resCheckout">2026-10-17</strong>
-                            <small class="hint">Até às 12:00h</small>
-                        </div>
-                    </div>
-
-                    <div class="ticket-row rules-row">
-                        <div class="rules-box">
-                            <span class="lbl">&#128392; INSTRUÇÕES DO ESPAÇO</span>
-                            <p>Wi-Fi e periféricos já estarão pareados. Apresente este voucher ou o QR Code ao concierge
-                                na entrada.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="ticket-footer">
-                    <div>
-                        <span class="lbl">TOTAL PAGO</span>
-                        <strong class="price-val" id="resTotal">R$ 198,00</strong>
-                    </div>
-                    <div>
-                        <span class="lbl">MÉTODO</span>
-                        <span class="pay-method" id="resMethod">PIX</span>
-                    </div>
-                </div>
+        <div class="ticket-body">
+          <div class="ticket-row">
+            <div class="ticket-col">
+              <span class="lbl">HÓSPEDE / GAMERTAG</span>
+              <strong class="val" id="resPlayer">Player Convidado</strong>
             </div>
-
-            <!-- LADO DIREITO (CANHOTO DO TICKET COM QR CODE) -->
-            <div class="ticket-stub">
-                <span class="stub-title">CHECK-IN RÁPIDO</span>
-                <div class="qr-code-ticket">
-                    <!-- QR Code Vetorial -->
-                    <svg width="120" height="120" viewBox="0 0 100 100" fill="none">
-                        <rect width="100" height="100" fill="#090a10" />
-                        <rect x="8" y="8" width="28" height="28" stroke="#00f0ff" stroke-width="4" fill="none" />
-                        <rect x="16" y="16" width="12" height="12" fill="#00f0ff" />
-                        <rect x="64" y="8" width="28" height="28" stroke="#00f0ff" stroke-width="4" fill="none" />
-                        <rect x="72" y="16" width="12" height="12" fill="#00f0ff" />
-                        <rect x="8" y="64" width="28" height="28" stroke="#00f0ff" stroke-width="4" fill="none" />
-                        <rect x="16" y="72" width="12" height="12" fill="#00f0ff" />
-                        <rect x="44" y="12" width="12" height="12" fill="#b026ff" />
-                        <rect x="44" y="44" width="12" height="12" fill="#00f0ff" />
-                        <rect x="64" y="44" width="24" height="12" fill="#b026ff" />
-                        <rect x="44" y="64" width="12" height="24" fill="#00f0ff" />
-                        <rect x="64" y="72" width="28" height="16" fill="#ff007f" />
-                    </svg>
-                </div>
-                <span class="scan-hint">Apresente na recepção</span>
+            <div class="ticket-col">
+              <span class="lbl">ACOMODAÇÃO RESERVADA</span>
+              <strong class="val" id="resRoom">Suíte Duo Next-Gen</strong>
             </div>
+          </div>
 
+          <div class="ticket-row">
+            <div class="ticket-col">
+              <span class="lbl">DATA DE ENTRADA (CHECK-IN)</span>
+              <strong class="val" id="resCheckin">--/--/----</strong>
+              <small class="hint">Liberado a partir das 14:00h</small>
+            </div>
+            <div class="ticket-col">
+              <span class="lbl">DATA DE SAÍDA (CHECK-OUT)</span>
+              <strong class="val" id="resCheckout">--/--/----</strong>
+              <small class="hint">Até às 12:00h</small>
+            </div>
+          </div>
+
+          <div class="ticket-row rules-row">
+            <div class="rules-box">
+              <span class="lbl">INSTRUÇÕES DE ACESSO AO SETUP</span>
+              <p>Fibra óptica Cat6 dedicada, isolamento acústico ativo e periféricos sanitizados. Acesso à rede Wi-Fi 6 VIP liberado automaticamente no check-in.</p>
+            </div>
+          </div>
         </div>
 
-        <!-- BOTÕES DE AÇÃO -->
-        <div class="confirmation-actions no-print">
-            <button onclick="window.print()" class="btn-secondary">
-                &#128424; Salvar / Imprimir Voucher
-            </button>
-            <a href="../index.html" class="btn-primary">
-                Voltar à Página Inicial
-            </a>
+        <div class="ticket-footer">
+          <div>
+            <span class="lbl">VALOR TOTAL QUITADO</span>
+            <strong class="price-val" id="resTotal">R$ 0,00</strong>
+          </div>
+          <div>
+            <span class="lbl">FORMA DE PAGAMENTO</span>
+            <span class="pay-method" id="resMethod">PIX Instantâneo</span>
+          </div>
         </div>
+      </div>
 
-    </main>
-
-    <footer class="footer no-print">
-        <div class="footer-content">
-            <p>&copy; 2026 Nexus Inn - Bom jogo e boa estadia!</p>
+      <!-- CANHOTO DESTACÁVEL COM QR CODE REAL -->
+      <div class="ticket-stub">
+        <span class="stub-title">FAST CHECK-IN</span>
+        <div class="qr-code-ticket">
+          <img 
+            id="ticketQrImg" 
+            src="" 
+            alt="QR Code de Check-in Nexus Inn"
+            style="width: 140px; height: 140px; border-radius: 4px; display: block;"
+          >
         </div>
-    </footer>
+        <span class="scan-hint">Apresente na recepção</span>
+      </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const params = new URLSearchParams(window.location.search);
+    </div>
 
-            const codigo = params.get('codigo') || 'NX-' + Math.floor(100000 + Math.random() * 900000);
-            const quarto = params.get('quarto') || 'Suíte Solo Streamer';
-            const checkin = params.get('checkin') || 'Data a confirmar';
-            const checkout = params.get('checkout') || 'Data a confirmar';
-            const total = params.get('total') || 'R$ 198,00';
-            const metodo = params.get('metodo') || 'PIX';
+    <!-- BOTÕES DE AÇÃO (OCULTOS NA IMPRESSÃO) -->
+    <div class="confirmation-actions no-print">
+      <button type="button" onclick="window.print()" class="btn-secondary">
+        🖨️ Salvar / Imprimir Voucher (PDF)
+      </button>
+      <a href="../index.html" class="btn-primary">
+        Voltar à Página Inicial
+      </a>
+    </div>
 
-            document.getElementById('resCode').textContent = codigo;
-            document.getElementById('resRoom').textContent = quarto;
-            document.getElementById('resCheckin').textContent = checkin;
-            document.getElementById('resCheckout').textContent = checkout;
-            document.getElementById('resTotal').textContent = total;
-            document.getElementById('resMethod').textContent = metodo;
+  </main>
+
+  <footer class="footer no-print">
+    <div class="footer-content">
+      <p>&copy; 2026 Nexus Inn - Bom jogo e excelente descanso!</p>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1. RESGATE DE DADOS ENVIADOS PELA TELA DE PAGAMENTO
+      const params = new URLSearchParams(window.location.search);
+      
+      const codigo = params.get('codigo') || 'NX-' + Math.floor(100000 + Math.random() * 900000);
+      const hospede = params.get('hospede') || 'Player Convidado';
+      const quarto = params.get('quarto') || 'Suíte Duo Next-Gen';
+      let checkin = params.get('checkin') || 'A combinar';
+      let checkout = params.get('checkout') || 'A combinar';
+      const total = params.get('total') || 'R$ 260,00';
+      const metodo = params.get('metodo') || 'PIX Instantâneo';
+
+      // Formata datas de AAAA-MM-DD para DD/MM/AAAA se necessário
+      if (checkin.includes('-')) checkin = checkin.split('-').reverse().join('/');
+      if (checkout.includes('-')) checkout = checkout.split('-').reverse().join('/');
+
+      // Preenchimento dos campos no ticket
+      document.getElementById('resCode').textContent = codigo;
+      document.getElementById('resPlayer').textContent = hospede;
+      document.getElementById('resRoom').textContent = quarto;
+      document.getElementById('resCheckin').textContent = checkin;
+      document.getElementById('resCheckout').textContent = checkout;
+      document.getElementById('resTotal').textContent = total;
+      document.getElementById('resMethod').textContent = metodo;
+
+      // 2. GERAÇÃO DO QR CODE DE CHECK-IN DINÂMICO
+      // O QR Code carrega as informações do voucher para leitura direta do concierge
+      const qrData = `NEXUS-INN|CHECKIN:${codigo}|PLAYER:${hospede}|QUARTO:${quarto}|ENTRADA:${checkin}|STATUS:CONFIRMADO`;
+      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&margin=8&data=${encodeURIComponent(qrData)}`;
+      document.getElementById('ticketQrImg').src = qrUrl;
+
+      // 3. SALVA A RESERVA NO HISTÓRICO DO NAVEGADOR (localStorage)
+      try {
+        const reservations = JSON.parse(localStorage.getItem('nexus_reservations') || '[]');
+        reservations.unshift({
+          codigo,
+          hospede,
+          quarto,
+          checkin,
+          checkout,
+          total,
+          metodo,
+          dataCriacao: new Date().toLocaleDateString('pt-BR')
         });
-    </script>
+        localStorage.setItem('nexus_reservations', JSON.stringify(reservations));
+      } catch(e) {}
+    });
+  </script>
 </body>
-
 </html>
