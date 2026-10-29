@@ -96,19 +96,18 @@
 
       <!-- CANHOTO DESTACÁVEL COM QR CODE REAL -->
       <div class="ticket-stub">
-        <span class="stub-title">FAST CHECK-IN</span>
-        <div class="qr-code-ticket">
-          <img 
-            id="ticketQrImg" 
-            src="" 
-            alt="QR Code de Check-in Nexus Inn"
-            style="width: 140px; height: 140px; border-radius: 4px; display: block;"
-          >
+        <span class="stub-title">CHECK-IN RÁPIDO</span>
+        <div class="qr-code-ticket" style="display: flex; justify-content: center; align-items: center; min-height: 130px; background: #090a10; padding: 8px; border-radius: 6px; border: 1px solid var(--border-glow);">
+          <img id="qrCodeImg"
+               src="https://api.qrserver.com/v1/create-qr-code/?size=130x130&margin=4&color=00f0ff&bgcolor=090a10&data=NX-RESERVA" 
+               alt="QR Code de Check-in Nexus Inn"
+               width="130" 
+               height="130"
+               style="display: block; border-radius: 4px;"
+               loading="eager">
         </div>
-        <span class="scan-hint">Apresente na recepção</span>
+        <span class="scan-hint" style="margin-top: 10px; font-size: 0.8rem; color: var(--neon-cyan);">Apresente na recepção</span>
       </div>
-
-    </div>
 
     <!-- BOTÕES DE AÇÃO (OCULTOS NA IMPRESSÃO) -->
     <div class="confirmation-actions no-print">
@@ -128,12 +127,11 @@
     </div>
   </footer>
 
-  <script>
-  // 1. RESGATE DE DADOS ENVIADOS PELA TELA DE PAGAMENTO
+<script>
     document.addEventListener('DOMContentLoaded', () => {
+      // 1. RESGATE DE DADOS ENVIADOS PELA TELA DE PAGAMENTO / URL
       const params = new URLSearchParams(window.location.search);
-      
-      // Resgata o nome via parâmetro de URL ou pela sessão do localStorage
+
       let hospede = params.get('hospede');
       if (!hospede || hospede === 'Player Convidado') {
         const currentUserRaw = localStorage.getItem('nexus_current_user');
@@ -152,30 +150,44 @@
       const total = params.get('total') || 'R$ 260,00';
       const metodo = params.get('metodo') || 'PIX Instantâneo';
 
-      // Formatação de data visual (DD/MM/AAAA)
       const formatDate = (d) => (d && d.includes('-')) ? d.split('-').reverse().join('/') : d;
 
-      document.getElementById('resCode').textContent = codigo;
-      document.querySelector('.ticket-col .val').textContent = hospede || 'Player VIP';
-      document.getElementById('resRoom').textContent = quarto;
-      document.getElementById('resCheckin').textContent = formatDate(checkin);
-      document.getElementById('resCheckout').textContent = formatDate(checkout);
-      document.getElementById('resTotal').textContent = total;
-      document.getElementById('resMethod').textContent = metodo;
-    });
+      // Injeção visual nos campos do voucher
+      const resCodeEl = document.getElementById('resCode');
+      if (resCodeEl) resCodeEl.textContent = codigo;
 
-      // 2. GERAÇÃO DO QR CODE DE CHECK-IN DINÂMICO
-      // O QR Code carrega as informações do voucher para leitura direta do concierge
-      const qrData = `NEXUS-INN|CHECKIN:${codigo}|PLAYER:${hospede}|QUARTO:${quarto}|ENTRADA:${checkin}|STATUS:CONFIRMADO`;
-      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&margin=8&data=${encodeURIComponent(qrData)}`;
-      document.getElementById('ticketQrImg').src = qrUrl;
+      const guestEl = document.querySelector('.ticket-col .val');
+      if (guestEl) guestEl.textContent = hospede || 'Player VIP';
 
-      // 3. SALVA A RESERVA NO HISTÓRICO DO NAVEGADOR (localStorage)
+      const roomEl = document.getElementById('resRoom');
+      if (roomEl) roomEl.textContent = quarto;
+
+      const checkinEl = document.getElementById('resCheckin');
+      if (checkinEl) checkinEl.textContent = formatDate(checkin);
+
+      const checkoutEl = document.getElementById('resCheckout');
+      if (checkoutEl) checkoutEl.textContent = formatDate(checkout);
+
+      const totalEl = document.getElementById('resTotal');
+      if (totalEl) totalEl.textContent = total;
+
+      const methodEl = document.getElementById('resMethod');
+      if (methodEl) methodEl.textContent = metodo;
+
+      // 2. GERAÇÃO DINÂMICA DO QR CODE TEMÁTICO
+      // Compatível tanto com id="qrCodeImg" quanto com id="ticketQrImg"
+      const qrEl = document.getElementById('qrCodeImg') || document.getElementById('ticketQrImg');
+      if (qrEl) {
+        const qrData = `NEXUS-INN|CHECKIN:${codigo}|PLAYER:${hospede || 'VIP'}|QUARTO:${quarto}|ENTRADA:${checkin}|STATUS:CONFIRMADO`;
+        qrEl.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&margin=4&color=00f0ff&bgcolor=090a10&data=${encodeURIComponent(qrData)}`;
+      }
+
+      // 3. BACKUP DA RESERVA NO HISTÓRICO LOCAL DO NAVEGADOR
       try {
         const reservations = JSON.parse(localStorage.getItem('nexus_reservations') || '[]');
         reservations.unshift({
           codigo,
-          hospede,
+          hospede: hospede || 'Player VIP',
           quarto,
           checkin,
           checkout,
@@ -184,8 +196,10 @@
           dataCriacao: new Date().toLocaleDateString('pt-BR')
         });
         localStorage.setItem('nexus_reservations', JSON.stringify(reservations));
-      } catch(e) {}
-    
+      } catch (e) {
+        console.warn('Falha ao salvar backup local:', e);
+      }
+    });
   </script>
 <!-- SDK Oficial do Supabase -->
   <script defer src="../supabase-sdk.js"></script>
