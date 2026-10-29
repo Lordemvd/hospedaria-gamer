@@ -5,11 +5,19 @@
 const SUPABASE_URL = 'https://jccjjyvryepfnrenqhbi.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_0zpUzcOfgIlHxhgDtShkpQ_G7xGOHxH';
 
-// Inicializa o cliente Supabase via CDN
-const supabaseClient = (typeof window !== 'undefined' && window.supabase) 
-  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) 
-  : null;
+let supabaseClient = null;
 
+// Garante que o cliente seja criado mesmo se a CDN carregar com atraso
+function getSupabaseClient() {
+  if (supabaseClient) return supabaseClient;
+  if (typeof window !== 'undefined' && window.supabase && window.supabase.createClient) {
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    return supabaseClient;
+  }
+  return null;
+}
+
+getSupabaseClient();
 // ==========================================
 // FUNÇÕES DE PERSISTÊNCIA EM BANCO DE DADOS
 // ==========================================
@@ -158,8 +166,10 @@ async function checkRoomAvailability(roomId, checkinStr, checkoutStr) {
 
 // 5. Registar novo utilizador no banco de dados
 async function registerUserInDB(userData) {
-  if (!supabaseClient) {
-    return { success: false, message: 'Supabase não conectado.' };
+  const client = getSupabaseClient(); // Garante a reconexão em tempo real
+  
+  if (!client) {
+    return { success: false, message: 'Supabase não conectado. Verifique se o SDK foi carregado.' };
   }
 
   const cleanEmail = userData.email.trim().toLowerCase();
@@ -167,7 +177,7 @@ async function registerUserInDB(userData) {
 
   try {
     // 1. Verifica se o e-mail já existe
-    const { data: emailMatch, error: emailErr } = await supabaseClient
+    const { data: emailMatch, error: emailErr } = await client
       .from('users')
       .select('id')
       .ilike('email', cleanEmail)
@@ -180,7 +190,7 @@ async function registerUserInDB(userData) {
     }
 
     // 2. Verifica se a GamerTag já existe
-    const { data: tagMatch, error: tagErr } = await supabaseClient
+    const { data: tagMatch, error: tagErr } = await client
       .from('users')
       .select('id')
       .ilike('gamer_tag', cleanTag)
@@ -193,7 +203,7 @@ async function registerUserInDB(userData) {
     }
 
     // 3. Insere o novo usuário com papel comum ('user')
-    const { data, error } = await supabaseClient
+    const { data, error } = await client
       .from('users')
       .insert([
         {
@@ -216,8 +226,10 @@ async function registerUserInDB(userData) {
 
 // 6. Iniciar sessão validando no PostgreSQL
 async function loginUserInDB(identifier, password) {
-  if (!supabaseClient) {
-    return { success: false, message: 'Supabase não conectado.' };
+  const client = getSupabaseClient(); // Garante a reconexão em tempo real
+
+  if (!client) {
+    return { success: false, message: 'Supabase não conectado. Verifique se o SDK foi carregado.' };
   }
 
   const cleanId = identifier.trim();
