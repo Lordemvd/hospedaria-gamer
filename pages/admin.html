@@ -17,7 +17,7 @@
 
 <style>
     /* ==========================================================================
-       PAINEL ADMINISTRATIVO (pages/admin.html) - CORREÇÃO DE EIXOS & NAVBAR
+       PAINEL ADMINISTRATIVO (pages/admin.html) - ALINHAMENTO MILIMÉTRICO
        ========================================================================== */
     .admin-body {
       background-color: #07080c;
@@ -27,7 +27,7 @@
       flex-direction: column;
     }
 
-    /* 1. NAVBAR FIXA & ALINHAMENTO HORIZONTAL DOS BOTÕES */
+    /* 1. NAVBAR: ALINHAMENTO E EIXO VERTICAL RENTE DOS BOTÕES */
     .navbar {
       position: fixed !important;
       top: 0 !important;
@@ -67,33 +67,46 @@
       box-shadow: 0 0 10px rgba(255, 0, 127, 0.25);
     }
 
-    /* Alinhamento de Página Principal + Botão Sair no mesmo centro */
+    /* Ambos os itens da direita trancados na mesma linha central */
     .navbar .nav-links {
       display: flex !important;
       align-items: center !important;
-      gap: 20px !important;
+      gap: 16px !important;
       margin: 0 !important;
+      height: 100% !important;
     }
 
+    /* Transforma Página Principal em botão alinhado com Sair */
     .navbar .nav-links a {
-      color: #e2e8f0;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 0.95rem;
-      line-height: 1;
-      display: inline-flex;
-      align-items: center;
-      transition: color 0.2s ease;
+      height: 38px !important;
+      padding: 0 16px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      color: #e2e8f0 !important;
+      text-decoration: none !important;
+      font-family: var(--font-body, 'Rajdhani', sans-serif) !important;
+      font-size: 0.95rem !important;
+      font-weight: 600 !important;
+      border-radius: 4px !important;
+      border: 1px solid transparent !important;
+      box-sizing: border-box !important;
+      transition: all 0.2s ease !important;
     }
 
     .navbar .nav-links a:hover {
-      color: #00f0ff;
+      color: #00f0ff !important;
+      background: rgba(0, 240, 255, 0.08) !important;
+      border-color: rgba(0, 240, 255, 0.25) !important;
     }
 
     .navbar .nav-links button,
     .btn-logout {
       height: 38px !important;
       padding: 0 16px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
       background: #0d0f18 !important;
       border: 1px solid rgba(255, 255, 255, 0.15) !important;
       color: #ffffff !important;
@@ -102,9 +115,7 @@
       font-size: 0.95rem !important;
       font-weight: 600 !important;
       cursor: pointer !important;
-      display: inline-flex !important;
-      align-items: center !important;
-      justify-content: center !important;
+      box-sizing: border-box !important;
       transition: all 0.2s ease !important;
     }
 
@@ -115,24 +126,30 @@
       box-shadow: 0 0 10px rgba(255, 42, 85, 0.3) !important;
     }
 
-    /* 2. ESPAÇAMENTO DO CONTAINER (ELIMINA A SOBREPOSIÇÃO) */
+    /* 2. ESPAÇAMENTO DO CONTAINER */
     .admin-container {
       max-width: 1280px;
       margin: 0 auto;
-      padding: 105px 20px 40px 20px !important; /* 75px da navbar + 30px de respiro */
+      padding: 105px 20px 40px 20px !important;
       width: 100%;
       flex: 1;
     }
 
-    /* 3. CABEÇALHO OPERACIONAL: TÍTULO E ATUALIZAR DADOS NIVELADOS */
+    /* 3. CABEÇALHO OPERACIONAL: TÍTULO E BOTÃO NA MESMA LINHA DE BASE */
     .admin-header {
       display: flex !important;
       justify-content: space-between !important;
-      align-items: center !important;
+      align-items: flex-end !important; /* Alinha o botão pela base do título */
       margin-bottom: 25px !important;
       border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
-      padding-bottom: 16px !important;
+      padding-bottom: 14px !important;
       width: 100% !important;
+    }
+
+    .admin-title-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
     }
 
     .admin-header h1 {
@@ -144,7 +161,7 @@
       line-height: 1 !important;
     }
 
-    /* Botão Atualizar Dados no mesmo eixo horizontal */
+    /* Botão Atualizar Dados nivelado com o título */
     .admin-header button,
     #btnRefresh,
     .btn-refresh {
@@ -160,11 +177,13 @@
       color: #00f0ff !important;
       border-radius: 6px !important;
       font-family: var(--font-display, 'Orbitron', sans-serif) !important;
-      font-size: 0.85rem !important;
+      font-size: 0.82rem !important;
       font-weight: 700 !important;
+      letter-spacing: 0.5px !important;
       cursor: pointer !important;
       box-shadow: 0 0 10px rgba(0, 240, 255, 0.2) !important;
       transition: all 0.25s ease !important;
+      box-sizing: border-box !important;
     }
 
     .admin-header button:hover,
@@ -236,6 +255,9 @@
       padding: 8px 16px;
       border-radius: 4px;
       cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
       transition: all 0.2s ease;
     }
 
@@ -245,7 +267,7 @@
       border-color: rgba(0, 240, 255, 0.25);
     }
 
-    /* 6. BARRA DE FILTROS (BUSCA + SELECT) RENTE A 48PX */
+    /* 6. BARRA DE FILTROS: NIVELAMENTO RENTE A 48PX */
     .table-controls {
       display: flex !important;
       align-items: stretch !important;
