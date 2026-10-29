@@ -669,39 +669,56 @@
         `).join('');
       }
 
-// 5. Renderizar Tabela da Fila de Espera (Waitlist Drops)
+// 5. Renderizar Tabela da Fila de Espera (Resiliente e com Auto-deteção)
       function renderizarWaitlist() {
-        const tbodyFila = document.getElementById('tbodyFila');
-        if (!tbodyFila) return;
+        // Procura pelo ID direto ou pela segunda tabela da página
+        const targetBody = document.getElementById('tbodyFila') || 
+                           document.getElementById('tbodyWaitlist') || 
+                           document.querySelector('#tabFila tbody') ||
+                           document.querySelectorAll('.admin-table tbody')[1];
 
-        if (!allWaitlistData || allWaitlistData.length === 0) {
-          tbodyFila.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 25px; color: var(--text-muted);">Fila de espera vazia no momento.</td></tr>';
+        if (!targetBody) {
+          console.warn('Elemento tbody da fila não encontrado no DOM.');
           return;
         }
 
-        const formatDt = (d) => (d && d.includes('-')) ? d.split('-').reverse().join('/') : (d || '-');
+        if (!allWaitlistData || allWaitlistData.length === 0) {
+          targetBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 25px; color: var(--text-muted);">Fila de espera vazia no momento.</td></tr>';
+          return;
+        }
 
-        tbodyFila.innerHTML = allWaitlistData.map((item, idx) => {
-          const shortId = item.id ? item.id.substring(0, 8).toUpperCase() : `WL-0${idx + 1}`;
-          const contato = item.contact || item.contato || 'Sem contacto';
-          const quarto = item.room_name || item.quarto || 'Acomodação Gamer';
-          const checkin = item.check_in || item.checkin;
-          const checkout = item.check_out || item.checkout;
-          const periodo = (checkin && checkout) ? `${formatDt(checkin)} até ${formatDt(checkout)}` : 'Período flexível';
-          const dataReg = item.created_at ? new Date(item.created_at).toLocaleString('pt-BR') : (item.dataRegistro || '-');
+        const formatDataBR = (str) => {
+          if (!str) return '-';
+          if (str.includes('-')) return str.split('-').reverse().join('/');
+          return str;
+        };
 
-          return `
-            <tr>
-              <td><strong style="color: var(--neon-cyan); font-family: var(--font-display);">${shortId}</strong></td>
-              <td><strong>${contato}</strong></td>
-              <td>${quarto}</td>
-              <td>${periodo}</td>
-              <td style="color: var(--text-muted); font-size: 0.85rem;">${dataReg}</td>
-            </tr>
-          `;
-        }).join('');
+        try {
+          targetBody.innerHTML = allWaitlistData.map((item, idx) => {
+            const shortId = item.id ? String(item.id).substring(0, 8).toUpperCase() : `WL-0${idx + 1}`;
+            const contato = item.contact || item.contato || 'Sem contacto';
+            const quarto = item.room_name || item.quarto || 'Acomodação Gamer';
+            const checkin = item.check_in || item.checkin;
+            const checkout = item.check_out || item.checkout;
+            const periodo = (checkin && checkout) ? `${formatDataBR(checkin)} até ${formatDataBR(checkout)}` : 'Período flexível';
+            const dataReg = item.created_at ? new Date(item.created_at).toLocaleString('pt-BR') : (item.dataRegistro || '-');
+
+            return `
+              <tr>
+                <td><strong style="color: var(--neon-cyan); font-family: var(--font-display);">${shortId}</strong></td>
+                <td><strong>${contato}</strong></td>
+                <td>${quarto}</td>
+                <td>${periodo}</td>
+                <td style="color: var(--text-muted); font-size: 0.85rem;">${dataReg}</td>
+              </tr>
+            `;
+          }).join('');
+        } catch (err) {
+          console.error('Erro na renderização das linhas da fila:', err);
+          targetBody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 20px; color: #ff2a55;">Erro ao processar itens: ${err.message}</td></tr>`;
+        }
       }
-      
+
       // 6. Ação de Cancelamento
        window.cancelarReserva = async (code) => {
         if (!confirm(`Deseja realmente cancelar a reserva ${code}? O quarto será liberado no banco de dados.`)) {
@@ -723,24 +740,27 @@
       filterStatus.addEventListener('change', renderizarReservas);
       btnRefresh.addEventListener('click', carregarPainel);
 
-      // Alternância de Abas
-      const tabReservas = document.getElementById('tabReservas');
-      const tabWaitlist = document.getElementById('tabWaitlist');
-      const secReservas = document.getElementById('sectionReservas');
-      const secWaitlist = document.getElementById('sectionWaitlist');
+      // Alternância de Abas Operacionais
+      const tabBtns = document.querySelectorAll('.admin-tab-btn');
+      tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          tabBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
 
-      tabReservas.addEventListener('click', () => {
-        tabReservas.classList.add('active');
-        tabWaitlist.classList.remove('active');
-        secReservas.style.display = 'block';
-        secWaitlist.style.display = 'none';
-      });
+          const isFila = btn.textContent.includes('Fila') || btn.getAttribute('data-tab') === 'fila';
+          
+          const viewReservas = document.getElementById('viewReservas') || document.getElementById('tabReservas');
+          const viewFila = document.getElementById('viewFila') || document.getElementById('tabFila');
 
-      tabWaitlist.addEventListener('click', () => {
-        tabWaitlist.classList.add('active');
-        tabReservas.classList.remove('active');
-        secWaitlist.style.display = 'block';
-        secReservas.style.display = 'none';
+          if (viewReservas && viewFila) {
+            viewReservas.style.display = isFila ? 'none' : 'block';
+            viewFila.style.display = isFila ? 'block' : 'none';
+          }
+
+          if (isFila) {
+            renderizarWaitlist(); // Garante a atualização imediata ao abrir a aba
+          }
+        });
       });
 
       // Inicialização
