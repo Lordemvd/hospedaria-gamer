@@ -94,35 +94,37 @@ async function saveWaitlistToDB(waitlistData) {
 }
 
 // 3. Consultar Reservas por GamerTag ou Código de Reserva
-async function fetchUserReservations(query) {
-  if (!supabaseClient) {
-    console.warn('Supabase não conectado.');
+async function fetchUserReservations(searchTerm) {
+  const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : supabaseClient;
+  
+  if (!client) {
     return { success: false, data: [] };
   }
 
-  const cleanQuery = query.trim();
-
   try {
-    let request = supabaseClient
+    const cleanTerm = searchTerm.trim();
+
+    // Busca tanto pelo código NX quanto pela GamerTag (guest_name)
+    const { data, error } = await client
       .from('reservations')
       .select('*')
+      .or(`guest_name.ilike.%${cleanTerm}%,reservation_code.ilike.%${cleanTerm}%`)
       .order('created_at', { ascending: false });
 
-    if (cleanQuery.toUpperCase().startsWith('NX-')) {
-      request = request.eq('reservation_code', cleanQuery.toUpperCase());
-    } else {
-      request = request.ilike('guest_name', `%${cleanQuery}%`);
-    }
-
-    const { data, error } = await request;
-
     if (error) throw error;
-    return { success: true, data };
+
+    return {
+      success: true,
+      data: data || []
+    };
   } catch (err) {
     console.error('Erro ao buscar reservas no Supabase:', err.message);
     return { success: false, error: err.message, data: [] };
   }
 }
+
+// Garante visibilidade no escopo global
+window.fetchUserReservations = fetchUserReservations;
 
 // 4. Verificar Disponibilidade Real de Quarto (Anti-Overbooking)
 async function checkRoomAvailability(roomId, checkinStr, checkoutStr) {
