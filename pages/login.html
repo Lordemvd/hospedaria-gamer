@@ -5,14 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nexus Inn | Login do Jogador</title>
   <link rel="stylesheet" href="../style.css">
-  <!-- SDK Oficial do Supabase -->
-  <!-- NOSONAR -->
-  <script defer src="../supabase-sdk.js"></script>
-  <script defer src="../supabase.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%AE%3C/text%3E%3C/svg%3E">
+
+  <!-- SDK Oficial do Supabase + Arquivo de Conexão -->
+  <!-- NOSONAR -->
+  <script defer src="../supabase-sdk.js"></script>
+  <script defer src="../supabase.js"></script>
 </head>
 <body class="auth-page-body">
 
@@ -35,25 +36,24 @@
         <p class="auth-subtitle">Acesse suas reservas, histórico de estadias e pedidos do bar.</p>
       </div>
 
-      <div id="loginFeedback" style="display: none; padding: 10px; margin-bottom: 16px; border-radius: 4px; font-size: 0.9rem; text-align: center;"></div>
-
       <form id="loginForm" class="auth-form">
         <div class="form-group">
           <label for="loginEmail">E-mail ou GamerTag</label>
-          <input type="text" id="loginEmail" placeholder="player@nexusinn.com ou GamerTag" required>
+          <input type="text" id="loginEmail" placeholder="player@nexusinn.com ou GamerTag" required autocomplete="username">
         </div>
 
         <div class="form-group">
-          <div class="label-with-link">
-            <label for="loginPass">Senha</label>
-          </div>
-          <div class="input-password-wrapper">
-            <input type="password" id="loginPass" placeholder="••••••••" required>
-            <button type="button" class="toggle-pass-btn" id="togglePassBtn" aria-label="Mostrar ou ocultar senha">👁</button>
+          <label for="loginPass">Senha</label>
+          <div class="input-password-wrapper" style="position: relative; display: flex; align-items: center;">
+            <input type="password" id="loginPass" placeholder="••••••••" required autocomplete="current-password" style="width: 100%; padding-right: 40px;">
+            <button type="button" id="btnTogglePass" class="toggle-pass-btn" style="position: absolute; right: 12px; background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 1.1rem;" aria-label="Alternar visibilidade da senha">👁</button>
           </div>
         </div>
 
-        <button type="submit" class="btn-primary btn-full-width">Iniciar Sessão</button>
+        <!-- Mensagem de feedback/erro -->
+        <div id="loginErrorMsg" style="display: none; color: #ff6b8b; text-align: center; font-size: 0.9rem; margin-top: 10px; font-family: var(--font-display);"></div>
+
+        <button type="submit" id="btnLoginSubmit" class="btn-primary btn-full-width" style="margin-top: 16px;">Iniciar Sessão</button>
       </form>
 
       <div class="auth-card-footer">
@@ -62,46 +62,97 @@
     </div>
   </main>
 
-  <script src="../auth.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
+      // 1. Alternador da visibilidade da senha
+      const passInput = document.getElementById('loginPass');
+      const btnToggle = document.getElementById('btnTogglePass');
+
+      if (btnToggle && passInput) {
+        btnToggle.addEventListener('click', () => {
+          if (passInput.type === 'password') {
+            passInput.type = 'text';
+            btnToggle.style.color = 'var(--neon-cyan)';
+          } else {
+            passInput.type = 'password';
+            btnToggle.style.color = 'var(--text-muted)';
+          }
+        });
+      }
+
+      // 2. Processamento do login com o Supabase
       const loginForm = document.getElementById('loginForm');
       const errorMsg = document.getElementById('loginErrorMsg');
-      const submitBtn = loginForm ? loginForm.querySelector('button[type="submit"]') : null;
+      const submitBtn = document.getElementById('btnLoginSubmit');
 
-      loginForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        errorMsg.style.display = 'none';
+      if (loginForm) {
+        loginForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
 
-        const identifier = document.getElementById('loginEmail').value.trim();
-        const password = document.getElementById('loginPass').value;
-
-        if (submitBtn) {
-          submitBtn.disabled = true;
-          submitBtn.textContent = 'Acessando setup...';
-        }
-
-        const result = await loginUserInDB(identifier, password);
-
-        if (!result.success) {
-          errorMsg.textContent = result.message;
-          errorMsg.style.display = 'block';
-          if (submitBtn) {
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Entrar no Setup';
+          if (errorMsg) {
+            errorMsg.style.display = 'none';
+            errorMsg.textContent = '';
           }
-          return;
-        }
 
-        // Registo da sessão ativa (com suporte ao perfil admin/user)
-        localStorage.setItem('nexus_current_user', JSON.stringify(result.user));
+          const identifier = document.getElementById('loginEmail').value.trim();
+          const password = passInput.value;
 
-        if (result.user.role === 'admin') {
-          alert(`Sessão de Administrador iniciada: Bem-vindo, ${result.user.gamerTag}!`);
-        }
+          if (!identifier || !password) return;
 
-        window.location.href = '../index.html';
-      });
+          if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Autenticando...';
+          }
+
+          try {
+            if (typeof loginUserInDB !== 'function') {
+              throw new Error('Script supabase.js não carregado ou função indisponível.');
+            }
+
+            const result = await loginUserInDB(identifier, password);
+
+            if (!result.success) {
+              if (errorMsg) {
+                errorMsg.textContent = result.message || 'Usuário ou senha inválidos.';
+                errorMsg.style.display = 'block';
+              } else {
+                alert(result.message || 'Usuário ou senha inválidos.');
+              }
+
+              if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Iniciar Sessão';
+              }
+              return;
+            }
+
+            // Armazena a sessão com perfil (admin/user)
+            localStorage.setItem('nexus_current_user', JSON.stringify(result.user));
+
+            if (result.user.role === 'admin') {
+              alert(`🛡️ Painel Master: Bem-vindo, Administrador ${result.user.gamerTag}!`);
+              window.location.href = 'admin.html';
+            } else {
+              alert(`🎮 Login confirmado: Bem-vindo, ${result.user.gamerTag}!`);
+              window.location.href = '../index.html';
+            }
+
+          } catch (err) {
+            console.error('Falha no login:', err);
+            if (errorMsg) {
+              errorMsg.textContent = err.message || 'Erro de conexão com o banco de dados.';
+              errorMsg.style.display = 'block';
+            } else {
+              alert(err.message || 'Erro de conexão.');
+            }
+
+            if (submitBtn) {
+              submitBtn.disabled = false;
+              submitBtn.textContent = 'Iniciar Sessão';
+            }
+          }
+        });
+      }
     });
   </script>
 </body>

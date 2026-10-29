@@ -210,27 +210,37 @@ async function loginUserInDB(identifier, password) {
     return { success: false, message: 'Supabase não conectado.' };
   }
 
-  const cleanId = identifier.trim().toLowerCase();
+  const cleanId = identifier.trim();
 
   try {
-    // Procura por email ou GamerTag
-    const { data, error } = await supabaseClient
+    let query = supabaseClient
       .from('users')
-      .select('id, full_name, gamer_tag, email, password, role')
-      .or(`email.ilike.${cleanId},gamer_tag.ilike.${cleanId}`)
-      .limit(1);
+      .select('id, full_name, gamer_tag, email, password, role');
 
-    if (error) throw error;
+    // Se possui @ busca pelo e-mail, caso contrário busca pela GamerTag
+    if (cleanId.includes('@')) {
+      query = query.ilike('email', cleanId.toLowerCase());
+    } else {
+      query = query.ilike('gamer_tag', cleanId);
+    }
+
+    const { data, error } = await query.limit(1);
+
+    if (error) {
+      if (error.code === '42P01') {
+        return { success: false, message: 'A tabela "users" ainda não foi criada no SQL Editor do Supabase.' };
+      }
+      throw error;
+    }
 
     if (!data || data.length === 0) {
-      return { success: false, message: 'Usuário ou senha inválidos.' };
+      return { success: false, message: 'E-mail ou GamerTag não encontrados.' };
     }
 
     const user = data[0];
 
-    // Validação de credencial
     if (user.password !== password) {
-      return { success: false, message: 'Usuário ou senha inválidos.' };
+      return { success: false, message: 'Senha incorreta.' };
     }
 
     return {
@@ -245,7 +255,7 @@ async function loginUserInDB(identifier, password) {
     };
   } catch (err) {
     console.error('Erro na autenticação:', err.message);
-    return { success: false, message: 'Falha ao autenticar no servidor.' };
+    return { success: false, message: 'Falha ao autenticar no servidor: ' + err.message };
   }
 }
 
