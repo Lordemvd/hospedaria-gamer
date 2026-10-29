@@ -307,26 +307,32 @@ async function fetchAllReservations() {
   }
 }
 
-// 8. Atualizar status de uma reserva (ex: 'CANCELADA', 'CONFIRMADA')
-async function updateReservationStatus(id, newStatus) {
-  if (!supabaseClient) {
-    return { success: false };
+// 8. Atualizar status de uma reserva (cancelamento pelo Admin)
+async function updateReservationStatus(reservationCode, newStatus) {
+  const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : supabaseClient;
+
+  if (!client) {
+    return { success: false, message: 'Supabase não conectado.' };
   }
 
   try {
-    const { data, error } = await supabaseClient
+    const { data, error } = await client
       .from('reservations')
       .update({ status: newStatus })
-      .eq('id', id)
+      .eq('reservation_code', reservationCode.trim())
       .select();
 
     if (error) throw error;
+
     return { success: true, data };
   } catch (err) {
     console.error('Erro ao atualizar status da reserva:', err.message);
-    return { success: false, error: err.message };
+    return { success: false, message: err.message };
   }
 }
+
+// Vincula ao escopo global
+window.updateReservationStatus = updateReservationStatus;
 
 // 9. Buscar todos os registros da lista de espera
 async function fetchAllWaitlist() {
