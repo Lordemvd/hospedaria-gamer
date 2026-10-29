@@ -155,14 +155,31 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+// Configuração Flatpickr para o Hero da Home
   if (typeof flatpickr !== 'undefined') {
-    flatpickr("input[type='date']", {
+    const fpCheckout = flatpickr("#checkout", {
       locale: "pt",
       dateFormat: "Y-m-d",
       altInput: true,
       altFormat: "d/m/Y",
       minDate: "today",
       disableMobile: true
+    });
+
+    flatpickr("#checkin", {
+      locale: "pt",
+      dateFormat: "Y-m-d",
+      altInput: true,
+      altFormat: "d/m/Y",
+      minDate: "today",
+      disableMobile: true,
+      onChange: function(selectedDates, dateStr) {
+        if (selectedDates[0]) {
+          const nextDay = new Date(selectedDates[0]);
+          nextDay.setDate(nextDay.getDate() + 1);
+          fpCheckout.set('minDate', nextDay);
+        }
+      }
     });
   }
 

@@ -5,14 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nexus Inn | Reserva de Setup</title>
   <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%AE%3C/text%3E%3C/svg%3E">
 
-  <!-- Flatpickr (Calendário Customizável) -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
 
   <!-- SDK Oficial do Supabase + Arquivo de Conexão -->
   <!-- NOSONAR -->
@@ -340,8 +339,41 @@
         }
       });
     });
+    
+    // Inicialização Flatpickr na Tela de Reserva
+    if (typeof flatpickr !== 'undefined') {
+      const fpOut = flatpickr("#checkoutDate", {
+        locale: "pt",
+        dateFormat: "Y-m-d",
+        altInput: true,
+        altFormat: "d/m/Y",
+        minDate: "today",
+        disableMobile: true,
+        onChange: () => {
+          if (typeof calculateTotal === 'function') calculateTotal();
+        }
+      });
+
+      flatpickr("#checkinDate", {
+        locale: "pt",
+        dateFormat: "Y-m-d",
+        altInput: true,
+        altFormat: "d/m/Y",
+        minDate: "today",
+        disableMobile: true,
+        onChange: (selectedDates) => {
+          if (selectedDates[0]) {
+            const nextDay = new Date(selectedDates[0]);
+            nextDay.setDate(nextDay.getDate() + 1);
+            fpOut.set('minDate', nextDay);
+          }
+          if (typeof calculateTotal === 'function') calculateTotal();
+        }
+      });
+    }
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js" crossorigin="anonymous"></script>
+  
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
 </body>
 </html>
