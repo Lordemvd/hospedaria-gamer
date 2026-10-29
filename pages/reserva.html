@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nexus Inn | Reserva de Setup</title>
   <link rel="stylesheet" href="../style.css">
+<!-- Flatpickr Base + Tema Dark -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -61,11 +62,11 @@
           <div class="form-row-2">
             <div class="form-group">
               <label for="checkinDate">Data de Check-in</label>
-              <input type="date" id="checkinDate" required>
+              <input type="text" id="checkinDate" placeholder="Selecione a entrada" required readonly>
             </div>
             <div class="form-group">
               <label for="checkoutDate">Data de Check-out</label>
-              <input type="date" id="checkoutDate" required>
+              <input type="text" id="checkoutDate" placeholder="Selecione a saída" required readonly>
             </div>
           </div>
 
@@ -339,41 +340,65 @@
         }
       });
     });
-    
-    // Inicialização Flatpickr na Tela de Reserva
-    if (typeof flatpickr !== 'undefined') {
-      const fpOut = flatpickr("#checkoutDate", {
-        locale: "pt",
-        dateFormat: "Y-m-d",
-        altInput: true,
-        altFormat: "d/m/Y",
-        minDate: "today",
-        disableMobile: true,
-        onChange: () => {
-          if (typeof calculateTotal === 'function') calculateTotal();
-        }
-      });
 
-      flatpickr("#checkinDate", {
-        locale: "pt",
-        dateFormat: "Y-m-d",
-        altInput: true,
-        altFormat: "d/m/Y",
-        minDate: "today",
-        disableMobile: true,
-        onChange: (selectedDates) => {
-          if (selectedDates[0]) {
-            const nextDay = new Date(selectedDates[0]);
-            nextDay.setDate(nextDay.getDate() + 1);
-            fpOut.set('minDate', nextDay);
-          }
-          if (typeof calculateTotal === 'function') calculateTotal();
-        }
-      });
-    }
   </script>
-  
+
+  <!-- Flatpickr Core & Tradução PT -->
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1. Instâncias Flatpickr Dark Neon integradas ao cálculo dinâmico
+      let fpOut, fpIn;
+
+      if (typeof flatpickr !== 'undefined') {
+        fpOut = flatpickr("#checkoutDate", {
+          locale: "pt",
+          dateFormat: "Y-m-d",
+          altInput: true,
+          altFormat: "d/m/Y",
+          minDate: "today",
+          disableMobile: true,
+          onChange: () => {
+            if (typeof calculateTotal === 'function') calculateTotal();
+          }
+        });
+
+        fpIn = flatpickr("#checkinDate", {
+          locale: "pt",
+          dateFormat: "Y-m-d",
+          altInput: true,
+          altFormat: "d/m/Y",
+          minDate: "today",
+          disableMobile: true,
+          onChange: (selectedDates) => {
+            if (selectedDates[0]) {
+              const nextDay = new Date(selectedDates[0]);
+              nextDay.setDate(nextDay.getDate() + 1);
+              fpOut.set('minDate', nextDay);
+              
+              // Se o checkout for anterior ao novo checkin, avança 1 dia
+              if (fpOut.selectedDates[0] && fpOut.selectedDates[0] <= selectedDates[0]) {
+                fpOut.setDate(nextDay);
+              }
+            }
+            if (typeof calculateTotal === 'function') calculateTotal();
+          }
+        });
+      }
+
+      // 2. Leitura de parâmetros da URL (caso venha da Home)
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlIn = urlParams.get('checkin');
+      const urlOut = urlParams.get('checkout');
+
+      if (urlIn && fpIn) fpIn.setDate(urlIn);
+      if (urlOut && fpOut) fpOut.setDate(urlOut);
+
+      // Dispara o cálculo inicial
+      if (typeof calculateTotal === 'function') calculateTotal();
+    });
+  </script>
 </body>
 </html>
