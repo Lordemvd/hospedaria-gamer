@@ -19,222 +19,108 @@
     /* ==========================================================================
        PAINEL ADMINISTRATIVO (pages/admin.html) - ALINHAMENTO MILIMÉTRICO
        ========================================================================== */
-    .admin-body {
-      background-color: #07080c;
-      color: #e2e8f0;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* 1. NAVBAR: ALINHAMENTO E EIXO VERTICAL RENTE DOS BOTÕES */
-    .navbar {
-      position: fixed !important;
-      top: 0 !important;
-      left: 0 !important;
-      width: 100% !important;
-      height: 75px !important;
-      display: flex !important;
-      align-items: center !important;
-      justify-content: space-between !important;
-      padding: 0 5% !important;
-      background: rgba(7, 8, 12, 0.95) !important;
-      backdrop-filter: blur(14px) !important;
-      border-bottom: 1px solid rgba(0, 240, 255, 0.15) !important;
-      z-index: 1000 !important;
-    }
-
-    .navbar .logo {
-      display: inline-flex !important;
-      align-items: center !important;
-      gap: 12px !important;
-      font-family: var(--font-display, 'Orbitron', sans-serif);
-      font-size: 1.6rem;
-      font-weight: 900;
-      color: #ffffff;
-      margin: 0;
-    }
-
-    .badge-master,
-    .navbar .badge {
-      font-family: var(--font-display, 'Orbitron', sans-serif);
-      font-size: 0.72rem;
-      letter-spacing: 1px;
-      color: #ff007f;
-      border: 1px solid #ff007f;
-      padding: 3px 10px;
-      border-radius: 4px;
-      box-shadow: 0 0 10px rgba(255, 0, 127, 0.25);
-    }
-
-    /* Ambos os itens da direita trancados na mesma linha central */
-    .navbar .nav-links {
-      display: flex !important;
-      align-items: center !important;
-      gap: 16px !important;
-      margin: 0 !important;
-      height: 100% !important;
-    }
-
-    /* Transforma Página Principal em botão alinhado com Sair */
-    .navbar .nav-links a {
-      height: 38px !important;
-      padding: 0 16px !important;
-      display: inline-flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      color: #e2e8f0 !important;
-      text-decoration: none !important;
-      font-family: var(--font-body, 'Rajdhani', sans-serif) !important;
-      font-size: 0.95rem !important;
-      font-weight: 600 !important;
-      border-radius: 4px !important;
-      border: 1px solid transparent !important;
-      box-sizing: border-box !important;
-      transition: all 0.2s ease !important;
-    }
-
-    .navbar .nav-links a:hover {
-      color: #00f0ff !important;
-      background: rgba(0, 240, 255, 0.08) !important;
-      border-color: rgba(0, 240, 255, 0.25) !important;
-    }
-
-    .navbar .nav-links button,
-    .btn-logout {
-      height: 38px !important;
-      padding: 0 16px !important;
-      display: inline-flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      background: #0d0f18 !important;
-      border: 1px solid rgba(255, 255, 255, 0.15) !important;
-      color: #ffffff !important;
-      border-radius: 4px !important;
-      font-family: var(--font-body, 'Rajdhani', sans-serif) !important;
-      font-size: 0.95rem !important;
-      font-weight: 600 !important;
-      cursor: pointer !important;
-      box-sizing: border-box !important;
-      transition: all 0.2s ease !important;
-    }
-
-    .navbar .nav-links button:hover,
-    .btn-logout:hover {
-      border-color: #ff2a55 !important;
-      color: #ff2a55 !important;
-      box-shadow: 0 0 10px rgba(255, 42, 85, 0.3) !important;
-    }
-
-    /* 2. ESPAÇAMENTO DO CONTAINER */
-    .admin-container {
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 105px 20px 40px 20px !important;
+.admin-table {
       width: 100%;
-      flex: 1;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.92rem;
     }
 
-    /* 3. CABEÇALHO OPERACIONAL: TÍTULO E BOTÃO NA MESMA LINHA DE BASE */
-    .admin-header {
-      display: flex !important;
-      justify-content: space-between !important;
-      align-items: flex-end !important; /* Alinha o botão pela base do título */
-      margin-bottom: 25px !important;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
-      padding-bottom: 14px !important;
-      width: 100% !important;
+    .admin-table th {
+      background: rgba(255, 255, 255, 0.03);
+      padding: 14px 16px;
+      color: #94a3b8;
+      font-family: var(--font-display, 'Orbitron', sans-serif);
+      font-size: 0.8rem;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      white-space: nowrap;
     }
 
-    .admin-title-group {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
+    .admin-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: #cbd5e1;
+      vertical-align: middle !important; /* Trava alinhamento vertical no centro */
     }
 
-    .admin-header h1 {
-      font-family: var(--font-display, 'Orbitron', sans-serif) !important;
-      font-size: 1.85rem !important;
-      color: #ffffff !important;
-      letter-spacing: 1px !important;
-      margin: 0 !important;
-      line-height: 1 !important;
+    /* Centraliza os cabeçalhos e células de STATUS e AÇÕES */
+    .admin-table th:nth-child(7),
+    .admin-table td:nth-child(7),
+    .admin-table th:nth-child(8),
+    .admin-table td:nth-child(8) {
+      text-align: center !important;
     }
 
-    /* Botão Atualizar Dados nivelado com o título */
-    .admin-header button,
-    #btnRefresh,
-    .btn-refresh {
-      height: 42px !important;
-      padding: 0 18px !important;
+    /* ==========================================================================
+       PADRONIZAÇÃO COMUM (32PX): BADGES, BOTÕES E INATIVA
+       ========================================================================== */
+    .status-badge,
+    .btn-action-cancel,
+    .status-inativa,
+    .btn-action-inativa {
       display: inline-flex !important;
       align-items: center !important;
       justify-content: center !important;
-      gap: 8px !important;
-      margin: 0 !important;
-      background: transparent !important;
-      border: 1px solid #00f0ff !important;
-      color: #00f0ff !important;
-      border-radius: 6px !important;
-      font-family: var(--font-display, 'Orbitron', sans-serif) !important;
-      font-size: 0.82rem !important;
-      font-weight: 700 !important;
-      letter-spacing: 0.5px !important;
-      cursor: pointer !important;
-      box-shadow: 0 0 10px rgba(0, 240, 255, 0.2) !important;
-      transition: all 0.25s ease !important;
+      height: 32px !important;
+      min-height: 32px !important;
+      max-height: 32px !important;
+      padding: 0 14px !important;
       box-sizing: border-box !important;
+      margin: 0 !important;
+      border-radius: 4px !important;
+      font-family: var(--font-display, 'Orbitron', sans-serif) !important;
+      font-size: 0.74rem !important;
+      font-weight: 700 !important;
+      letter-spacing: 1px !important;
+      text-transform: uppercase !important;
+      line-height: 1 !important;
+      vertical-align: middle !important;
     }
 
-    .admin-header button:hover,
-    #btnRefresh:hover,
-    .btn-refresh:hover {
-      background: rgba(0, 240, 255, 0.12) !important;
-      box-shadow: 0 0 18px rgba(0, 240, 255, 0.45) !important;
+    /* 1. CONFIRMADA (Neon Azul Ciano) */
+    .status-badge.CONFIRMADA,
+    .status-badge.confirmada {
+      color: #00f0ff !important;
+      background: rgba(0, 240, 255, 0.1) !important;
+      border: 1px solid #00f0ff !important;
+      box-shadow: 0 0 12px rgba(0, 240, 255, 0.45) !important;
+      text-shadow: 0 0 6px rgba(0, 240, 255, 0.75) !important;
     }
 
-    /* 4. CARDS DE INDICADORES (KPIS) */
-    .kpi-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 16px;
-      margin-bottom: 30px;
+    /* 2. CANCELADA (Neon Vermelho) */
+    .status-badge.CANCELADA,
+    .status-badge.cancelada {
+      color: #ff2a55 !important;
+      background: rgba(255, 42, 85, 0.1) !important;
+      border: 1px solid #ff2a55 !important;
+      box-shadow: 0 0 12px rgba(255, 42, 85, 0.45) !important;
+      text-shadow: 0 0 6px rgba(255, 42, 85, 0.75) !important;
     }
 
-    .kpi-card {
-      background: #0d0f18;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 8px;
-      padding: 20px;
-      position: relative;
-      overflow: hidden;
+    /* 3. BOTÃO CANCELAR (Ativo) */
+    .btn-action-cancel {
+      background: transparent !important;
+      border: 1px solid rgba(255, 42, 85, 0.5) !important;
+      color: #ff2a55 !important;
+      cursor: pointer !important;
+      transition: all 0.2s ease !important;
     }
 
-    .kpi-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 4px;
-      height: 100%;
-      background: #00f0ff;
+    .btn-action-cancel:hover {
+      background: #ff2a55 !important;
+      color: #ffffff !important;
+      box-shadow: 0 0 12px rgba(255, 42, 85, 0.5) !important;
     }
 
-    .kpi-card.pink::before { background: #ff007f; }
-    .kpi-card.purple::before { background: #b026ff; }
-
-    .kpi-label {
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: #94a3b8;
-      margin-bottom: 6px;
-    }
-
-    .kpi-value {
-      font-family: var(--font-display, 'Orbitron', sans-serif);
-      font-size: 1.8rem;
-      color: #ffffff;
+    /* 4. AÇÃO INATIVA (Substitui o texto solto da linha cancelada) */
+    .status-inativa,
+    .btn-action-inativa {
+      background: rgba(255, 255, 255, 0.03) !important;
+      border: 1px dashed rgba(255, 255, 255, 0.18) !important;
+      color: #64748b !important;
+      cursor: not-allowed !important;
+      user-select: none !important;
     }
 
     /* 5. ABAS OPERACIONAIS */
@@ -605,8 +491,7 @@
 
         kpiFaturamento.textContent = `R$ ${totalFaturado.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
       }
-
-      // 4. Renderizar Tabela de Reservas com Filtro
+// 4. Renderizar Tabela de Reservas com Filtro
       function renderizarReservas() {
         const termo = searchInput.value.toLowerCase().trim();
         const statusFiltro = filterStatus.value;
@@ -641,7 +526,7 @@
                 <button type="button" class="btn-action-cancel" onclick="cancelarReserva('${r.reservation_code}')">
                   Cancelar
                 </button>
-              ` : '<span style="color: var(--text-muted); font-size: 0.8rem;">Inativa</span>'}
+              ` : '<span class="status-inativa">Inativa</span>'}
             </td>
           </tr>
         `).join('');
