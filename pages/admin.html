@@ -656,24 +656,39 @@
         `).join('');
       }
 
-      // 5. Renderizar Tabela da Fila de Espera
+      // 5. Renderizar Tabela da Fila de Espera (Waitlist Drops)
       function renderizarWaitlist() {
-        if (allWaitlistData.length === 0) {
-          tbodyWaitlist.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 25px; color: var(--text-muted);">Fila de espera vazia no momento.</td></tr>';
+        if (!tbodyFila) return;
+
+        if (!allWaitlistData || allWaitlistData.length === 0) {
+          tbodyFila.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 25px; color: var(--text-muted);">Fila de espera vazia no momento.</td></tr>';
           return;
         }
 
-        tbodyWaitlist.innerHTML = allWaitlistData.map((w, index) => `
-          <tr>
-            <td>#${index + 1}</td>
-            <td><strong style="color: var(--neon-cyan);">${w.contact}</strong></td>
-            <td>${w.room_name || 'Geral'}</td>
-            <td>${w.check_in || '-'} até ${w.check_out || '-'}</td>
-            <td>${w.created_at ? new Date(w.created_at).toLocaleDateString('pt-BR') : 'Recente'}</td>
-          </tr>
-        `).join('');
-      }
+        const formatDt = (d) => (d && d.includes('-')) ? d.split('-').reverse().join('/') : (d || '-');
 
+        tbodyFila.innerHTML = allWaitlistData.map((item, idx) => {
+          // Trata tanto ID uuid do Supabase quanto fallback local
+          const shortId = item.id ? item.id.substring(0, 8).toUpperCase() : `WL-0${idx + 1}`;
+          const contato = item.contact || item.contato || 'Sem contato';
+          const quarto = item.room_name || item.quarto || 'Acomodação Gamer';
+          const checkin = item.check_in || item.checkin;
+          const checkout = item.check_out || item.checkout;
+          const periodo = (checkin && checkout) ? `${formatDt(checkin)} até ${formatDt(checkout)}` : 'Período flexível';
+          const dataReg = item.created_at ? new Date(item.created_at).toLocaleString('pt-BR') : (item.dataRegistro || '-');
+
+          return `
+            <tr>
+              <td><strong style="color: var(--neon-cyan); font-family: var(--font-display);">${shortId}</strong></td>
+              <td><strong>${contato}</strong></td>
+              <td>${quarto}</td>
+              <td>${periodo}</td>
+              <td style="color: var(--text-muted); font-size: 0.85rem;">${dataReg}</td>
+            </tr>
+          `;
+        }).join('');
+      }
+      
       // 6. Ação de Cancelamento
        window.cancelarReserva = async (code) => {
         if (!confirm(`Deseja realmente cancelar a reserva ${code}? O quarto será liberado no banco de dados.`)) {

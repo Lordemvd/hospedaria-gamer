@@ -237,7 +237,7 @@ async function loginUserInDB(identifier, password) {
   const cleanId = identifier.trim();
 
   try {
-    let query = supabaseClient
+    let query = client
       .from('users')
       .select('id, full_name, gamer_tag, email, password, role');
 
@@ -334,22 +334,28 @@ async function updateReservationStatus(reservationCode, newStatus) {
 // Vincula ao escopo global
 window.updateReservationStatus = updateReservationStatus;
 
-// 9. Buscar todos os registros da lista de espera
+// 9. Buscar todos os registros da fila de espera
 async function fetchAllWaitlist() {
-  if (!supabaseClient) {
+  const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : supabaseClient;
+
+  if (!client) {
     return { success: false, data: [] };
   }
 
   try {
-    const { data, error } = await supabaseClient
+    const { data, error } = await client
       .from('waitlist')
       .select('*')
       .order('created_at', { ascending: false });
 
     if (error) throw error;
+
     return { success: true, data: data || [] };
   } catch (err) {
     console.error('Erro ao buscar fila de espera:', err.message);
     return { success: false, error: err.message, data: [] };
   }
 }
+
+// Vincula ao escopo global para acesso pelo admin.html
+window.fetchAllWaitlist = fetchAllWaitlist;
