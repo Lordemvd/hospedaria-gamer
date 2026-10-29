@@ -52,8 +52,8 @@
         <div class="ticket-body">
           <div class="ticket-row">
             <div class="ticket-col">
-              <span class="lbl">HÓSPEDE / GAMERTAG</span>
-              <strong class="val" id="resPlayer">Player Convidado</strong>
+              <span class="lbl">HÓSPEDE / PLAYER</span>
+              <strong class="val" id="resGuest">Player Convidado</strong>
             </div>
             <div class="ticket-col">
               <span class="lbl">ACOMODAÇÃO RESERVADA</span>
@@ -129,9 +129,10 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // 1. RESGATE DE DADOS ENVIADOS PELA TELA DE PAGAMENTO / URL
+      // 1. RESGATE DE DADOS ENVIADOS PELA TELA DE PAGAMENTO / URL E SESSÃO
       const params = new URLSearchParams(window.location.search);
 
+      // Prioriza a GamerTag da conta autenticada no LocalStorage
       let hospede = params.get('hospede');
       if (!hospede || hospede === 'Player Convidado') {
         const currentUserRaw = localStorage.getItem('nexus_current_user');
@@ -147,7 +148,7 @@
       const quarto = params.get('quarto') || 'Suíte Duo Next-Gen';
       const checkin = params.get('checkin') || 'A confirmar';
       const checkout = params.get('checkout') || 'A confirmar';
-      const total = params.get('total') || 'R$ 260,00';
+      const total = params.get('total') || 'R$ 520,00';
       const metodo = params.get('metodo') || 'PIX Instantâneo';
 
       const formatDate = (d) => (d && d.includes('-')) ? d.split('-').reverse().join('/') : d;
@@ -156,7 +157,7 @@
       const resCodeEl = document.getElementById('resCode');
       if (resCodeEl) resCodeEl.textContent = codigo;
 
-      const guestEl = document.querySelector('.ticket-col .val');
+      const guestEl = document.getElementById('resGuest') || document.querySelector('.ticket-col .val');
       if (guestEl) guestEl.textContent = hospede || 'Player VIP';
 
       const roomEl = document.getElementById('resRoom');
@@ -174,8 +175,7 @@
       const methodEl = document.getElementById('resMethod');
       if (methodEl) methodEl.textContent = metodo;
 
-      // 2. GERAÇÃO DINÂMICA DO QR CODE TEMÁTICO
-      // Compatível tanto com id="qrCodeImg" quanto com id="ticketQrImg"
+      // 2. GERAÇÃO DINÂMICA DO QR CODE TEMÁTICO COM A GAMERTAG REAL
       const qrEl = document.getElementById('qrCodeImg') || document.getElementById('ticketQrImg');
       if (qrEl) {
         const qrData = `NEXUS-INN|CHECKIN:${codigo}|PLAYER:${hospede || 'VIP'}|QUARTO:${quarto}|ENTRADA:${checkin}|STATUS:CONFIRMADO`;
@@ -201,6 +201,7 @@
       }
     });
   </script>
+  
 <!-- SDK Oficial do Supabase -->
   <script defer src="../supabase-sdk.js"></script>
   <script defer src="../supabase.js"></script>
