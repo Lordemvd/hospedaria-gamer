@@ -530,9 +530,9 @@
 
   </main>
 
-  <script>
+<script>
     document.addEventListener('DOMContentLoaded', async () => {
-      // 1. TRAVA DE SEGURANÇA: Somente perfil 'admin' pode acessar
+      // 1. TRAVA DE SEGURANÇA: Somente 'admin' acessa o painel
       const currentUserRaw = localStorage.getItem('nexus_current_user');
       if (!currentUserRaw) {
         alert('Acesso restrito: faça login como administrador.');
@@ -553,45 +553,50 @@
       }
 
       // Logout Admin
-      document.getElementById('adminLogout').addEventListener('click', () => {
-        localStorage.removeItem('nexus_current_user');
-        window.location.href = '../index.html';
-      });
+      const btnLogout = document.getElementById('adminLogout') || document.querySelector('.btn-logout');
+      if (btnLogout) {
+        btnLogout.addEventListener('click', () => {
+          localStorage.removeItem('nexus_current_user');
+          window.location.href = '../index.html';
+        });
+      }
 
       // Elementos do DOM
       const tbodyReservas = document.getElementById('tbodyReservas');
-      const tbodyWaitlist = document.getElementById('tbodyWaitlist');
+      const tbodyWaitlist = document.getElementById('tbodyWaitlist') || document.getElementById('tbodyFila');
+      const secReservas = document.getElementById('sectionReservas');
+      const secWaitlist = document.getElementById('sectionWaitlist');
+
       const kpiTotalReservas = document.getElementById('kpiTotalReservas');
       const kpiFaturamento = document.getElementById('kpiFaturamento');
       const kpiConfirmadas = document.getElementById('kpiConfirmadas');
       const kpiWaitlist = document.getElementById('kpiWaitlist');
 
-      const searchInput = document.getElementById('searchReservas');
-      const filterStatus = document.getElementById('filterStatus');
+      const searchInput = document.getElementById('searchReservas') || document.querySelector('.table-search');
+      const filterStatus = document.getElementById('filterStatus') || document.querySelector('select');
       const btnRefresh = document.getElementById('btnRefresh');
 
       let allReservations = [];
       let allWaitlistData = [];
 
-// 2. Carregar dados do Supabase com proteção contra paragens
+      // 2. Carregar dados do Supabase com tolerância a falhas
       async function carregarPainel() {
         if (tbodyReservas) {
-          tbodyReservas.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 30px;">A carregar base de dados...</td></tr>';
+          tbodyReservas.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 30px;">Carregando banco de dados...</td></tr>';
         }
-        
+
         if (typeof fetchAllReservations !== 'function') {
           setTimeout(carregarPainel, 300);
           return;
         }
 
         try {
-          // Executa ambas as consultas em paralelo sem deixar que uma quebre a outra
-          const resReservas = await fetchAllReservations().catch(() => ({ success: false, data: [] }));
-          
-          let resWaitlist = { success: false, data: [] };
-          if (typeof fetchAllWaitlist === 'function') {
-            resWaitlist = await fetchAllWaitlist().catch(() => ({ success: false, data: [] }));
-          }
+          const [resReservas, resWaitlist] = await Promise.all([
+            fetchAllReservations().catch(() => ({ success: false, data: [] })),
+            (typeof fetchAllWaitlist === 'function') 
+              ? fetchAllWaitlist().catch(() => ({ success: false, data: [] }))
+              : Promise.resolve({ success: false, data: [] })
+          ]);
 
           allReservations = (resReservas && resReservas.success) ? resReservas.data : [];
           allWaitlistData = (resWaitlist && resWaitlist.success) ? resWaitlist.data : [];
@@ -600,21 +605,17 @@
           renderizarReservas();
           renderizarWaitlist();
         } catch (err) {
-          console.error('Erro ao carregar dados do painel:', err);
-          const tbodyFila = document.getElementById('tbodyFila');
-          if (tbodyFila) {
-            tbodyFila.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 25px; color: #ff2a55;">Falha de comunicação com o Supabase.</td></tr>';
-          }
+          console.error('Erro ao sincronizar painel:', err);
         }
       }
 
       // 3. Atualizar Indicadores (KPIs)
       function atualizarKPIs() {
-        kpiTotalReservas.textContent = allReservations.length;
-        kpiWaitlist.textContent = allWaitlistData.length;
+        if (kpiTotalReservas) kpiTotalReservas.textContent = allReservations.length;
+        if (kpiWaitlist) kpiWaitlist.textContent = allWaitlistData.length;
 
-        const confirmadas = allReservations.filter(r => r.status !== 'CANCELADA');
-        kpiConfirmadas.textContent = confirmadas.length;
+        const confirmadas = allReservations.filter(r => (r.status || '').toUpperCase() !== 'CANCELADA');
+        if (kpiConfirmadas) kpiConfirmadas.textContent = confirmadas.length;
 
         let totalFaturado = 0;
         confirmadas.forEach(r => {
@@ -626,20 +627,25 @@
           }
         });
 
-        kpiFaturamento.textContent = `R$ ${totalFaturado.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        if (kpiFaturamento) {
+          kpiFaturamento.textContent = `R$ ${totalFaturado.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        }
       }
-// 4. Renderizar Tabela de Reservas com Filtro
+
+      // 4. Renderizar Tabela de Reservas
       function renderizarReservas() {
-        const termo = searchInput.value.toLowerCase().trim();
-        const statusFiltro = filterStatus.value;
+        if (!tbodyReservas) return;
+
+        const termo = searchInput ? searchInput.value.toLowerCase().trim() : '';
+        const statusFiltro = filterStatus ? filterStatus.value : 'ALL';
 
         const filtradas = allReservations.filter(item => {
           const matchBusca = 
-            item.reservation_code?.toLowerCase().includes(termo) ||
-            item.guest_name?.toLowerCase().includes(termo) ||
-            item.room_name?.toLowerCase().includes(termo);
+            (item.reservation_code || '').toLowerCase().includes(termo) ||
+            (item.guest_name || '').toLowerCase().includes(termo) ||
+            (item.room_name || '').toLowerCase().includes(termo);
 
-          const matchStatus = statusFiltro === 'ALL' || item.status === statusFiltro;
+          const matchStatus = statusFiltro === 'ALL' || (item.status || '').toUpperCase() === statusFiltro;
 
           return matchBusca && matchStatus;
         });
@@ -649,84 +655,75 @@
           return;
         }
 
-        tbodyReservas.innerHTML = filtradas.map(r => `
-          <tr>
-            <td><strong style="color: var(--neon-cyan); font-family: var(--font-display);">${r.reservation_code}</strong></td>
-            <td><strong>${r.guest_name}</strong></td>
-            <td>${r.room_name}</td>
-            <td>${r.check_in?.split('-').reverse().join('/')} até ${r.check_out?.split('-').reverse().join('/')}</td>
-            <td style="font-family: var(--font-display); color: #fff;">${r.total_price}</td>
-            <td><small style="color: var(--text-muted);">${r.payment_method}</small></td>
-            <td><span class="status-badge ${r.status}">${r.status}</span></td>
-            <td>
-              ${r.status !== 'CANCELADA' ? `
-                <button type="button" class="btn-action-cancel" onclick="cancelarReserva('${r.reservation_code}')">
-                  Cancelar
-                </button>
-              ` : '<span class="status-inativa">Inativa</span>'}
-            </td>
-          </tr>
-        `).join('');
+        const formatDt = (d) => (d && d.includes('-')) ? d.split('-').reverse().join('/') : (d || '-');
+
+        tbodyReservas.innerHTML = filtradas.map(r => {
+          const isCancelada = (r.status || '').toUpperCase() === 'CANCELADA';
+          const statusClass = isCancelada ? 'status-badge CANCELADA' : 'status-badge CONFIRMADA';
+          const acaoHtml = isCancelada
+            ? '<span class="status-inativa">Inativa</span>'
+            : `<button type="button" class="btn-action-cancel" onclick="cancelarReserva('${r.reservation_code}')">Cancelar</button>`;
+
+          return `
+            <tr>
+              <td><strong style="color: var(--neon-cyan); font-family: var(--font-display);">${r.reservation_code}</strong></td>
+              <td><strong>${r.guest_name}</strong></td>
+              <td>${r.room_name}</td>
+              <td>${formatDt(r.check_in)} até ${formatDt(r.check_out)}</td>
+              <td style="font-family: var(--font-display); color: #fff;">${r.total_price}</td>
+              <td><small style="color: var(--text-muted);">${r.payment_method || 'PIX'}</small></td>
+              <td><span class="${statusClass}">${r.status}</span></td>
+              <td>${acaoHtml}</td>
+            </tr>
+          `;
+        }).join('');
       }
 
-// 5. Renderizar Tabela da Fila de Espera (Resiliente e com Auto-deteção)
+      // 5. Renderizar Tabela da Fila de Espera (Waitlist Drops)
       function renderizarWaitlist() {
-        // Procura pelo ID direto ou pela segunda tabela da página
-        const targetBody = document.getElementById('tbodyFila') || 
-                           document.getElementById('tbodyWaitlist') || 
-                           document.querySelector('#tabFila tbody') ||
-                           document.querySelectorAll('.admin-table tbody')[1];
-
-        if (!targetBody) {
-          console.warn('Elemento tbody da fila não encontrado no DOM.');
-          return;
-        }
+        const targetBody = document.getElementById('tbodyWaitlist') || document.getElementById('tbodyFila');
+        if (!targetBody) return;
 
         if (!allWaitlistData || allWaitlistData.length === 0) {
           targetBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 25px; color: var(--text-muted);">Fila de espera vazia no momento.</td></tr>';
           return;
         }
 
-        const formatDataBR = (str) => {
-          if (!str) return '-';
-          if (str.includes('-')) return str.split('-').reverse().join('/');
-          return str;
-        };
+        const formatDt = (d) => (d && d.includes('-')) ? d.split('-').reverse().join('/') : (d || '-');
 
-        try {
-          targetBody.innerHTML = allWaitlistData.map((item, idx) => {
-            const shortId = item.id ? String(item.id).substring(0, 8).toUpperCase() : `WL-0${idx + 1}`;
-            const contato = item.contact || item.contato || 'Sem contacto';
-            const quarto = item.room_name || item.quarto || 'Acomodação Gamer';
-            const checkin = item.check_in || item.checkin;
-            const checkout = item.check_out || item.checkout;
-            const periodo = (checkin && checkout) ? `${formatDataBR(checkin)} até ${formatDataBR(checkout)}` : 'Período flexível';
-            const dataReg = item.created_at ? new Date(item.created_at).toLocaleString('pt-BR') : (item.dataRegistro || '-');
+        targetBody.innerHTML = allWaitlistData.map((item, idx) => {
+          const shortId = item.id ? String(item.id).substring(0, 8).toUpperCase() : `WL-0${idx + 1}`;
+          const contato = item.contact || item.contato || 'Sem contato';
+          const quarto = item.room_name || item.quarto || 'Acomodação Gamer';
+          const checkin = item.check_in || item.checkin;
+          const checkout = item.check_out || item.checkout;
+          const periodo = (checkin && checkout) ? `${formatDt(checkin)} até ${formatDt(checkout)}` : 'Período flexível';
+          const dataReg = item.created_at ? new Date(item.created_at).toLocaleString('pt-BR') : (item.dataRegistro || '-');
 
-            return `
-              <tr>
-                <td><strong style="color: var(--neon-cyan); font-family: var(--font-display);">${shortId}</strong></td>
-                <td><strong>${contato}</strong></td>
-                <td>${quarto}</td>
-                <td>${periodo}</td>
-                <td style="color: var(--text-muted); font-size: 0.85rem;">${dataReg}</td>
-              </tr>
-            `;
-          }).join('');
-        } catch (err) {
-          console.error('Erro na renderização das linhas da fila:', err);
-          targetBody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 20px; color: #ff2a55;">Erro ao processar itens: ${err.message}</td></tr>`;
-        }
+          return `
+            <tr>
+              <td><strong style="color: var(--neon-cyan); font-family: var(--font-display);">${shortId}</strong></td>
+              <td><strong>${contato}</strong></td>
+              <td>${quarto}</td>
+              <td>${periodo}</td>
+              <td style="color: var(--text-muted); font-size: 0.85rem;">${dataReg}</td>
+            </tr>
+          `;
+        }).join('');
       }
 
-      // 6. Ação de Cancelamento
-       window.cancelarReserva = async (code) => {
+      // 6. Ação de Cancelamento de Reserva
+      window.cancelarReserva = async (code) => {
         if (!confirm(`Deseja realmente cancelar a reserva ${code}? O quarto será liberado no banco de dados.`)) {
           return;
         }
 
-        const res = await updateReservationStatus(code, 'CANCELADA');
+        if (typeof updateReservationStatus !== 'function') {
+          alert('Erro: função updateReservationStatus não encontrada no supabase.js.');
+          return;
+        }
 
+        const res = await updateReservationStatus(code, 'CANCELADA');
         if (res.success) {
           alert(`✅ Reserva ${code} cancelada com sucesso!`);
           carregarPainel();
@@ -735,35 +732,34 @@
         }
       };
 
-      // Listeners
-      searchInput.addEventListener('input', renderizarReservas);
-      filterStatus.addEventListener('change', renderizarReservas);
-      btnRefresh.addEventListener('click', carregarPainel);
-
-      // Alternância de Abas Operacionais
+      // 7. Alternância Confiável entre as Abas
       const tabBtns = document.querySelectorAll('.admin-tab-btn');
       tabBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.onclick = () => {
           tabBtns.forEach(b => b.classList.remove('active'));
           btn.classList.add('active');
 
-          const isFila = btn.textContent.includes('Fila') || btn.getAttribute('data-tab') === 'fila';
-          
-          const viewReservas = document.getElementById('viewReservas') || document.getElementById('tabReservas');
-          const viewFila = document.getElementById('viewFila') || document.getElementById('tabFila');
+          const isFila = btn.textContent.includes('Fila') || btn.textContent.includes('Drops') || btn.id === 'tabWaitlist';
 
-          if (viewReservas && viewFila) {
-            viewReservas.style.display = isFila ? 'none' : 'block';
-            viewFila.style.display = isFila ? 'block' : 'none';
+          if (secReservas && secWaitlist) {
+            secReservas.style.display = isFila ? 'none' : 'block';
+            secWaitlist.style.display = isFila ? 'block' : 'none';
           }
 
           if (isFila) {
-            renderizarWaitlist(); // Garante a atualização imediata ao abrir a aba
+            renderizarWaitlist();
+          } else {
+            renderizarReservas();
           }
-        });
+        };
       });
 
-      // Inicialização
+      // Listeners de Busca e Atualização
+      if (searchInput) searchInput.addEventListener('input', renderizarReservas);
+      if (filterStatus) filterStatus.addEventListener('change', renderizarReservas);
+      if (btnRefresh) btnRefresh.addEventListener('click', carregarPainel);
+
+      // Carregamento Inicial
       carregarPainel();
     });
   </script>
