@@ -573,26 +573,39 @@
       let allReservations = [];
       let allWaitlistData = [];
 
-      // 2. Carregar dados do Supabase
+// 2. Carregar dados do Supabase com proteção contra paragens
       async function carregarPainel() {
-        tbodyReservas.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 30px;">Carregando banco de dados...</td></tr>';
+        if (tbodyReservas) {
+          tbodyReservas.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 30px;">A carregar base de dados...</td></tr>';
+        }
         
         if (typeof fetchAllReservations !== 'function') {
-          setTimeout(carregarPainel, 400);
+          setTimeout(carregarPainel, 300);
           return;
         }
 
-        const [resReservas, resWaitlist] = await Promise.all([
-          fetchAllReservations(),
-          fetchAllWaitlist()
-        ]);
+        try {
+          // Executa ambas as consultas em paralelo sem deixar que uma quebre a outra
+          const resReservas = await fetchAllReservations().catch(() => ({ success: false, data: [] }));
+          
+          let resWaitlist = { success: false, data: [] };
+          if (typeof fetchAllWaitlist === 'function') {
+            resWaitlist = await fetchAllWaitlist().catch(() => ({ success: false, data: [] }));
+          }
 
-        allReservations = resReservas.success ? resReservas.data : [];
-        allWaitlistData = resWaitlist.success ? resWaitlist.data : [];
+          allReservations = (resReservas && resReservas.success) ? resReservas.data : [];
+          allWaitlistData = (resWaitlist && resWaitlist.success) ? resWaitlist.data : [];
 
-        atualizarKPIs();
-        renderizarReservas();
-        renderizarWaitlist();
+          atualizarKPIs();
+          renderizarReservas();
+          renderizarWaitlist();
+        } catch (err) {
+          console.error('Erro ao carregar dados do painel:', err);
+          const tbodyFila = document.getElementById('tbodyFila');
+          if (tbodyFila) {
+            tbodyFila.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 25px; color: #ff2a55;">Falha de comunicação com o Supabase.</td></tr>';
+          }
+        }
       }
 
       // 3. Atualizar Indicadores (KPIs)
@@ -656,8 +669,9 @@
         `).join('');
       }
 
-      // 5. Renderizar Tabela da Fila de Espera (Waitlist Drops)
+// 5. Renderizar Tabela da Fila de Espera (Waitlist Drops)
       function renderizarWaitlist() {
+        const tbodyFila = document.getElementById('tbodyFila');
         if (!tbodyFila) return;
 
         if (!allWaitlistData || allWaitlistData.length === 0) {
@@ -668,9 +682,8 @@
         const formatDt = (d) => (d && d.includes('-')) ? d.split('-').reverse().join('/') : (d || '-');
 
         tbodyFila.innerHTML = allWaitlistData.map((item, idx) => {
-          // Trata tanto ID uuid do Supabase quanto fallback local
           const shortId = item.id ? item.id.substring(0, 8).toUpperCase() : `WL-0${idx + 1}`;
-          const contato = item.contact || item.contato || 'Sem contato';
+          const contato = item.contact || item.contato || 'Sem contacto';
           const quarto = item.room_name || item.quarto || 'Acomodação Gamer';
           const checkin = item.check_in || item.checkin;
           const checkout = item.check_out || item.checkout;

@@ -334,7 +334,7 @@ async function updateReservationStatus(reservationCode, newStatus) {
 // Vincula ao escopo global
 window.updateReservationStatus = updateReservationStatus;
 
-// 9. Buscar todos os registros da fila de espera
+// 9. Procurar todos os registos da lista de espera
 async function fetchAllWaitlist() {
   const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : supabaseClient;
 
@@ -349,13 +349,12 @@ async function fetchAllWaitlist() {
       .order('created_at', { ascending: false });
 
     if (error) throw error;
-
     return { success: true, data: data || [] };
   } catch (err) {
-    console.error('Erro ao buscar fila de espera:', err.message);
+    console.error('Erro ao procurar fila de espera:', err.message);
     return { success: false, error: err.message, data: [] };
   }
 }
 
-// Vincula ao escopo global para acesso pelo admin.html
+// Vincula ao escopo global para que o admin.html o encontre
 window.fetchAllWaitlist = fetchAllWaitlist;
