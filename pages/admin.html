@@ -15,7 +15,10 @@
   <script defer src="../supabase-sdk.js"></script>
   <script defer src="../supabase.js"></script>
 
-  <style>
+<style>
+    /* ==========================================================================
+       ESTILOS EXCLUSIVOS DO PAINEL ADMIN (pages/admin.html)
+       ========================================================================== */
     .admin-body {
       background-color: #07080c;
       color: #e2e8f0;
@@ -32,6 +35,7 @@
       flex: 1;
     }
 
+    /* Cabeçalho do Painel Operacional */
     .admin-header {
       display: flex;
       justify-content: space-between;
@@ -41,6 +45,15 @@
       padding-bottom: 15px;
     }
 
+    .admin-header h1 {
+      font-family: var(--font-display, 'Orbitron', sans-serif);
+      font-size: 1.85rem;
+      color: #fff;
+      letter-spacing: 1px;
+      margin: 0;
+    }
+
+    /* Cards de Indicadores (KPIs) */
     .kpi-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -64,26 +77,27 @@
       left: 0;
       width: 4px;
       height: 100%;
-      background: var(--neon-cyan);
+      background: var(--neon-cyan, #00f0ff);
     }
 
-    .kpi-card.pink::before { background: var(--neon-pink); }
-    .kpi-card.purple::before { background: var(--neon-purple); }
+    .kpi-card.pink::before { background: var(--neon-pink, #ff007f); }
+    .kpi-card.purple::before { background: var(--neon-purple, #b026ff); }
 
     .kpi-label {
       font-size: 0.8rem;
       text-transform: uppercase;
       letter-spacing: 1px;
-      color: var(--text-muted);
+      color: var(--text-muted, #94a3b8);
       margin-bottom: 6px;
     }
 
     .kpi-value {
-      font-family: var(--font-display);
+      font-family: var(--font-display, 'Orbitron', sans-serif);
       font-size: 1.8rem;
       color: #fff;
     }
 
+    /* Abas Operacionais */
     .admin-tabs {
       display: flex;
       gap: 12px;
@@ -95,42 +109,75 @@
     .admin-tab-btn {
       background: transparent;
       border: 1px solid transparent;
-      color: var(--text-muted);
-      font-family: var(--font-display);
+      color: var(--text-muted, #94a3b8);
+      font-family: var(--font-display, 'Orbitron', sans-serif);
       font-size: 0.95rem;
       padding: 8px 16px;
       border-radius: 4px;
       cursor: pointer;
-      transition: var(--transition);
+      transition: var(--transition, 0.3s ease);
     }
 
     .admin-tab-btn.active {
-      color: var(--neon-cyan);
+      color: var(--neon-cyan, #00f0ff);
       background: rgba(0, 240, 255, 0.08);
-      border-color: var(--border-glow);
+      border-color: var(--border-glow, rgba(0, 240, 255, 0.25));
     }
 
+    /* ==========================================================================
+       BARRA DE FILTROS: NIVELAMENTO RENTE E ALTURA IDÊNTICA (48PX)
+       ========================================================================== */
     .table-controls {
       display: flex;
-      flex-wrap: wrap;
+      align-items: stretch;
       justify-content: space-between;
-      gap: 12px;
+      gap: 16px;
       margin-bottom: 18px;
+      width: 100%;
     }
 
+    /* Trava o campo de busca e o select na mesma altura milimétrica */
+    .table-controls input,
+    .table-controls select,
     .table-search {
-      flex: 1;
-      max-width: 360px;
-      background: #0d0f18;
-      border: 1px solid #282d44;
-      color: #fff;
-      padding: 9px 14px;
-      border-radius: 4px;
-      outline: none;
+      height: 48px !important;
+      min-height: 48px !important;
+      max-height: 48px !important;
+      line-height: 46px !important;
+      padding: 0 16px !important;
+      box-sizing: border-box !important;
+      margin: 0 !important;
+      background: #0d0f18 !important;
+      border: 1px solid #282d44 !important;
+      border-radius: 6px !important;
+      color: #ffffff !important;
+      font-family: var(--font-body, 'Rajdhani', sans-serif) !important;
+      font-size: 0.98rem !important;
+      outline: none !important;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
 
-    .table-search:focus { border-color: var(--neon-cyan); }
+    /* Campo de texto ocupa o restante do espaço */
+    .table-search,
+    .table-controls input {
+      flex: 1 !important;
+      max-width: 100% !important;
+    }
 
+    /* Menu suspenso de status com largura confortável */
+    .table-controls select {
+      min-width: 210px !important;
+      cursor: pointer !important;
+    }
+
+    .table-controls input:focus,
+    .table-controls select:focus,
+    .table-search:focus {
+      border-color: #00f0ff !important;
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.35) !important;
+    }
+
+    /* Tabela Operacional */
     .table-wrapper {
       background: #0d0f18;
       border: 1px solid rgba(255, 255, 255, 0.08);
@@ -142,14 +189,14 @@
       width: 100%;
       border-collapse: collapse;
       text-align: left;
-      font-size: 0.9rem;
+      font-size: 0.92rem;
     }
 
     .admin-table th {
       background: rgba(255, 255, 255, 0.03);
       padding: 14px 16px;
-      color: var(--text-muted);
-      font-family: var(--font-display);
+      color: var(--text-muted, #94a3b8);
+      font-family: var(--font-display, 'Orbitron', sans-serif);
       font-size: 0.8rem;
       letter-spacing: 0.5px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
@@ -159,46 +206,62 @@
       padding: 14px 16px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.04);
       color: #cbd5e1;
+      vertical-align: middle;
     }
 
     .admin-table tr:hover { background: rgba(255, 255, 255, 0.02); }
 
+    /* ==========================================================================
+       BADGES DE STATUS COM NEON VIBRANTE
+       ========================================================================== */
     .status-badge {
       display: inline-block;
-      padding: 4px 8px;
+      padding: 5px 12px;
       border-radius: 4px;
-      font-family: var(--font-display);
-      font-size: 0.72rem;
-      letter-spacing: 0.5px;
+      font-family: var(--font-display, 'Orbitron', sans-serif);
+      font-size: 0.74rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      user-select: none;
     }
 
+    /* CONFIRMADA: Neon Azul Ciano */
     .status-badge.CONFIRMADA {
-      background: rgba(0, 240, 255, 0.12);
-      color: var(--neon-cyan);
-      border: 1px solid var(--border-glow);
+      color: #00f0ff !important;
+      background: rgba(0, 240, 255, 0.1) !important;
+      border: 1px solid #00f0ff !important;
+      box-shadow: 0 0 12px rgba(0, 240, 255, 0.45) !important;
+      text-shadow: 0 0 6px rgba(0, 240, 255, 0.75) !important;
     }
 
+    /* CANCELADA: Neon Vermelho */
     .status-badge.CANCELADA {
-      background: rgba(255, 0, 85, 0.12);
-      color: #ff6b8b;
-      border: 1px solid rgba(255, 0, 85, 0.3);
+      color: #ff2a55 !important;
+      background: rgba(255, 42, 85, 0.1) !important;
+      border: 1px solid #ff2a55 !important;
+      box-shadow: 0 0 12px rgba(255, 42, 85, 0.45) !important;
+      text-shadow: 0 0 6px rgba(255, 42, 85, 0.75) !important;
     }
 
+    /* Botão de Cancelamento */
     .btn-action-cancel {
       background: transparent;
-      border: 1px solid rgba(255, 0, 85, 0.4);
-      color: #ff6b8b;
-      padding: 4px 8px;
+      border: 1px solid rgba(255, 42, 85, 0.45);
+      color: #ff2a55;
+      padding: 5px 10px;
       border-radius: 4px;
       cursor: pointer;
-      font-size: 0.75rem;
-      font-family: var(--font-display);
-      transition: var(--transition);
+      font-size: 0.76rem;
+      font-family: var(--font-display, 'Orbitron', sans-serif);
+      letter-spacing: 0.5px;
+      transition: var(--transition, 0.3s ease);
     }
 
     .btn-action-cancel:hover {
-      background: var(--neon-pink);
-      color: #fff;
+      background: #ff2a55;
+      color: #ffffff;
+      box-shadow: 0 0 12px rgba(255, 42, 85, 0.5);
     }
   </style>
 </head>
