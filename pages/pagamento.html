@@ -166,41 +166,46 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // 1. RESGATE DE DADOS DA SESSÃO E DA URL
-      const params = new URLSearchParams(window.location.search);
-      const roomParam = params.get('room') || 'duo';
-      const checkinParam = params.get('checkin') || 'A combinar';
-      const checkoutParam = params.get('checkout') || 'A combinar';
-      const totalParam = params.get('total') || 'R$ 260,00';
+  // 1. RESGATE DE DADOS DA SESSÃO E DA URL
+  const params = new URLSearchParams(window.location.search);
+  const roomParam = params.get('room') || 'duo';
+  const checkinParam = params.get('checkin') || 'A combinar';
+  const checkoutParam = params.get('checkout') || 'A combinar';
+  const totalParam = params.get('total') || 'R$ 260,00';
 
-      const roomNames = {
-        'solo': 'Suíte Solo Streamer',
-        'duo': 'Suíte Duo Next-Gen',
-        'squad': 'Party Room Squad'
-      };
+  const roomNames = {
+    'solo': 'Suíte Solo Streamer',
+    'duo': 'Suíte Duo Next-Gen',
+    'squad': 'Party Room Squad'
+  };
 
-      const displayPlayer = document.getElementById('displayPlayer');
-      const displayRoom = document.getElementById('displayRoom');
-      const displayCheckin = document.getElementById('displayCheckin');
-      const displayCheckout = document.getElementById('displayCheckout');
-      const displayTotal = document.getElementById('displayTotal');
+  // Elementos visuais do resumo
+  const displayPlayer = document.getElementById('displayPlayer');
+  const displayRoom = document.getElementById('displayRoom');
+  const displayCheckin = document.getElementById('displayCheckin');
+  const displayCheckout = document.getElementById('displayCheckout');
+  const displayTotal = document.getElementById('displayTotal');
 
-      // Verifica se há player autenticado no localStorage
-      let playerName = 'Player Convidado';
-      const userRaw = localStorage.getItem('nexus_current_user');
-      if (userRaw) {
-        try {
-          const user = JSON.parse(userRaw);
-          playerName = user.gamerTag || user.fullName || 'Player Conectado';
-        } catch(e){}
-      }
+  // Identifica o hóspede autenticado no Supabase/localStorage
+  let playerName = params.get('hospede') || 'Player Convidado';
+  const userRaw = localStorage.getItem('nexus_current_user');
 
-      displayPlayer.textContent = playerName;
-      displayRoom.textContent = roomNames[roomParam] || 'Quarto Personalizado';
-      displayCheckin.textContent = checkinParam.includes('-') ? checkinParam.split('-').reverse().join('/') : checkinParam;
-      displayCheckout.textContent = checkoutParam.includes('-') ? checkoutParam.split('-').reverse().join('/') : checkoutParam;
-      displayTotal.textContent = totalParam;
+  if (userRaw) {
+    try {
+      const user = JSON.parse(userRaw);
+      playerName = user.gamerTag || user.fullName || playerName;
+    } catch (e) {
+      console.warn('Erro ao ler sessão do usuário:', e);
+    }
+  }
 
+  // Atualização visual segura dos dados na página
+  if (displayPlayer) displayPlayer.textContent = playerName;
+  if (displayRoom) displayRoom.textContent = roomNames[roomParam] || 'Suíte Duo Next-Gen';
+  if (displayCheckin) displayCheckin.textContent = checkinParam.includes('-') ? checkinParam.split('-').reverse().join('/') : checkinParam;
+  if (displayCheckout) displayCheckout.textContent = checkoutParam.includes('-') ? checkoutParam.split('-').reverse().join('/') : checkoutParam;
+  if (displayTotal) displayTotal.textContent = totalParam;
+  
       // 2. TEMPORIZADOR ANTI-OVERBOOKING (15 MINUTOS)
       let timeLeft = 15 * 60;
       const timerElement = document.getElementById('timer');

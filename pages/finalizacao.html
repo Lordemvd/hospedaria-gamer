@@ -129,30 +129,40 @@
   </footer>
 
   <script>
+  // 1. RESGATE DE DADOS ENVIADOS PELA TELA DE PAGAMENTO
     document.addEventListener('DOMContentLoaded', () => {
-      // 1. RESGATE DE DADOS ENVIADOS PELA TELA DE PAGAMENTO
       const params = new URLSearchParams(window.location.search);
       
+      // Resgata o nome via parâmetro de URL ou pela sessão do localStorage
+      let hospede = params.get('hospede');
+      if (!hospede || hospede === 'Player Convidado') {
+        const currentUserRaw = localStorage.getItem('nexus_current_user');
+        if (currentUserRaw) {
+          try {
+            const user = JSON.parse(currentUserRaw);
+            hospede = user.gamerTag || user.fullName;
+          } catch (e) {}
+        }
+      }
+
       const codigo = params.get('codigo') || 'NX-' + Math.floor(100000 + Math.random() * 900000);
-      const hospede = params.get('hospede') || 'Player Convidado';
       const quarto = params.get('quarto') || 'Suíte Duo Next-Gen';
-      let checkin = params.get('checkin') || 'A combinar';
-      let checkout = params.get('checkout') || 'A combinar';
+      const checkin = params.get('checkin') || 'A confirmar';
+      const checkout = params.get('checkout') || 'A confirmar';
       const total = params.get('total') || 'R$ 260,00';
       const metodo = params.get('metodo') || 'PIX Instantâneo';
 
-      // Formata datas de AAAA-MM-DD para DD/MM/AAAA se necessário
-      if (checkin.includes('-')) checkin = checkin.split('-').reverse().join('/');
-      if (checkout.includes('-')) checkout = checkout.split('-').reverse().join('/');
+      // Formatação de data visual (DD/MM/AAAA)
+      const formatDate = (d) => (d && d.includes('-')) ? d.split('-').reverse().join('/') : d;
 
-      // Preenchimento dos campos no ticket
       document.getElementById('resCode').textContent = codigo;
-      document.getElementById('resPlayer').textContent = hospede;
+      document.querySelector('.ticket-col .val').textContent = hospede || 'Player VIP';
       document.getElementById('resRoom').textContent = quarto;
-      document.getElementById('resCheckin').textContent = checkin;
-      document.getElementById('resCheckout').textContent = checkout;
+      document.getElementById('resCheckin').textContent = formatDate(checkin);
+      document.getElementById('resCheckout').textContent = formatDate(checkout);
       document.getElementById('resTotal').textContent = total;
       document.getElementById('resMethod').textContent = metodo;
+    });
 
       // 2. GERAÇÃO DO QR CODE DE CHECK-IN DINÂMICO
       // O QR Code carrega as informações do voucher para leitura direta do concierge
@@ -175,7 +185,7 @@
         });
         localStorage.setItem('nexus_reservations', JSON.stringify(reservations));
       } catch(e) {}
-    });
+    
   </script>
 <!-- SDK Oficial do Supabase -->
   <script defer src="../supabase-sdk.js"></script>
