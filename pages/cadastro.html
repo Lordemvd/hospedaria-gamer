@@ -3,16 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nexus Inn | Criar Perfil Gamer</title>
+  <title>Nexus Inn | Novo Cadastro</title>
   <link rel="stylesheet" href="../style.css">
-    <!-- SDK Oficial do Supabase -->
-  <!-- NOSONAR -->
-  <script defer src="../supabase-sdk.js"></script>
-  <script defer src="../supabase.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%AE%3C/text%3E%3C/svg%3E">
+
+  <!-- SDK Oficial do Supabase + Arquivo de Conexão -->
+  <!-- NOSONAR -->
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr" crossorigin="anonymous"></script>
+  <script defer src="../supabase.js"></script>
 </head>
 <body class="auth-page-body">
 
@@ -28,104 +29,186 @@
   </header>
 
   <main class="auth-wrapper">
-    <div class="auth-card">
+    <div class="auth-card auth-card-wide">
       <div class="auth-card-header">
-        <span class="badge">NOVA CONTA</span>
-        <h1 class="auth-title">CRIE SUA GAMERTAG</h1>
-        <p class="auth-subtitle">Garanta vantagens VIP, ping prioritário e agilidade no check-in.</p>
+        <span class="badge">NOVO JOGADOR</span>
+        <h1 class="auth-title">CRIE SUA CONTA</h1>
+        <p class="auth-subtitle">Registre seu perfil gamer com persistência direta na nuvem.</p>
       </div>
 
-      <div id="cadastroFeedback" style="display: none; padding: 10px; margin-bottom: 16px; border-radius: 4px; font-size: 0.9rem; text-align: center;"></div>
-
-      <form id="cadastroForm" class="auth-form">
-        <div class="form-group">
-          <label for="cadNome">Nome Completo</label>
-          <input type="text" id="cadNome" placeholder="Ex: Alex Mercer" required>
-        </div>
-
-        <div class="form-group">
-          <label for="cadGamerTag">GamerTag (Apelido Público)</label>
-          <input type="text" id="cadGamerTag" placeholder="Ex: ShadowStriker" required>
-        </div>
-
-        <div class="form-group">
-          <label for="cadEmail">E-mail</label>
-          <input type="email" id="cadEmail" placeholder="player@nexusinn.com" required>
-        </div>
-
-        <div class="form-group">
-          <label for="cadCpf">CPF</label>
-          <input type="text" id="cadCpf" placeholder="000.000.000-00" maxlength="14" required>
-        </div>
-
-        <div class="form-row-card">
+      <form id="signupForm" class="auth-form">
+        <div class="form-row-2">
           <div class="form-group">
-            <label for="cadSenha">Senha</label>
-            <input type="password" id="cadSenha" placeholder="••••••••" required>
+            <label for="fullName">Nome Completo</label>
+            <input type="text" id="fullName" placeholder="Ex: Lucas Silva" required autocomplete="name">
           </div>
           <div class="form-group">
-            <label for="cadConfSenha">Confirmar Senha</label>
-            <input type="password" id="cadConfSenha" placeholder="••••••••" required>
+            <label for="gamerTag">Gamer Tag / Nickname</label>
+            <input type="text" id="gamerTag" placeholder="Ex: ShadowStriker" required autocomplete="username">
           </div>
         </div>
 
-        <div class="form-options">
-          <label class="remember-me">
-            <input type="checkbox" id="cadTermos" required>
-            <span>Concordo com os Termos de Uso e Políticas da Nexus Inn</span>
-          </label>
+        <div class="form-group">
+          <label for="signupEmail">E-mail</label>
+          <input type="email" id="signupEmail" placeholder="player@nexusinn.com" required autocomplete="email">
         </div>
 
-        <button type="submit" class="btn-primary btn-full-width">Criar Perfil Gamer</button>
+        <!-- SENHA COM MEDIDOR VISUAL -->
+        <div class="form-group">
+          <label for="newPass">Senha de Acesso</label>
+          <div class="input-password-wrapper" style="position: relative; display: flex; align-items: center;">
+            <input type="password" id="newPass" placeholder="Mínimo de 6 caracteres" required autocomplete="new-password" style="width: 100%; padding-right: 40px;">
+            <button type="button" id="btnTogglePass" class="toggle-pass-btn" style="position: absolute; right: 12px; background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 1.1rem;" aria-label="Alternar visibilidade da senha">👁</button>
+          </div>
+          <div class="strength-meter-container" style="margin-top: 8px;">
+            <div class="strength-bar" id="strengthBar"></div>
+          </div>
+          <span class="strength-text" id="strengthText" style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; display: block;">Força da senha: digite uma senha</span>
+        </div>
+
+        <div class="form-group">
+          <label for="confirmPass">Confirmar Senha</label>
+          <input type="password" id="confirmPass" placeholder="Repita a mesma senha" required autocomplete="new-password">
+          <small id="passMatchError" class="input-error-msg" style="display: none; color: #ff6b8b; margin-top: 4px;">As senhas não coincidem!</small>
+        </div>
+
+        <!-- Feedback de erro ou sucesso -->
+        <div id="signupFeedbackMsg" style="display: none; text-align: center; font-size: 0.95rem; margin-top: 10px; font-family: var(--font-display);"></div>
+
+        <button type="submit" id="btnSignupSubmit" class="btn-primary btn-full-width" style="margin-top: 14px;">Criar Perfil Gamer</button>
       </form>
 
       <div class="auth-card-footer">
-        <p>Já possui GamerTag? <a href="login.html" class="link-highlight">Fazer Login</a></p>
+        <p>Já possui cadastro? <a href="login.html" class="link-highlight">Entrar na sua conta</a></p>
       </div>
     </div>
   </main>
 
-  <script src="../auth.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const form = document.getElementById('registerForm');
-      const submitBtn = form ? form.querySelector('button[type="submit"]') : null;
+      const signupForm = document.getElementById('signupForm');
+      const newPass = document.getElementById('newPass');
+      const confirmPass = document.getElementById('confirmPass');
+      const btnToggle = document.getElementById('btnTogglePass');
+      const strengthBar = document.getElementById('strengthBar');
+      const strengthText = document.getElementById('strengthText');
+      const passMatchError = document.getElementById('passMatchError');
+      const feedbackMsg = document.getElementById('signupFeedbackMsg');
+      const btnSubmit = document.getElementById('btnSignupSubmit');
 
-      if (form) {
-        form.addEventListener('submit', async (e) => {
+      // 1. Alternador da visibilidade da senha
+      if (btnToggle && newPass) {
+        btnToggle.addEventListener('click', () => {
+          const isPass = newPass.type === 'password';
+          newPass.type = isPass ? 'text' : 'password';
+          confirmPass.type = isPass ? 'text' : 'password';
+          btnToggle.style.color = isPass ? 'var(--neon-cyan)' : 'var(--text-muted)';
+        });
+      }
+
+      // 2. Medidor dinâmico de força da senha
+      if (newPass) {
+        newPass.addEventListener('input', () => {
+          const val = newPass.value;
+          let score = 0;
+          if (val.length >= 6) score++;
+          if (/[A-Z]/.test(val)) score++;
+          if (/[0-9]/.test(val)) score++;
+          if (/[^A-Za-z0-9]/.test(val)) score++;
+
+          if (val.length === 0) {
+            strengthBar.style.width = '0%';
+            strengthText.textContent = 'Força da senha: digite uma senha';
+            strengthBar.style.backgroundColor = 'transparent';
+          } else if (score <= 1) {
+            strengthBar.style.width = '25%';
+            strengthBar.style.backgroundColor = 'var(--neon-pink)';
+            strengthText.textContent = 'Força da senha: Fraca';
+          } else if (score <= 3) {
+            strengthBar.style.width = '65%';
+            strengthBar.style.backgroundColor = 'var(--neon-purple)';
+            strengthText.textContent = 'Força da senha: Boa';
+          } else {
+            strengthBar.style.width = '100%';
+            strengthBar.style.backgroundColor = 'var(--neon-cyan)';
+            strengthText.textContent = 'Força da senha: Nível Boss';
+          }
+        });
+      }
+
+      // 3. Envio e gravação na tabela 'users' do Supabase
+      if (signupForm) {
+        signupForm.addEventListener('submit', async (e) => {
           e.preventDefault();
 
-          const fullName = document.getElementById('regFullName').value.trim();
-          const gamerTag = document.getElementById('regGamerTag').value.trim();
-          const email = document.getElementById('regEmail').value.trim();
-          const pass = document.getElementById('regPass').value;
-          const confirmPass = document.getElementById('regConfirmPass').value;
+          if (passMatchError) passMatchError.style.display = 'none';
+          if (feedbackMsg) feedbackMsg.style.display = 'none';
 
-          if (pass !== confirmPass) {
-            alert('As senhas não coincidem!');
+          if (newPass.value !== confirmPass.value) {
+            if (passMatchError) passMatchError.style.display = 'block';
+            confirmPass.focus();
             return;
           }
 
-          if (submitBtn) {
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Gravando perfil no banco...';
+          if (btnSubmit) {
+            btnSubmit.disabled = true;
+            btnSubmit.textContent = 'Gravando no banco...';
           }
 
-          const result = await registerUserInDB({
-            fullName,
-            gamerTag,
-            email,
-            password: pass
-          });
+          const fullName = document.getElementById('fullName').value.trim();
+          const gamerTag = document.getElementById('gamerTag').value.trim();
+          const email = document.getElementById('signupEmail').value.trim();
+          const password = newPass.value;
 
-          if (result.success) {
-            alert(`Conta criada com sucesso no banco de dados! Bem-vindo(a), ${gamerTag}!`);
-            window.location.href = 'login.html';
-          } else {
-            alert(result.message);
-            if (submitBtn) {
-              submitBtn.disabled = false;
-              submitBtn.textContent = 'Criar Perfil Gamer';
+          try {
+            if (typeof registerUserInDB !== 'function') {
+              throw new Error('Função registerUserInDB não encontrada no supabase.js.');
+            }
+
+            const result = await registerUserInDB({
+              fullName,
+              gamerTag,
+              email,
+              password
+            });
+
+            if (!result.success) {
+              if (feedbackMsg) {
+                feedbackMsg.textContent = result.message;
+                feedbackMsg.style.color = '#ff6b8b';
+                feedbackMsg.style.display = 'block';
+              } else {
+                alert(result.message);
+              }
+
+              if (btnSubmit) {
+                btnSubmit.disabled = false;
+                btnSubmit.textContent = 'Criar Perfil Gamer';
+              }
+              return;
+            }
+
+            // Feedback de sucesso imediato
+            if (feedbackMsg) {
+              feedbackMsg.textContent = `✅ Conta criada com sucesso para ${gamerTag}! Entrando no login...`;
+              feedbackMsg.style.color = 'var(--neon-cyan)';
+              feedbackMsg.style.display = 'block';
+            }
+
+            setTimeout(() => {
+              window.location.href = 'login.html';
+            }, 1200);
+
+          } catch (err) {
+            console.error(err);
+            if (feedbackMsg) {
+              feedbackMsg.textContent = err.message || 'Erro ao conectar ao banco.';
+              feedbackMsg.style.color = '#ff6b8b';
+              feedbackMsg.style.display = 'block';
+            }
+            if (btnSubmit) {
+              btnSubmit.disabled = false;
+              btnSubmit.textContent = 'Criar Perfil Gamer';
             }
           }
         });

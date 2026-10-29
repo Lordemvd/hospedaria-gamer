@@ -166,23 +166,33 @@ async function registerUserInDB(userData) {
   const cleanTag = userData.gamerTag.trim();
 
   try {
-    // Validação de unicidade de e-mail ou GamerTag
-    const { data: existingUsers, error: checkError } = await supabaseClient
+    // 1. Verifica se o e-mail já existe
+    const { data: emailMatch, error: emailErr } = await supabaseClient
       .from('users')
-      .select('email, gamer_tag')
-      .or(`email.ilike.${cleanEmail},gamer_tag.ilike.${cleanTag}`);
+      .select('id')
+      .ilike('email', cleanEmail)
+      .limit(1);
 
-    if (checkError) throw checkError;
+    if (emailErr) throw emailErr;
 
-    if (existingUsers && existingUsers.length > 0) {
-      const match = existingUsers[0];
-      if (match.email.toLowerCase() === cleanEmail) {
-        return { success: false, message: 'Este e-mail já está em uso por outro jogador!' };
-      }
+    if (emailMatch && emailMatch.length > 0) {
+      return { success: false, message: 'Este e-mail já está em uso por outro jogador!' };
+    }
+
+    // 2. Verifica se a GamerTag já existe
+    const { data: tagMatch, error: tagErr } = await supabaseClient
+      .from('users')
+      .select('id')
+      .ilike('gamer_tag', cleanTag)
+      .limit(1);
+
+    if (tagErr) throw tagErr;
+
+    if (tagMatch && tagMatch.length > 0) {
       return { success: false, message: 'Esta GamerTag já foi resgatada por outro player!' };
     }
 
-    // Registo com papel padrão 'user'
+    // 3. Insere o novo usuário com papel comum ('user')
     const { data, error } = await supabaseClient
       .from('users')
       .insert([
@@ -200,7 +210,7 @@ async function registerUserInDB(userData) {
     return { success: true, user: data[0] };
   } catch (err) {
     console.error('Erro no registo de utilizador:', err.message);
-    return { success: false, message: 'Erro de ligação ao servidor. Tente novamente.' };
+    return { success: false, message: 'Falha ao salvar no banco: ' + err.message };
   }
 }
 
