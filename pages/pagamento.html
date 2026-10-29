@@ -166,61 +166,78 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-  // 1. RESGATE DE DADOS DA SESSÃO E DA URL
-  const params = new URLSearchParams(window.location.search);
-  const roomParam = params.get('room') || 'duo';
-  const checkinParam = params.get('checkin') || 'A combinar';
-  const checkoutParam = params.get('checkout') || 'A combinar';
-  const totalParam = params.get('total') || 'R$ 260,00';
+// 1. Resgatar dados da URL e do utilizador autenticado
+      const params = new URLSearchParams(window.location.search);
+      const roomParam = params.get('room') || 'duo';
+      const checkinParam = params.get('checkin') || '';
+      const checkoutParam = params.get('checkout') || '';
+      const totalParam = params.get('total') || 'R$ 520,00';
 
-  const roomNames = {
-    'solo': 'Suíte Solo Streamer',
-    'duo': 'Suíte Duo Next-Gen',
-    'squad': 'Party Room Squad'
-  };
-
-  // Elementos visuais do resumo
-  const displayPlayer = document.getElementById('displayPlayer');
-  const displayRoom = document.getElementById('displayRoom');
-  const displayCheckin = document.getElementById('displayCheckin');
-  const displayCheckout = document.getElementById('displayCheckout');
-  const displayTotal = document.getElementById('displayTotal');
-
-  // Identifica o hóspede autenticado no Supabase/localStorage
-  let playerName = params.get('hospede') || 'Player Convidado';
-  const userRaw = localStorage.getItem('nexus_current_user');
-
-  if (userRaw) {
-    try {
-      const user = JSON.parse(userRaw);
-      playerName = user.gamerTag || user.fullName || playerName;
-    } catch (e) {
-      console.warn('Erro ao ler sessão do usuário:', e);
-    }
-  }
-
-  // Atualização visual segura dos dados na página
-  if (displayPlayer) displayPlayer.textContent = playerName;
-  if (displayRoom) displayRoom.textContent = roomNames[roomParam] || 'Suíte Duo Next-Gen';
-  if (displayCheckin) displayCheckin.textContent = checkinParam.includes('-') ? checkinParam.split('-').reverse().join('/') : checkinParam;
-  if (displayCheckout) displayCheckout.textContent = checkoutParam.includes('-') ? checkoutParam.split('-').reverse().join('/') : checkoutParam;
-  if (displayTotal) displayTotal.textContent = totalParam;
-  
-      // 2. TEMPORIZADOR ANTI-OVERBOOKING (15 MINUTOS)
-      let timeLeft = 15 * 60;
-      const timerElement = document.getElementById('timer');
-      const timerInterval = setInterval(() => {
-        timeLeft--;
-        const minutes = Math.floor(timeLeft / 60);
-        const seconds = timeLeft % 60;
-        timerElement.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-
-        if (timeLeft <= 0) {
-          clearInterval(timerInterval);
-          alert('O tempo de retenção do quarto expirou. O setup foi liberado para outros jogadores.');
-          window.location.href = '../index.html';
+      // Identifica o jogador conectado no LocalStorage
+      let currentGuestName = 'Player Convidado';
+      try {
+        const storedUser = localStorage.getItem('nexus_current_user');
+        if (storedUser) {
+          const userObj = JSON.parse(storedUser);
+          currentGuestName = userObj.gamerTag || userObj.fullName || 'Player Convidado';
         }
-      }, 1000);
+      } catch (e) {
+        console.warn('Sessão de utilizador não encontrada:', e);
+      }
+
+      const roomNames = {
+        'solo': 'Suíte Solo Streamer',
+        'duo': 'Suíte Duo Next-Gen',
+        'squad': 'Party Room Squad'
+      };
+
+      const roomTitle = roomNames[roomParam] || 'Suíte Duo Next-Gen';
+
+      document.getElementById('displayRoom').textContent = roomTitle;
+      document.getElementById('displayCheckin').textContent = checkinParam.includes('-') ? checkinParam.split('-').reverse().join('/') : checkinParam;
+      document.getElementById('displayCheckout').textContent = checkoutParam.includes('-') ? checkoutParam.split('-').reverse().join('/') : checkoutParam;
+      document.getElementById('displayTotal').textContent = totalParam;
+
+      // 2. Processar Pagamento e Gravar Reserva no Supabase
+      async function executePayment(metodo) {
+        processingModal.classList.add('show');
+
+        // Gera código único no formato NX-XXXXXX
+        const reservationCode = 'NX-' + Math.floor(100000 + Math.random() * 900000);
+
+        // Gravação direta no PostgreSQL (Supabase)
+        if (typeof saveReservationToDB === 'function') {
+          await saveReservationToDB({
+            codigo: reservationCode,
+            hospede: currentGuestName,
+            quartoId: roomParam,
+            quarto: roomTitle,
+            checkin: checkinParam,
+            checkout: checkoutParam,
+            total: totalParam,
+            metodo: metodo
+          });
+        }
+
+        setTimeout(() => {
+          statusHeading.textContent = 'Pagamento Aprovado!';
+          statusHeading.style.color = 'var(--neon-cyan)';
+          statusDesc.textContent = 'A emitir Gamer Pass VIP e credenciais de acesso...';
+
+          setTimeout(() => {
+            const redirectParams = new URLSearchParams({
+              codigo: reservationCode,
+              hospede: currentGuestName,
+              quarto: roomTitle,
+              checkin: checkinParam,
+              checkout: checkoutParam,
+              total: totalParam,
+              metodo: metodo
+            });
+            window.location.href = `finalizacao.html?${redirectParams.toString()}`;
+          }, 1200);
+        }, 1800);
+      }
 
       // 3. ALTERNÂNCIA DE ABAS (PIX / CARTÃO)
       const tabBtns = document.querySelectorAll('.tab-btn');
