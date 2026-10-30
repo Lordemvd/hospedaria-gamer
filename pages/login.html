@@ -15,11 +15,18 @@
   <script src="../supabase.js"></script>
 
   <style>
+    /* CORREÇÃO DO FUNDO: Gradiente fixo sem repetição e com cobertura total */
     .auth-page-body {
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      background: radial-gradient(circle at 50% 10%, rgba(0, 240, 255, 0.08) 0%, #07080c 70%);
+      background-color: #07080c;
+      background-image: 
+        radial-gradient(circle at 50% 20%, rgba(0, 240, 255, 0.12) 0%, transparent 60%),
+        linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+      background-size: 100% 100%, 40px 40px, 40px 40px;
+      background-attachment: fixed;
     }
 
     .auth-wrapper {
@@ -28,6 +35,7 @@
       align-items: center;
       justify-content: center;
       padding: 110px 20px 40px;
+      width: 100%;
     }
 
     .auth-card {
