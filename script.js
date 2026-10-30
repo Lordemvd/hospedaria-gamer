@@ -620,4 +620,63 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // ==========================================
+  // EASTER EGG DO PROFESSOR (LETRA U NO LOGO)
+  // ==========================================
+  const eggTrigger = document.getElementById('easterEggU');
+  const eggModal = document.getElementById('eggModal');
+  const closeEggBtn = document.getElementById('closeEggBtn');
+
+  // Sintetizador sonoro para o desbloqueio secreto
+  function tocarSomSecreto() {
+    try {
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // Dó
+      osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.12); // Mi
+      osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.24); // Sol
+      osc.frequency.setValueAtTime(1046.50, audioCtx.currentTime + 0.36); // Dó agudo
+
+      gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.6);
+
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.6);
+    } catch (e) {
+      // Ignora silenciosamente caso o navegador bloqueie áudio antes da interação
+    }
+  }
+
+  if (eggTrigger && eggModal) {
+    eggTrigger.addEventListener('click', (e) => {
+      e.preventDefault();
+      eggModal.classList.add('active');
+      tocarSomSecreto();
+    });
+
+    if (closeEggBtn) {
+      closeEggBtn.addEventListener('click', () => {
+        eggModal.classList.remove('active');
+      });
+    }
+
+    eggModal.addEventListener('click', (e) => {
+      if (e.target === eggModal) {
+        eggModal.classList.remove('active');
+      }
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && eggModal.classList.contains('active')) {
+        eggModal.classList.remove('active');
+      }
+    });
+  }
+
 });
