@@ -804,20 +804,49 @@
         reader.readAsDataURL(file);
       });
 
-      // 6. ATUALIZAÇÃO DOS DADOS DA CONTA
-      document.getElementById('userDataForm').addEventListener('submit', (e) => {
+      // 6. ATUALIZAÇÃO DOS DADOS DA CONTA COM VALIDAÇÃO ANTI-DUPLICIDADE
+      document.getElementById('userDataForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const newTag = document.getElementById('fieldGamerTag').value.trim();
         const newName = document.getElementById('fieldFullName').value.trim();
 
         if (!newTag || !newName) return;
 
+        // Se o usuário não alterou a GamerTag atual dele, apenas atualiza o nome
+        if (newTag.toLowerCase() === (user.gamerTag || '').toLowerCase()) {
+          user.fullName = newName;
+          localStorage.setItem('nexus_current_user', JSON.stringify(user));
+          alert('Dados atualizados com sucesso!');
+          return;
+        }
+
+        // Se tentou mudar a GamerTag, checa no Supabase se outro player já possui
+        const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
+        if (client) {
+          try {
+            const { data: tagExists, error: checkErr } = await client
+              .from('users')
+              .select('id')
+              .ilike('gamer_tag', newTag)
+              .neq('id', user.id || '') // ignora o próprio usuário
+              .limit(1);
+
+            if (tagExists && tagExists.length > 0) {
+              alert(`⚠️ A GamerTag "${newTag}" já está em uso por outro jogador! Escolha outro nickname.`);
+              return;
+            }
+          } catch (err) {
+            console.warn('Falha na verificação de tag remota:', err);
+          }
+        }
+
+        // Se liberado, atualiza
         user.gamerTag = newTag;
         user.fullName = newName;
         localStorage.setItem('nexus_current_user', JSON.stringify(user));
 
         sidebarGamerTag.textContent = newTag;
-        alert('Dados da conta salvos com sucesso!');
+        alert('GamerTag e dados salvos com sucesso!');
       });
 
       // 7. LOGOUT
