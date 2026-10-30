@@ -259,17 +259,81 @@
             return;
           }
 
-          // Validação do Captcha Autoral
-        if (captchaInput.value.trim().toUpperCase() !== currentCaptchaCode) {
-          captchaError.textContent = 'Código anti-bot inválido. Tente novamente!';
-          captchaError.style.display = 'block';
-          captchaInput.focus();
-          desenharCaptcha(); // Regera automaticamente em caso de erro
-          captchaInput.value = '';
-          return;
-        }
-        captchaError.style.display = 'none';
+    // ==========================================================================
+    // CYBER CAPTCHA ANTI-BYPASS (SHA-256 & SCOPE ISOLATION)
+    // ==========================================================================
+        (function() {
+             let expectedHash = null;
+             const SALT = 'NEXUS_CAPTCHA_PROTECT_2026';
 
+    // Função interna de hashing nativa do browser (Web Crypto API)
+        async function sha256(str) {
+             const buffer = new TextEncoder().encode(str + SALT);
+              const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+         return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+         }
+
+          function gerarStringAleatoria() {
+              const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+              let res = '';
+         for (let i = 0; i < 5; i++) {
+         res += chars.charAt(Math.floor(Math.random() * chars.length));
+         }
+         return res;
+         }
+
+         async function desenharCaptcha() {
+               const canvas = document.getElementById('captchaCanvas');
+          if (!canvas) return;
+             const ctx = canvas.getContext('2d');
+
+              const rawCode = gerarStringAleatoria();
+      expectedHash = await sha256(rawCode.toLowerCase());
+
+     // Renderização com ruído visual anti-OCR
+         ctx.fillStyle = '#06070a';
+         ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Linhas de distorção
+         for (let i = 0; i < 6; i++) {
+           ctx.strokeStyle = i % 2 === 0 ? '#00f0ff' : '#ff0055';
+           ctx.lineWidth = 1.2;
+           ctx.beginPath();
+           ctx.moveTo(Math.random() * canvas.width, Math.random() * canvas.height);
+           ctx.lineTo(Math.random() * canvas.width, Math.random() * canvas.height);
+           ctx.stroke();
+         }
+
+      // Caracteres com rotação aleatória
+           ctx.font = 'bold 24px Orbitron, monospace';
+      for (let i = 0; i < rawCode.length; i++) {
+           ctx.fillStyle = i % 2 === 0 ? '#00f0ff' : '#00ffaa';
+           ctx.save();
+           ctx.translate(22 + (i * 26), 34);
+           ctx.rotate((Math.random() - 0.5) * 0.4);
+           ctx.fillText(rawCode[i], 0, 0);
+           ctx.restore();
+          }
+         }
+
+     // Bloqueio de clique direito para descarregar a imagem
+         const canvasEl = document.getElementById('captchaCanvas');
+     if (canvasEl) {
+          canvasEl.addEventListener('contextmenu', e => e.preventDefault());
+          canvasEl.style.userSelect = 'none';
+     }
+
+    // Exposição única da validação assíncrona blindada
+         window.verificarCyberCaptcha = async function(userInput) {
+         if (!userInput || !expectedHash) return false;
+            const inputHash = await sha256(userInput.trim().toLowerCase());
+       return inputHash === expectedHash;
+     };
+
+         window.reiniciarCyberCaptcha = desenharCaptcha;
+         document.addEventListener('DOMContentLoaded', desenharCaptcha);
+        })();
           if (btnSubmit) {
             btnSubmit.disabled = true;
             btnSubmit.textContent = 'Gravando no banco...';

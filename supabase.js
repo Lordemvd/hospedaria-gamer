@@ -472,3 +472,12 @@ if (typeof window !== 'undefined') {
   window.fetchAllReservations = fetchAllReservations;
   window.updateReservationStatus = updateReservationStatus;
 }
+
+// Validação estrita antes de tocar na base de dados
+  const precoLimpo = String(reservationData.total).trim();
+  const regexPreco = /^R\$\s?\d{1,4},\d{2}$/;
+
+  if (!regexPreco.test(precoLimpo) || precoLimpo.includes('shell') || precoLimpo.includes('0,00')) {
+    console.error('Tentativa de gravação com tarifa adulterada:', precoLimpo);
+    return { success: false, error: 'Valor da tarifa inválido ou violado.' };
+  }

@@ -195,10 +195,10 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../supabase.js"></script>
 
-  <script>
+<script>
     document.addEventListener('DOMContentLoaded', () => {
 
-      // 1. TRAVA DE AUTENTICAÇÃO: Redireciona para o login e, após autenticar, leva para a RESERVA
+      // 1. TRAVA DE AUTENTICAÇÃO: Redireciona para o login caso não haja sessão ativa
       const activeSession = localStorage.getItem('nexus_current_user');
       if (!activeSession) {
         alert('🔒 Acesso restrito: identifique-se com sua GamerTag para configurar sua estadia.');
@@ -206,21 +206,88 @@
         return;
       }
 
-      // 2. TRAVA DE CARRINHO VAZIO: Impede acesso direto à página sem dados de reserva
+      // 2. LEITURA DE PARÂMETROS DA URL
       const params = new URLSearchParams(window.location.search);
-      const checkinParam = params.get('checkin');
-      const totalParam = params.get('total');
+      const roomParam = (params.get('room') || 'duo').toLowerCase();
+      const checkinParam = params.get('checkin') || '';
+      const checkoutParam = params.get('checkout') || '';
+      const totalParam = params.get('total') || '';
 
-      if (!checkinParam || !totalParam) {
+      // Trava de Carrinho Vazio
+      if (!checkinParam || !checkoutParam || !totalParam) {
         alert('⚠️ Nenhum setup selecionado. Escolha a acomodação e o período antes de avançar para o pagamento.');
         window.location.href = 'reserva.html';
         return;
       }
 
-      // 3. SE LOGADO E COM DADOS VÁLIDOS: Carrega a tela de pagamento normalmente
-      const roomParam = params.get('room') || 'duo';
-      const checkoutParam = params.get('checkout') || '';
+      // 3. BLINDAGEM ANTI-TAMPERING: VALIDAÇÃO ESTRITA DE DATAS E ANOS
+      const regexDataISO = /^\d{4}-\d{2}-\d{2}$/;
+      if (!regexDataISO.test(checkinParam) || !regexDataISO.test(checkoutParam)) {
+        alert('⚠️ Formato de data inválido detectado. Use o calendário oficial da reserva.');
+        window.location.href = 'reserva.html';
+        return;
+      }
 
+      const anoIn = parseInt(checkinParam.split('-')[0], 10);
+      const anoOut = parseInt(checkoutParam.split('-')[0], 10);
+      const anoAtual = 2026;
+
+      // Bloqueia tentativas com anos adulterados (ex: ano 20 ou 9999)
+      if (anoIn < anoAtual || anoIn > anoAtual + 1 || anoOut < anoAtual || anoOut > anoAtual + 1) {
+        alert('⚠️ Janela de reserva inválida. As estadias são aceitas apenas para 2026 e 2027.');
+        window.location.href = 'reserva.html';
+        return;
+      }
+
+      const dtCheckin = new Date(checkinParam + 'T14:00:00');
+      const dtCheckout = new Date(checkoutParam + 'T12:00:00');
+      const hojeReferencia = new Date();
+      hojeReferencia.setHours(0, 0, 0, 0);
+
+      if (dtCheckin < hojeReferencia) {
+        alert('⚠️ A data de check-in não pode ser retroativa.');
+        window.location.href = 'reserva.html';
+        return;
+      }
+
+      if (dtCheckout <= dtCheckin) {
+        alert('⚠️ A data de check-out deve ser posterior à data de check-in.');
+        window.location.href = 'reserva.html';
+        return;
+      }
+
+      const diffDias = Math.ceil((dtCheckout - dtCheckin) / (1000 * 60 * 60 * 24));
+      if (diffDias < 1 || diffDias > 30) {
+        alert('⚠️ Período de estadia fora dos limites permitidos (mínimo 1 diária, máximo 30).');
+        window.location.href = 'reserva.html';
+        return;
+      }
+
+      // 4. TABELA DE TARIFAS E RECÁLCULO SEGURO DO TOTAL (BLOQUEIA R$ 0,00 E STRINGS 'SHELL')
+      const TABELA_QUARTOS = {
+        'solo': { nome: 'Suíte Solo Streamer', preco: 180 },
+        'duo': { nome: 'Suíte Duo Next-Gen', preco: 260 },
+        'squad': { nome: 'Party Room Squad', preco: 420 }
+      };
+
+      const quartoInfo = TABELA_QUARTOS[roomParam] || TABELA_QUARTOS['duo'];
+      const roomTitle = quartoInfo.nome;
+      const tarifaMinimaEsperada = diffDias * quartoInfo.preco;
+
+      // Extrai o valor numérico que veio na URL para validar integridade
+      const valorNumericoURL = parseFloat(
+        totalParam.replace(/[^\d,]/g, '').replace(',', '.')
+      );
+
+      // Se o valor estiver corrompido, for "shell", "0,00" ou menor que as diárias contratadas, força o total legítimo
+      let valorFinalNumerico = tarifaMinimaEsperada;
+      if (!isNaN(valorNumericoURL) && valorNumericoURL >= tarifaMinimaEsperada) {
+        valorFinalNumerico = valorNumericoURL; // Aceita inclusão de opcionais legítimos calculados
+      }
+
+      const finalTotalFormatted = `R$ ${valorFinalNumerico.toFixed(2).replace('.', ',')}`;
+
+      // 5. RESGATE DA GAMERTAG AUTENTICADA
       let currentGuestName = 'Player Convidado';
       try {
         const storedUser = localStorage.getItem('nexus_current_user');
@@ -229,18 +296,10 @@
           currentGuestName = userObj.gamerTag || userObj.fullName || 'Player Convidado';
         }
       } catch (e) {
-        console.warn('Sessão de utilizador não encontrada:', e);
+        console.warn('Falha ao obter sessão do usuário:', e);
       }
 
-      const roomNames = {
-        'solo': 'Suíte Solo Streamer',
-        'duo': 'Suíte Duo Next-Gen',
-        'squad': 'Party Room Squad'
-      };
-
-      const roomTitle = roomNames[roomParam] || 'Suíte Duo Next-Gen';
-
-      // Atualiza os dados na barra lateral "Resumo do Pedido"
+      // 6. ATUALIZAÇÃO VISUAL NO RESUMO DO PEDIDO
       const guestEl = document.getElementById('displayGuest') || 
                       Array.from(document.querySelectorAll('strong')).find(el => el.textContent.includes('Player Convidado'));
       if (guestEl) guestEl.textContent = currentGuestName;
@@ -249,15 +308,15 @@
       if (roomEl) roomEl.textContent = roomTitle;
 
       const checkinEl = document.getElementById('displayCheckin');
-      if (checkinEl) checkinEl.textContent = checkinParam.includes('-') ? checkinParam.split('-').reverse().join('/') : checkinParam;
+      if (checkinEl) checkinEl.textContent = checkinParam.split('-').reverse().join('/');
 
       const checkoutEl = document.getElementById('displayCheckout');
-      if (checkoutEl) checkoutEl.textContent = checkoutParam.includes('-') ? checkoutParam.split('-').reverse().join('/') : checkoutParam;
+      if (checkoutEl) checkoutEl.textContent = checkoutParam.split('-').reverse().join('/');
 
       const totalEl = document.getElementById('displayTotal');
-      if (totalEl) totalEl.textContent = totalParam;
+      if (totalEl) totalEl.textContent = finalTotalFormatted;
 
-      // 3. Temporizador de Retenção (15 Minutos)
+      // 7. TEMPORIZADOR DE RETENÇÃO (15 MINUTOS)
       let timeLeft = 15 * 60;
       const timerElement = document.getElementById('timer');
       if (timerElement) {
@@ -269,13 +328,13 @@
 
           if (timeLeft <= 0) {
             clearInterval(timerInterval);
-            alert('O tempo de retenção expirou. O quarto foi liberado.');
+            alert('O tempo de retenção expirou. O setup foi liberado.');
             window.location.href = '../index.html';
           }
         }, 1000);
       }
 
-      // 4. Alternância de abas (PIX / Cartão)
+      // 8. ALTERNÂNCIA DE ABAS (PIX / CARTÃO)
       const tabBtns = document.querySelectorAll('.tab-btn');
       const tabContents = document.querySelectorAll('.tab-content');
 
@@ -290,7 +349,7 @@
         });
       });
 
-      // 5. Máscaras de entrada do Cartão de Crédito
+      // 9. MÁSCARAS DO CARTÃO DE CRÉDITO
       const cardNumber = document.getElementById('cardNumber');
       if (cardNumber) {
         cardNumber.addEventListener('input', (e) => {
@@ -311,7 +370,7 @@
         });
       }
 
-      // 6. Botão Copiar Código PIX com feedback visual
+      // 10. COPIAR CÓDIGO PIX
       const btnCopyPix = document.getElementById('btnCopyPix');
       const pixKey = document.getElementById('pixKey');
       if (btnCopyPix && pixKey) {
@@ -328,7 +387,7 @@
         });
       }
 
-      // 7. Processamento e gravação da reserva no Supabase com Timeout
+      // 11. PROCESSAMENTO E GRAVAÇÃO COM VALORES BLINDADOS
       let isProcessing = false;
 
       async function executePayment(metodo) {
@@ -349,6 +408,7 @@
               setTimeout(() => resolve({ success: false, timeout: true }), 2500)
             );
 
+            // Grava os dados validados e sanitizados no Supabase
             await Promise.race([
               saveReservationToDB({
                 codigo: reservationCode,
@@ -357,14 +417,14 @@
                 quarto: roomTitle,
                 checkin: checkinParam,
                 checkout: checkoutParam,
-                total: totalParam,
+                total: finalTotalFormatted,
                 metodo: metodo
               }),
               timeoutPromise
             ]);
           }
         } catch (dbErr) {
-          console.warn('Persistência Supabase superou o tempo limite ou oscilou. Prosseguindo:', dbErr);
+          console.warn('Persistência remota superou o tempo limite. Prosseguindo:', dbErr);
         }
 
         setTimeout(() => {
@@ -383,7 +443,7 @@
               quarto: roomTitle,
               checkin: checkinParam,
               checkout: checkoutParam,
-              total: totalParam,
+              total: finalTotalFormatted,
               metodo: metodo
             });
             window.location.href = `finalizacao.html?${redirectParams.toString()}`;
@@ -391,7 +451,7 @@
         }, 1500);
       }
 
-      // 8. Listeners de confirmação
+      // 12. LISTENERS DE CONFIRMAÇÃO
       const btnConfirmPix = document.getElementById('btnConfirmPix');
       if (btnConfirmPix) {
         btnConfirmPix.addEventListener('click', (e) => {
