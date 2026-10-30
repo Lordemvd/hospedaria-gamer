@@ -8,10 +8,6 @@ const SUPABASE_ANON_KEY = 'sb_publishable_0zpUzcOfgIlHxhgDtShkpQ_G7xGOHxH';
 
 let supabaseClient = null;
 
-/**
- * Garante a inicialização e recuperação do cliente Supabase
- * protegendo a aplicação contra atrasos de carregamento da CDN externa.
- */
 function getSupabaseClient() {
   if (supabaseClient) return supabaseClient;
   if (typeof window !== 'undefined' && window.supabase && window.supabase.createClient) {
@@ -21,7 +17,6 @@ function getSupabaseClient() {
   return null;
 }
 
-// Inicialização imediata
 getSupabaseClient();
 
 
@@ -29,9 +24,6 @@ getSupabaseClient();
 // 2. MOTOR DE RESERVAS & ANTI-OVERBOOKING
 // ==========================================================================
 
-/**
- * Grava uma nova reserva confirmada na tabela 'reservations'
- */
 async function saveReservationToDB(reservationData) {
   const client = getSupabaseClient();
   if (!client) {
@@ -39,7 +31,15 @@ async function saveReservationToDB(reservationData) {
     return { success: false, fallback: true };
   }
 
-  // Normalização de data para formato padrão ISO (YYYY-MM-DD) do PostgreSQL
+  // Sanitização financeira estrita (dentro da função correta)
+  const precoLimpo = String(reservationData.total || '').trim();
+  const regexPreco = /^R\$\s?\d{1,4},\d{2}$/;
+
+  if (!regexPreco.test(precoLimpo) || precoLimpo.includes('shell') || precoLimpo.includes('0,00')) {
+    console.error('❌ Tentativa de gravação com tarifa adulterada:', precoLimpo);
+    return { success: false, error: 'Valor da tarifa inválido ou violado.' };
+  }
+
   const parseValidDate = (dateStr) => {
     if (!dateStr || dateStr.includes('combinar')) {
       return new Date().toISOString().split('T')[0];
@@ -62,7 +62,7 @@ async function saveReservationToDB(reservationData) {
           room_name: reservationData.quarto,
           check_in: parseValidDate(reservationData.checkin),
           check_out: parseValidDate(reservationData.checkout),
-          total_price: reservationData.total,
+          total_price: precoLimpo,
           payment_method: reservationData.metodo,
           status: 'CONFIRMADA'
         }
@@ -78,9 +78,6 @@ async function saveReservationToDB(reservationData) {
   }
 }
 
-/**
- * Consulta reservas ativas por GamerTag ou Código NX (usado no Hub e Perfil)
- */
 async function fetchUserReservations(searchTerm) {
   const client = getSupabaseClient();
   if (!client) return { success: false, data: [] };
@@ -102,9 +99,6 @@ async function fetchUserReservations(searchTerm) {
   }
 }
 
-/**
- * Validação Anti-Overbooking: verifica colisão de datas no banco em tempo real
- */
 async function checkRoomAvailability(roomId, checkinStr, checkoutStr) {
   const client = getSupabaseClient();
   if (!client) {
@@ -146,9 +140,6 @@ async function checkRoomAvailability(roomId, checkinStr, checkoutStr) {
 // 3. FILA DE ESPERA & DROPS PRIORITÁRIOS
 // ==========================================================================
 
-/**
- * Registra contato na lista de espera para quartos esgotados
- */
 async function saveWaitlistToDB(waitlistData) {
   const client = getSupabaseClient();
   if (!client) return { success: false };
@@ -174,9 +165,6 @@ async function saveWaitlistToDB(waitlistData) {
   }
 }
 
-/**
- * Busca todas as inscrições na fila de espera (Painel Master)
- */
 async function fetchAllWaitlist() {
   const client = getSupabaseClient();
   if (!client) return { success: false, data: [] };
@@ -200,9 +188,6 @@ async function fetchAllWaitlist() {
 // 4. AUTENTICAÇÃO, CONTAS & RECUPERAÇÃO DE ACESSO
 // ==========================================================================
 
-/**
- * Cadastra novo usuário garantindo unicidade estrita de e-mail e GamerTag
- */
 async function registerUserInDB(userData) {
   const client = getSupabaseClient();
   if (!client) {
@@ -213,7 +198,6 @@ async function registerUserInDB(userData) {
   const cleanTag = userData.gamerTag.trim();
 
   try {
-    // 1. Verifica duplicidade de e-mail
     const { data: emailMatch, error: emailErr } = await client
       .from('users')
       .select('id')
@@ -225,7 +209,6 @@ async function registerUserInDB(userData) {
       return { success: false, message: 'Este e-mail já está em uso por outro jogador!' };
     }
 
-    // 2. Verifica duplicidade de GamerTag (case-insensitive)
     const { data: tagMatch, error: tagErr } = await client
       .from('users')
       .select('id')
@@ -237,7 +220,6 @@ async function registerUserInDB(userData) {
       return { success: false, message: 'Esta GamerTag já foi resgatada por outro player!' };
     }
 
-    // 3. Insere a conta
     const { data, error } = await client
       .from('users')
       .insert([
@@ -260,9 +242,6 @@ async function registerUserInDB(userData) {
   }
 }
 
-/**
- * Autentica o jogador por E-mail ou GamerTag contra a senha
- */
 async function loginUserInDB(identifier, password) {
   const client = getSupabaseClient();
   if (!client) {
@@ -320,9 +299,6 @@ async function loginUserInDB(identifier, password) {
   }
 }
 
-/**
- * Atualiza campos de perfil (GamerTag, foto, previous_tags, nome)
- */
 async function updateUserProfileInDB(userId, updateData) {
   const client = getSupabaseClient();
   if (!client) return { success: false, message: 'Supabase não conectado.' };
@@ -342,9 +318,6 @@ async function updateUserProfileInDB(userId, updateData) {
   }
 }
 
-/**
- * Localiza conta por E-mail ou CPF para recuperação de senha
- */
 async function findUserForRecovery(identifier) {
   const client = getSupabaseClient();
   if (!client) return { success: false, message: 'Supabase não conectado.' };
@@ -375,9 +348,6 @@ async function findUserForRecovery(identifier) {
   }
 }
 
-/**
- * Grava uma nova senha na conta do usuário
- */
 async function resetUserPasswordInDB(userId, newPassword) {
   const client = getSupabaseClient();
   if (!client) return { success: false, message: 'Supabase não conectado.' };
@@ -402,9 +372,6 @@ async function resetUserPasswordInDB(userId, newPassword) {
 // 5. FUNÇÕES ADMINISTRATIVAS (PAINEL MASTER ADM)
 // ==========================================================================
 
-/**
- * Lista todas as reservas do sistema para visualização administrativa
- */
 async function fetchAllReservations() {
   const client = getSupabaseClient();
   if (!client) return { success: false, data: [] };
@@ -423,9 +390,6 @@ async function fetchAllReservations() {
   }
 }
 
-/**
- * Altera status da reserva (ex: 'CANCELADA', 'CHECKIN')
- */
 async function updateReservationStatus(reservationCode, newStatus) {
   const client = getSupabaseClient();
   if (!client) return { success: false, message: 'Supabase não conectado.' };
@@ -472,12 +436,3 @@ if (typeof window !== 'undefined') {
   window.fetchAllReservations = fetchAllReservations;
   window.updateReservationStatus = updateReservationStatus;
 }
-
-// Validação estrita antes de tocar na base de dados
-  const precoLimpo = String(reservationData.total).trim();
-  const regexPreco = /^R\$\s?\d{1,4},\d{2}$/;
-
-  if (!regexPreco.test(precoLimpo) || precoLimpo.includes('shell') || precoLimpo.includes('0,00')) {
-    console.error('Tentativa de gravação com tarifa adulterada:', precoLimpo);
-    return { success: false, error: 'Valor da tarifa inválido ou violado.' };
-  }
