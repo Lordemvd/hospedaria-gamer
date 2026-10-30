@@ -3410,3 +3410,85 @@ span.flatpickr-weekday {
   color: #ff6b8b;
   background: rgba(255, 107, 139, 0.08);
 }
+
+/* ==========================================================================
+   EXPORTAÇÃO LIMPA: GAMER PASS (IMPRESSÃO & PDF A4)
+   ========================================================================== */
+@media print {
+  /* 1. Oculta elementos desnecessários na impressão */
+  .navbar,
+  .footer,
+  .ticket-actions,
+  .sfx-toggle-btn,
+  .btn-primary,
+  .btn-secondary,
+  .back-home-link,
+  #btnImprimirPass {
+    display: none !important;
+  }
+
+  /* 2. Configuração de margem da página A4 */
+  @page {
+    size: A4 portrait;
+    margin: 12mm;
+  }
+
+  /* 3. Limpeza do fundo geral */
+  html, body {
+    background: #ffffff !important;
+    color: #07080c !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .finalizacao-container,
+  .voucher-page-wrap,
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    background: transparent !important;
+  }
+
+  /* 4. Enquadramento e fidelidade de cor do Gamer Pass */
+  .ticket-card,
+  .voucher-card,
+  .gamer-pass-wrapper {
+    background: #090a12 !important;
+    color: #ffffff !important;
+    border: 2px solid #00f0ff !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+    max-width: 680px !important;
+    margin: 20px auto !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Preserva o contraste néon dos detalhes */
+  .ticket-header,
+  .ticket-col,
+  .ticket-badge,
+  .badge {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .ticket-col .val,
+  #resGuest,
+  #resCode {
+    color: #00f0ff !important;
+  }
+
+  /* 5. QR Code nítido e proporcional */
+  #ticketQrImg,
+  #qrCodeImg {
+    width: 140px !important;
+    height: 140px !important;
+    border: 1px solid #00f0ff !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}

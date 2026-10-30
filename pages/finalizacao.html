@@ -109,15 +109,15 @@
         <span class="scan-hint" style="margin-top: 10px; font-size: 0.8rem; color: var(--neon-cyan);">Apresente na recepção</span>
       </div>
 
-    <!-- BOTÕES DE AÇÃO (OCULTOS NA IMPRESSÃO) -->
-    <div class="confirmation-actions no-print">
-      <button type="button" onclick="window.print()" class="btn-secondary">
-        🖨️ Salvar / Imprimir Voucher (PDF)
-      </button>
-      <a href="../index.html" class="btn-primary">
-        Voltar à Página Inicial
-      </a>
-    </div>
+    <!-- AÇÕES DO COMPROVATIVO -->
+      <div class="ticket-actions" style="display: flex; gap: 14px; justify-content: center; margin-top: 25px;">
+        <button type="button" id="btnImprimirPass" class="btn-primary" onclick="window.print()" style="padding: 12px 24px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
+          📄 Guardar em PDF / Imprimir Bilhete
+        </button>
+        <a href="../index.html" class="btn-secondary" style="padding: 12px 20px; text-decoration: none; display: inline-flex; align-items: center;">
+          Voltar ao Início
+        </a>
+      </div>
 
   </main>
 
@@ -201,7 +201,7 @@
       }
     });
   </script>
-  
+
 <!-- SDK Oficial do Supabase -->
   <script defer src="../supabase-sdk.js"></script>
   <script defer src="../supabase.js"></script>
