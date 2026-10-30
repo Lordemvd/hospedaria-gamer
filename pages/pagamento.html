@@ -193,6 +193,15 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
+
+    // Trava de Segurança: impede acesso direto à tela de pagamento sem estar autenticado
+      const activeSession = localStorage.getItem('nexus_current_user');
+      if (!activeSession) {
+        alert('Acesso negado: faça login para acessar a área de pagamento seguro.');
+        window.location.href = 'login.html';
+        return;
+      }
+
       // 1. RESGATE DE DADOS DA URL E IDENTIFICAÇÃO DO JOGADOR
       const params = new URLSearchParams(window.location.search);
       const roomParam = params.get('room') || 'duo';

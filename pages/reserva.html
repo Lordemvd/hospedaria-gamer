@@ -285,19 +285,37 @@
       checkoutInput.addEventListener('change', calculateTotal);
       addonCheckboxes.forEach(cb => cb.addEventListener('change', calculateTotal));
 
-     // 5. Envio com validação real Anti-Overbooking e Proteção contra Travamento
+     // 5. Envio com Login Obrigatório, Anti-Overbooking e Proteção contra Travamento
       reservationForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+
         const submitBtn = reservationForm.querySelector('button[type="submit"]');
         const originalText = 'Avançar para Pagamento Seguro';
-        
+
+        // 1. CHECAGEM DE AUTENTICAÇÃO OBRIGATÓRIA (BARREIRA IMEDIATA)
+        const currentUser = localStorage.getItem('nexus_current_user');
+        const data = calculateTotal();
+
+        if (!currentUser) {
+          alert('🔒 Acesso Restrito: Identifique-se com sua GamerTag para confirmar a reserva do setup.');
+
+          const returnParams = new URLSearchParams({
+            room: data.room,
+            checkin: data.checkin,
+            checkout: data.checkout,
+            total: data.total
+          });
+
+          window.location.href = `login.html?redirect=${encodeURIComponent('reserva.html?' + returnParams.toString())}`;
+          return;
+        }
+
+        // 2. FEEDBACK VISUAL DE PROCESSAMENTO
         submitBtn.disabled = true;
         submitBtn.textContent = 'Checando disponibilidade no banco...';
 
         try {
-          const data = calculateTotal();
-
-          // 1. Checagem com timeout de segurança (máximo de 3.5s para nunca travar a tela)
+          // 3. CHECAGEM ANTI-OVERBOOKING COM TIMEOUT DE SEGURANÇA (3.5s)
           if (typeof checkRoomAvailability === 'function') {
             const timeoutPromise = new Promise((resolve) =>
               setTimeout(() => resolve({ available: true, timeout: true }), 3500)
@@ -322,7 +340,7 @@
             }
           }
 
-          // 2. Se liberado (ou se atingiu timeout de conexão), avança normalmente
+          // 4. SETUP LIBERADO: AVANÇA PARA O CHECKOUT COM IDENTIDADE CONFIRMADA
           const params = new URLSearchParams({
             room: data.room,
             checkin: data.checkin,
@@ -333,13 +351,11 @@
 
         } catch (err) {
           console.error('Falha na verificação de reserva:', err);
-          // Em caso de qualquer erro imprevisto, restaura o botão na hora
           submitBtn.disabled = false;
           submitBtn.textContent = originalText;
           alert('Houve uma oscilação momentânea na checagem. Tente clicar em avançar novamente.');
         }
       });
-    });
 
   </script>
 

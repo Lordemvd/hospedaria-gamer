@@ -129,7 +129,14 @@
             // Armazena a sessão com perfil (admin/user)
             localStorage.setItem('nexus_current_user', JSON.stringify(result.user));
 
-            if (result.user.role === 'admin') {
+            // 3. REDIRECIONAMENTO INTELIGENTE: Verifica se o usuário veio barrado da reserva
+            const urlParams = new URLSearchParams(window.location.search);
+            const redirectTarget = urlParams.get('redirect');
+
+            if (redirectTarget) {
+              alert(`🎮 Login confirmado: Bem-vindo, ${result.user.gamerTag}! Retornando à sua reserva...`);
+              window.location.href = decodeURIComponent(redirectTarget);
+            } else if (result.user.role === 'admin') {
               alert(`🛡️ Painel Master: Bem-vindo, Administrador ${result.user.gamerTag}!`);
               window.location.href = 'admin.html';
             } else {
@@ -153,6 +160,7 @@
           }
         });
       }
+    
     });
   </script>
 </body>
