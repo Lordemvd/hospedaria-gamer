@@ -3,55 +3,158 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nexus Inn | Novo Cadastro</title>
+  <title>Nexus Inn | Criar Conta</title>
   <link rel="stylesheet" href="../style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%AE%3C/text%3E%3C/svg%3E">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%2300f0ff'/%3E%3Ctext x='50' y='65' font-size='48' text-anchor='middle' fill='%2307080c'%3E%F0%9F%8E%AE%3C/text%3E%3C/svg%3E">
 
-<!-- SDK Oficial do Supabase + Arquivo de Conexão -->
-  <!-- NOSONAR -->
-  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" crossorigin="anonymous"></script>
+  <!-- SDK Oficial do Supabase + Conexão -->
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script defer src="../supabase.js"></script>
-</head>
 
-    <style>
-
-        /* CYBER CAPTCHA AUTORAL */
-    .captcha-group {
-      margin-top: 6px;
+  <style>
+    .auth-page-body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: radial-gradient(circle at 50% 10%, rgba(0, 240, 255, 0.08) 0%, #07080c 70%);
     }
 
-    .captcha-box {
+    .auth-wrapper {
+      flex: 1;
       display: flex;
       align-items: center;
-      gap: 10px;
+      justify-content: center;
+      padding: 110px 20px 40px;
+    }
+
+    .auth-card-wide {
+      background: #0d0f18;
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      border-radius: 10px;
+      max-width: 680px;
+      width: 100%;
+      padding: 32px 36px;
+      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 240, 255, 0.15);
+    }
+
+    .auth-card-header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .auth-card-header h1 {
+      font-family: var(--font-display, 'Orbitron', sans-serif);
+      font-size: 1.6rem;
+      color: #ffffff;
+      margin: 8px 0 4px 0;
+    }
+
+    .auth-card-header p {
+      color: var(--text-muted, #94a3b8);
+      font-size: 0.95rem;
+      margin: 0;
+    }
+
+    .form-row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 600px) {
+      .form-row-2 {
+        grid-template-columns: 1fr;
+      }
+      .auth-card-wide {
+        padding: 24px 20px;
+      }
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-family: var(--font-display, 'Orbitron', sans-serif);
+      font-size: 0.78rem;
+      color: var(--text-muted, #94a3b8);
+      margin-bottom: 6px;
+    }
+
+    .form-group input {
+      width: 100%;
+      background: #07080c;
+      border: 1px solid #1f2338;
+      color: #ffffff;
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-family: var(--font-body, 'Rajdhani', sans-serif);
+      font-size: 0.95rem;
+      outline: none;
+      box-sizing: border-box;
+      transition: border-color 0.2s ease;
+    }
+
+    .form-group input:focus {
+      border-color: var(--neon-cyan, #00f0ff);
+    }
+
+    /* ESTILOS DO CYBER CAPTCHA */
+    .captcha-container {
+      background: #080910;
+      border: 1px solid rgba(0, 240, 255, 0.2);
+      border-radius: 6px;
+      padding: 14px;
+      margin-bottom: 18px;
+    }
+
+    .captcha-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .canvas-wrap {
+      position: relative;
+      display: inline-block;
+      user-select: none;
+      -webkit-user-select: none;
     }
 
     #captchaCanvas {
-      background: #090a12;
-      border: 1px solid var(--border-glow, rgba(0, 240, 255, 0.4));
+      background: #05060a;
+      border: 1px solid rgba(0, 240, 255, 0.3);
       border-radius: 4px;
-      box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8);
       cursor: not-allowed;
-      user-select: none;
-      flex-shrink: 0;
+      display: block;
+    }
+
+    /* Camada transparente anti-download */
+    .canvas-shield {
+      position: absolute;
+      inset: 0;
+      background: transparent;
+      cursor: not-allowed;
     }
 
     .btn-refresh-captcha {
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.15);
       color: var(--neon-cyan, #00f0ff);
-      font-size: 1.1rem;
-      padding: 8px 12px;
+      width: 42px;
+      height: 42px;
       border-radius: 4px;
       cursor: pointer;
-      transition: all 0.2s ease;
-      height: 42px;
       display: flex;
       align-items: center;
       justify-content: center;
+      font-size: 1.1rem;
+      transition: all 0.2s ease;
     }
 
     .btn-refresh-captcha:hover {
@@ -60,18 +163,43 @@
       transform: rotate(90deg);
     }
 
-    #captchaInput {
+    .captcha-input-field {
+      flex: 1;
+      min-width: 140px;
+    }
+
+    .captcha-input-field input {
       text-transform: uppercase;
       font-family: var(--font-display, 'Orbitron', monospace);
       letter-spacing: 2px;
-      font-weight: 700;
       text-align: center;
+      font-weight: 700;
       height: 42px;
     }
 
+    .input-error-msg {
+      color: #ff6b8b;
+      font-size: 0.8rem;
+      margin-top: 6px;
+      display: block;
+    }
 
-    </style>
+    .terms-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+      font-size: 0.88rem;
+      color: #94a3b8;
+    }
 
+    .terms-row input[type="checkbox"] {
+      accent-color: var(--neon-cyan, #00f0ff);
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body class="auth-page-body">
 
@@ -81,387 +209,183 @@
         <span class="logo-highlight">NEXUS</span>INN
       </a>
     </div>
-    <nav class="nav-links">
+    <nav class="nav-links" aria-label="Navegação principal">
       <a href="../index.html">Voltar ao Início</a>
     </nav>
   </header>
 
   <main class="auth-wrapper">
-    <div class="auth-card auth-card-wide">
+    <div class="auth-card-wide">
       <div class="auth-card-header">
-        <span class="badge">NOVA CONTA</span>
-        <h1 class="auth-title">CRIE SUA GAMERTAG</h1>
-        <p class="auth-subtitle">Garanta vantagens VIP, ping prioritário e agilidade no check-in.</p>
+        <span class="badge">REGISTRO DE ACESSO</span>
+        <h1>CRIE SUA GAMERTAG</h1>
+        <p>Cadastre sua credencial oficial para reservar setups e obter seu Gamer Pass.</p>
       </div>
 
-      <form id="signupForm" class="auth-form">
-        <div class="auth-grid-desktop">
-          
-          <!-- Linha 1: Nome e GamerTag -->
+      <form id="signupForm">
+        <div class="form-row-2">
           <div class="form-group">
             <label for="fullName">Nome Completo</label>
-            <input type="text" id="fullName" placeholder="Ex: Alex Mercer" required autocomplete="name">
+            <input type="text" id="fullName" placeholder="Ex: Gabriel Souza" required>
           </div>
           <div class="form-group">
-            <label for="gamerTag">GamerTag (Apelido Público)</label>
-            <input type="text" id="gamerTag" placeholder="Ex: ShadowStriker" required autocomplete="username">
-          </div>
-
-          <!-- Linha 2: E-mail e CPF -->
-          <div class="form-group">
-            <label for="signupEmail">E-mail</label>
-            <input type="email" id="signupEmail" placeholder="player@nexusinn.com" required autocomplete="email">
-          </div>
-          <div class="form-group">
-            <label for="cpf">CPF</label>
-            <input type="text" id="cpf" placeholder="000.000.000-00" required maxlength="14">
-          </div>
-
-          <!-- Linha 3: Senha e Confirmação -->
-          <div class="form-group">
-            <label for="newPass">Senha</label>
-            <div class="input-password-wrapper" style="position: relative; display: flex; align-items: center;">
-              <input type="password" id="newPass" placeholder="••••••••" required autocomplete="new-password" style="width: 100%; padding-right: 40px;">
-              <button type="button" id="btnTogglePass" class="toggle-pass-btn" style="position: absolute; right: 12px; background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 1.1rem;" aria-label="Alternar visibilidade da senha">👁</button>
-            </div>
-            <div class="strength-meter-container" style="margin-top: 6px;">
-              <div class="strength-bar" id="strengthBar"></div>
-            </div>
-            <span class="strength-text" id="strengthText" style="font-size: 0.76rem; color: var(--text-muted); margin-top: 3px; display: block;">Força da senha: digite uma senha</span>
-          </div>
-
-          <div class="form-group">
-            <label for="confirmPass">Confirmar Senha</label>
-            <input type="password" id="confirmPass" placeholder="••••••••" required autocomplete="new-password">
-            <small id="passMatchError" class="input-error-msg" style="display: none; color: #ff6b8b; margin-top: 4px;">As senhas não coincidem!</small>
-          </div>
-
-          <!-- Linha 4: Captcha e Termos de Uso (Corrigido) -->
-
-          <!-- VERIFICAÇÃO ANTI-BOT AUTORAL (CYBER CAPTCHA) -->
-        <div class="form-group captcha-group">
-          <label for="captchaInput">Protocolo Anti-Bot &bull; Digite o Código</label>
-          <div class="captcha-box">
-            <canvas id="captchaCanvas" width="160" height="42" title="Código de verificação"></canvas>
-            <button type="button" id="btnRefreshCaptcha" class="btn-refresh-captcha" title="Gerar novo código" aria-label="Gerar novo código captcha">
-              🔄
-            </button>
+            <label for="gamerTag">GamerTag (3 a 16 caracteres)</label>
             <input 
               type="text" 
-              id="captchaInput" 
-              placeholder="Código" 
-              maxlength="6" 
+              id="gamerTag" 
+              placeholder="Ex: Shadow_21" 
+              maxlength="16" 
               required 
-              autocomplete="off"
-              spellcheck="false"
+              pattern="^[a-zA-Z0-9_-]{3,16}$" 
+              title="A GamerTag deve conter de 3 a 16 caracteres (letras, números, hífen e underline)."
             >
           </div>
-          <small id="captchaError" class="input-error-msg" style="display: none;">Código incorreto. Tente novamente.</small>
         </div>
 
-          <div class="terms-wrapper">
-            <label class="terms-label" for="acceptTerms">
-              <input type="checkbox" id="acceptTerms" required>
-              <span>Concordo com os Termos de Uso e Políticas da Nexus Inn</span>
-            </label>
+        <div class="form-row-2">
+          <div class="form-group">
+            <label for="signupEmail">E-mail Principal</label>
+            <input type="email" id="signupEmail" placeholder="seu-email@dominio.com" required>
           </div>
-
-          <!-- Linha 5: Envio e Feedback -->
-          <div class="auth-submit-row">
-            <div id="signupFeedbackMsg" style="display: none; text-align: center; font-size: 0.95rem; margin-bottom: 8px; font-family: var(--font-display);"></div>
-            <button type="submit" id="btnSignupSubmit" class="btn-primary btn-full-width">Criar Perfil Gamer</button>
+          <div class="form-group">
+            <label for="cpf">CPF (apenas números)</label>
+            <input type="text" id="cpf" placeholder="000.000.000-00" maxlength="14" required>
           </div>
-
         </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label for="newPass">Senha de Acesso</label>
+            <input type="password" id="newPass" placeholder="Mínimo de 6 caracteres" minlength="6" required>
+          </div>
+          <div class="form-group">
+            <label for="confirmPass">Confirmar Senha</label>
+            <input type="password" id="confirmPass" placeholder="Repita a senha" minlength="6" required>
+            <small id="passError" class="input-error-msg" style="display: none;"></small>
+          </div>
+        </div>
+
+        <!-- PROTOCOLO DE SEGURANÇA: CYBER CAPTCHA -->
+        <div class="captcha-container">
+          <label style="display: block; font-family: var(--font-display); font-size: 0.78rem; color: var(--neon-cyan); margin-bottom: 8px;">
+            VERIFICAÇÃO DE SEGURANÇA
+          </label>
+          <div class="captcha-row">
+            <div class="canvas-wrap">
+              <canvas id="captchaCanvas" width="160" height="42" title="Código de verificação"></canvas>
+              <!-- Bloqueador transparente que intercepta o clique do mouse -->
+              <div class="canvas-shield" id="canvasShield"></div>
+            </div>
+
+            <button type="button" id="btnRefreshCaptcha" class="btn-refresh-captcha" title="Gerar novo código" aria-label="Gerar novo código">
+              🔄
+            </button>
+
+            <div class="captcha-input-field">
+              <input 
+                type="text" 
+                id="captchaInput" 
+                placeholder="DIGITE O CÓDIGO" 
+                maxlength="6" 
+                required 
+                autocomplete="off" 
+                spellcheck="false"
+              >
+            </div>
+          </div>
+          <small id="captchaError" class="input-error-msg" style="display: none;"></small>
+        </div>
+
+        <div class="terms-row">
+          <input type="checkbox" id="termsCheck" required>
+          <label for="termsCheck">Li e concordo com as diretrizes e regras de estadia da Nexus Inn.</label>
+        </div>
+
+        <button type="submit" id="btnSubmitForm" class="btn-primary btn-full-width" style="padding: 12px; font-size: 1rem; cursor: pointer;">
+          Concluir Cadastro
+        </button>
       </form>
 
-      <div class="auth-card-footer" style="margin-top: 16px;">
-        <p>Já possui GamerTag? <a href="login.html" class="link-highlight">Fazer Login</a></p>
+      <div style="text-align: center; margin-top: 20px; font-size: 0.9rem; color: #94a3b8;">
+        Já possui uma conta? <a href="login.html" style="color: var(--neon-cyan); font-weight: 700; text-decoration: none;">Acessar credencial &rarr;</a>
       </div>
     </div>
   </main>
 
+  <footer class="footer">
+    <div class="footer-content">
+      <p>&copy; 2026 Nexus Inn - Todos os direitos reservados.</p>
+    </div>
+  </footer>
+
+  <!-- MOTOR CRIPTOGRÁFICO DO CYBER CAPTCHA (IIFE - ESCOPO PRIVADO) -->
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const signupForm = document.getElementById('signupForm');
-      const newPass = document.getElementById('newPass');
-      const confirmPass = document.getElementById('confirmPass');
-      const btnToggle = document.getElementById('btnTogglePass');
-      const strengthBar = document.getElementById('strengthBar');
-      const strengthText = document.getElementById('strengthText');
-      const passMatchError = document.getElementById('passMatchError');
-      const feedbackMsg = document.getElementById('signupFeedbackMsg');
-      const btnSubmit = document.getElementById('btnSignupSubmit');
-      const cpfInput = document.getElementById('cpf');
+    (function() {
+      let expectedHash = null;
+      const SALT = 'NEXUS_CORE_SECURE_SALT_2026';
 
-      // Máscara dinâmica de CPF (000.000.000-00)
-      if (cpfInput) {
-        cpfInput.addEventListener('input', (e) => {
-          let v = e.target.value.replace(/\D/g, '').slice(0, 11);
-          if (v.length > 9) v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2})/, '$1.$2.$3-$4');
-          else if (v.length > 6) v = v.replace(/(\d{3})(\d{3})(\d{1,3})/, '$1.$2.$3');
-          else if (v.length > 3) v = v.replace(/(\d{3})(\d{1,3})/, '$1.$2');
-          e.target.value = v;
-        });
+      async function computeHash(text) {
+        const buffer = new TextEncoder().encode(text + SALT);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
       }
 
-      // Alternador de visibilidade da senha
-      if (btnToggle && newPass) {
-        btnToggle.addEventListener('click', () => {
-          const isPass = newPass.type === 'password';
-          newPass.type = isPass ? 'text' : 'password';
-          confirmPass.type = isPass ? 'text' : 'password';
-          btnToggle.style.color = isPass ? 'var(--neon-cyan)' : 'var(--text-muted)';
-        });
-      }
-
-      // Medidor de força da senha
-      if (newPass) {
-        newPass.addEventListener('input', () => {
-          const val = newPass.value;
-          let score = 0;
-          if (val.length >= 6) score++;
-          if (/[A-Z]/.test(val)) score++;
-          if (/[0-9]/.test(val)) score++;
-          if (/[^A-Za-z0-9]/.test(val)) score++;
-
-          if (val.length === 0) {
-            strengthBar.style.width = '0%';
-            strengthText.textContent = 'Força da senha: digite uma senha';
-            strengthBar.style.backgroundColor = 'transparent';
-          } else if (score <= 1) {
-            strengthBar.style.width = '25%';
-            strengthBar.style.backgroundColor = 'var(--neon-pink)';
-            strengthText.textContent = 'Força da senha: Fraca';
-          } else if (score <= 3) {
-            strengthBar.style.width = '65%';
-            strengthBar.style.backgroundColor = 'var(--neon-purple)';
-            strengthText.textContent = 'Força da senha: Boa';
-          } else {
-            strengthBar.style.width = '100%';
-            strengthBar.style.backgroundColor = 'var(--neon-cyan)';
-            strengthText.textContent = 'Força da senha: Nível Boss';
-          }
-        });
-      }
-
-      // Envio para o Supabase
-      if (signupForm) {
-        signupForm.addEventListener('submit', async (e) => {
-          e.preventDefault();
-
-          if (passMatchError) passMatchError.style.display = 'none';
-          if (feedbackMsg) feedbackMsg.style.display = 'none';
-
-          if (newPass.value !== confirmPass.value) {
-            if (passMatchError) passMatchError.style.display = 'block';
-            confirmPass.focus();
-            return;
-          }
-
-    // ==========================================================================
-    // CYBER CAPTCHA ANTI-BYPASS (SHA-256 & SCOPE ISOLATION)
-    // ==========================================================================
-        (function() {
-             let expectedHash = null;
-             const SALT = 'NEXUS_CAPTCHA_PROTECT_2026';
-
-    // Função interna de hashing nativa do browser (Web Crypto API)
-        async function sha256(str) {
-             const buffer = new TextEncoder().encode(str + SALT);
-              const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-         return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-         }
-
-          function gerarStringAleatoria() {
-              const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-              let res = '';
-         for (let i = 0; i < 5; i++) {
-         res += chars.charAt(Math.floor(Math.random() * chars.length));
-         }
-         return res;
-         }
-
-         async function desenharCaptcha() {
-               const canvas = document.getElementById('captchaCanvas');
-          if (!canvas) return;
-             const ctx = canvas.getContext('2d');
-
-              const rawCode = gerarStringAleatoria();
-      expectedHash = await sha256(rawCode.toLowerCase());
-
-     // Renderização com ruído visual anti-OCR
-         ctx.fillStyle = '#06070a';
-         ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // Linhas de distorção
-         for (let i = 0; i < 6; i++) {
-           ctx.strokeStyle = i % 2 === 0 ? '#00f0ff' : '#ff0055';
-           ctx.lineWidth = 1.2;
-           ctx.beginPath();
-           ctx.moveTo(Math.random() * canvas.width, Math.random() * canvas.height);
-           ctx.lineTo(Math.random() * canvas.width, Math.random() * canvas.height);
-           ctx.stroke();
-         }
-
-      // Caracteres com rotação aleatória
-           ctx.font = 'bold 24px Orbitron, monospace';
-      for (let i = 0; i < rawCode.length; i++) {
-           ctx.fillStyle = i % 2 === 0 ? '#00f0ff' : '#00ffaa';
-           ctx.save();
-           ctx.translate(22 + (i * 26), 34);
-           ctx.rotate((Math.random() - 0.5) * 0.4);
-           ctx.fillText(rawCode[i], 0, 0);
-           ctx.restore();
-          }
-         }
-
-     // Bloqueio de clique direito para descarregar a imagem
-         const canvasEl = document.getElementById('captchaCanvas');
-     if (canvasEl) {
-          canvasEl.addEventListener('contextmenu', e => e.preventDefault());
-          canvasEl.style.userSelect = 'none';
-     }
-
-    // Exposição única da validação assíncrona blindada
-         window.verificarCyberCaptcha = async function(userInput) {
-         if (!userInput || !expectedHash) return false;
-            const inputHash = await sha256(userInput.trim().toLowerCase());
-       return inputHash === expectedHash;
-     };
-
-         window.reiniciarCyberCaptcha = desenharCaptcha;
-         document.addEventListener('DOMContentLoaded', desenharCaptcha);
-        })();
-          if (btnSubmit) {
-            btnSubmit.disabled = true;
-            btnSubmit.textContent = 'Gravando no banco...';
-          }
-
-          const fullName = document.getElementById('fullName').value.trim();
-          const gamerTag = document.getElementById('gamerTag').value.trim();
-          const email = document.getElementById('signupEmail').value.trim();
-          const password = newPass.value;
-
-          try {
-            if (typeof registerUserInDB !== 'function') {
-              throw new Error('Função de banco não inicializada.');
-            }
-
-            const result = await registerUserInDB({
-              fullName,
-              gamerTag,
-              email,
-              password
-            });
-
-            if (!result.success) {
-              if (feedbackMsg) {
-                feedbackMsg.textContent = result.message;
-                feedbackMsg.style.color = '#ff6b8b';
-                feedbackMsg.style.display = 'block';
-              } else {
-                alert(result.message);
-              }
-              if (btnSubmit) {
-                btnSubmit.disabled = false;
-                btnSubmit.textContent = 'Criar Perfil Gamer';
-              }
-              return;
-            }
-
-            if (feedbackMsg) {
-              feedbackMsg.textContent = `✅ Conta criada com sucesso para ${gamerTag}! Redirecionando para login...`;
-              feedbackMsg.style.color = 'var(--neon-cyan)';
-              feedbackMsg.style.display = 'block';
-            }
-
-            setTimeout(() => {
-              window.location.href = 'login.html';
-            }, 1200);
-
-          } catch (err) {
-            console.error(err);
-            if (feedbackMsg) {
-              feedbackMsg.textContent = err.message || 'Erro de conexão com o Supabase.';
-              feedbackMsg.style.color = '#ff6b8b';
-              feedbackMsg.style.display = 'block';
-            }
-            if (btnSubmit) {
-              btnSubmit.disabled = false;
-              btnSubmit.textContent = 'Criar Perfil Gamer';
-            }
-          }
-        });
-      }
-    });
-
-// ==========================================
-      // MOTOR AUTORAL DO CYBER CAPTCHA
-      // ==========================================
-      const canvas = document.getElementById('captchaCanvas');
-      const captchaInput = document.getElementById('captchaInput');
-      const captchaError = document.getElementById('captchaError');
-      const btnRefresh = document.getElementById('btnRefreshCaptcha');
-      let currentCaptchaCode = '';
-
-      function gerarCodigoAleatorio() {
-        // Caracteres sem ambiguidade visual (sem 0, O, 1, I, l)
-        const caracteres = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-        let codigo = '';
+      function generateRandomString() {
+        // Caracteres legíveis sem ambiguidade (sem 0, O, 1, I, l)
+        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+        let code = '';
         for (let i = 0; i < 5; i++) {
-          codigo += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
+          code += chars.charAt(Math.floor(Math.random() * chars.length));
         }
-        return codigo;
+        return code;
       }
 
-      function desenharCaptcha() {
+      async function renderCyberCaptcha() {
+        const canvas = document.getElementById('captchaCanvas');
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
-        currentCaptchaCode = gerarCodigoAleatorio();
 
-        // 1. Fundo do terminal
-        ctx.fillStyle = '#090a12';
+        const rawCode = generateRandomString();
+        expectedHash = await computeHash(rawCode.toLowerCase());
+
+        // Fundo escuro com micro gradiente
+        ctx.fillStyle = '#05060a';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // 2. Linhas de interferência cibernética (Scanlines / Glitch)
-        for (let i = 0; i < 4; i++) {
-          ctx.strokeStyle = i % 2 === 0 ? 'rgba(0, 240, 255, 0.45)' : 'rgba(255, 0, 127, 0.45)';
+        // Linhas de interferência (Glitch lines)
+        for (let i = 0; i < 5; i++) {
+          ctx.strokeStyle = i % 2 === 0 ? 'rgba(0, 240, 255, 0.4)' : 'rgba(255, 0, 85, 0.4)';
           ctx.lineWidth = 1.2;
           ctx.beginPath();
           ctx.moveTo(Math.random() * canvas.width, Math.random() * canvas.height);
-          ctx.bezierCurveTo(
-            Math.random() * canvas.width, Math.random() * canvas.height,
-            Math.random() * canvas.width, Math.random() * canvas.height,
-            Math.random() * canvas.width, Math.random() * canvas.height
-          );
+          ctx.lineTo(Math.random() * canvas.width, Math.random() * canvas.height);
           ctx.stroke();
         }
 
-        // 3. Ruído de partículas (fator anti-OCR para bots)
-        for (let i = 0; i < 35; i++) {
-          ctx.fillStyle = i % 2 === 0 ? '#00f0ff' : '#b026ff';
+        // Ruído de partículas
+        for (let i = 0; i < 30; i++) {
+          ctx.fillStyle = i % 2 === 0 ? '#00f0ff' : '#00ffaa';
           ctx.beginPath();
           ctx.arc(Math.random() * canvas.width, Math.random() * canvas.height, 1, 0, Math.PI * 2);
           ctx.fill();
         }
 
-        // 4. Renderização dos caracteres estilizados com rotação individual
-        const cores = ['#00f0ff', '#b026ff', '#ff007f', '#00ffaa', '#ffffff'];
-        ctx.font = 'bold 22px "Orbitron", monospace, sans-serif';
+        // Renderização dos caracteres com inclinação aleatória
+        const palette = ['#00f0ff', '#00ffaa', '#ff0055', '#ffffff'];
+        ctx.font = 'bold 22px "Orbitron", monospace';
         ctx.textBaseline = 'middle';
 
-        for (let i = 0; i < currentCaptchaCode.length; i++) {
-          const char = currentCaptchaCode[i];
-          const x = 20 + i * 26;
+        for (let i = 0; i < rawCode.length; i++) {
+          const char = rawCode[i];
+          const x = 18 + (i * 26);
           const y = canvas.height / 2;
-          const angulo = (Math.random() - 0.5) * 0.4; // Inclinação leve
+          const tilt = (Math.random() - 0.5) * 0.4;
 
           ctx.save();
           ctx.translate(x, y);
-          ctx.rotate(angulo);
-          ctx.fillStyle = cores[Math.floor(Math.random() * cores.length)];
+          ctx.rotate(tilt);
+          ctx.fillStyle = palette[Math.floor(Math.random() * palette.length)];
           ctx.shadowColor = ctx.fillStyle;
           ctx.shadowBlur = 6;
           ctx.fillText(char, -8, 2);
@@ -469,16 +393,138 @@
         }
       }
 
-      // Inicializa o captcha e liga o botão de regerar
-      desenharCaptcha();
+      // Bloqueio rigoroso de clique direito e arrasto no canvas e no protetor
+      ['captchaCanvas', 'canvasShield'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.addEventListener('contextmenu', e => e.preventDefault());
+          el.addEventListener('dragstart', e => e.preventDefault());
+        }
+      });
+
+      // Validação assíncrona única exposta ao escopo do formulário
+      window.validateCyberCaptcha = async function(userInput) {
+        if (!userInput || !expectedHash) return false;
+        const candidateHash = await computeHash(userInput.trim().toLowerCase());
+        return candidateHash === expectedHash;
+      };
+
+      window.reloadCyberCaptcha = renderCyberCaptcha;
+      document.addEventListener('DOMContentLoaded', renderCyberCaptcha);
+    })();
+  </script>
+
+  <!-- LÓGICA DO FORMULÁRIO DE CADASTRO -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const signupForm = document.getElementById('signupForm');
+      const passError = document.getElementById('passError');
+      const captchaError = document.getElementById('captchaError');
+      const btnRefresh = document.getElementById('btnRefreshCaptcha');
+      const btnSubmit = document.getElementById('btnSubmitForm');
+      const captchaInput = document.getElementById('captchaInput');
+
+      // Botão de regerar captcha
       if (btnRefresh) {
         btnRefresh.addEventListener('click', () => {
-          desenharCaptcha();
-          captchaInput.value = '';
-          if (captchaError) captchaError.style.display = 'none';
+          if (typeof window.reloadCyberCaptcha === 'function') {
+            window.reloadCyberCaptcha();
+            captchaInput.value = '';
+            captchaError.style.display = 'none';
+          }
         });
       }
 
+      // Máscara dinâmica de CPF
+      const cpfInput = document.getElementById('cpf');
+      if (cpfInput) {
+        cpfInput.addEventListener('input', (e) => {
+          let v = e.target.value.replace(/\D/g, '');
+          if (v.length > 11) v = v.substring(0, 11);
+          if (v.length > 9) {
+            v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2})/, '$1.$2.$3-$4');
+          } else if (v.length > 6) {
+            v = v.replace(/(\d{3})(\d{3})(\d{1,3})/, '$1.$2.$3');
+          } else if (v.length > 3) {
+            v = v.replace(/(\d{3})(\d{1,3})/, '$1.$2');
+          }
+          e.target.value = v;
+        });
+      }
+
+      // Submissão do formulário
+      signupForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        passError.style.display = 'none';
+        captchaError.style.display = 'none';
+
+        const pass = document.getElementById('newPass').value;
+        const confirm = document.getElementById('confirmPass').value;
+
+        // 1. Validação de Senha
+        if (pass !== confirm) {
+          passError.textContent = 'As senhas não coincidem!';
+          passError.style.display = 'block';
+          document.getElementById('confirmPass').focus();
+          return;
+        }
+
+        // 2. BARREIRA ZERO: Validação Criptográfica do Cyber Captcha
+        const isCaptchaValid = typeof window.validateCyberCaptcha === 'function' 
+          ? await window.validateCyberCaptcha(captchaInput.value)
+          : false;
+
+        if (!isCaptchaValid) {
+          captchaError.textContent = 'Código de verificação incorreto. Tente novamente.';
+          captchaError.style.display = 'block';
+          captchaInput.value = '';
+          captchaInput.focus();
+          if (typeof window.reloadCyberCaptcha === 'function') {
+            window.reloadCyberCaptcha();
+          }
+          return;
+        }
+
+        // 3. Captura dos Dados Sanitizados
+        const fullName = document.getElementById('fullName').value.trim();
+        const gamerTag = document.getElementById('gamerTag').value.trim();
+        const email = document.getElementById('signupEmail').value.trim();
+        const cpf = document.getElementById('cpf').value.trim();
+
+        btnSubmit.disabled = true;
+        btnSubmit.textContent = 'Gravando perfil...';
+
+        // 4. Gravação Segura no Supabase com Trava Anti-Duplicidade
+        if (typeof registerUserInDB === 'function') {
+          const result = await registerUserInDB({
+            fullName,
+            gamerTag,
+            email,
+            cpf,
+            password: pass
+          });
+
+          if (!result.success) {
+            alert(result.message);
+            btnSubmit.disabled = false;
+            btnSubmit.textContent = 'Concluir Cadastro';
+            if (typeof window.reloadCyberCaptcha === 'function') {
+              window.reloadCyberCaptcha();
+              captchaInput.value = '';
+            }
+            return;
+          }
+
+          alert(`🎉 Perfil criado com sucesso! Seja bem-vindo à Nexus Inn, ${gamerTag}!`);
+          window.location.href = 'login.html';
+        } else {
+          // Fallback caso a conexão remota não responda
+          alert('Serviço temporariamente indisponível. Tente novamente em instantes.');
+          btnSubmit.disabled = false;
+          btnSubmit.textContent = 'Concluir Cadastro';
+        }
+      });
+    });
   </script>
 </body>
 </html>
