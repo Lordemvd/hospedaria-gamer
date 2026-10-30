@@ -237,32 +237,53 @@
       const totalEl = document.getElementById('displayTotal');
       if (totalEl) totalEl.textContent = totalParam;
 
-      // 2. Processar Pagamento e Gravar Reserva no Supabase
+      // 2. Processar Pagamento e Gravar Reserva no Supabase (Com Timeout de Proteção)
       async function executePayment(metodo) {
-        processingModal.classList.add('show');
+        const modal = document.getElementById('processingModal');
+        const heading = document.getElementById('statusHeading') || modal?.querySelector('h3');
+        const desc = document.getElementById('statusDesc') || modal?.querySelector('p');
 
-        // Gera código único no formato NX-XXXXXX
+        if (modal) modal.classList.add('show');
+
+        // Gera código de reserva único NX-XXXXXX
         const reservationCode = 'NX-' + Math.floor(100000 + Math.random() * 900000);
 
-        // Gravação direta no PostgreSQL (Supabase)
-        if (typeof saveReservationToDB === 'function') {
-          await saveReservationToDB({
-            codigo: reservationCode,
-            hospede: currentGuestName,
-            quartoId: roomParam,
-            quarto: roomTitle,
-            checkin: checkinParam,
-            checkout: checkoutParam,
-            total: totalParam,
-            metodo: metodo
-          });
+        try {
+          // 1. Gravação no Supabase com Timeout Limite de 3s (Impede congelamento por AdBlocker)
+          if (typeof saveReservationToDB === 'function') {
+            const timeoutPromise = new Promise(resolve => 
+              setTimeout(() => resolve({ success: false, timeout: true }), 3000)
+            );
+
+            await Promise.race([
+              saveReservationToDB({
+                codigo: reservationCode,
+                hospede: currentGuestName,
+                quartoId: roomParam,
+                quarto: roomTitle,
+                checkin: checkinParam,
+                checkout: checkoutParam,
+                total: totalParam,
+                metodo: metodo
+              }),
+              timeoutPromise
+            ]);
+          }
+        } catch (dbErr) {
+          console.warn('Persistência Supabase superou o tempo limite ou oscilou. Prosseguindo com checkout local:', dbErr);
         }
 
+        // 2. Feedback Visual de Aprovação
         setTimeout(() => {
-          statusHeading.textContent = 'Pagamento Aprovado!';
-          statusHeading.style.color = 'var(--neon-cyan)';
-          statusDesc.textContent = 'A emitir Gamer Pass VIP e credenciais de acesso...';
+          if (heading) {
+            heading.textContent = 'Pagamento Aprovado!';
+            heading.style.color = 'var(--neon-cyan, #00f0ff)';
+          }
+          if (desc) {
+            desc.textContent = 'Emitindo Gamer Pass VIP e credenciais de acesso...';
+          }
 
+          // 3. Redirecionamento Garantido para a Tela de Finalização
           setTimeout(() => {
             const redirectParams = new URLSearchParams({
               codigo: reservationCode,
@@ -275,7 +296,7 @@
             });
             window.location.href = `finalizacao.html?${redirectParams.toString()}`;
           }, 1200);
-        }, 1800);
+        }, 1500);
       }
 
       // 3. ALTERNÂNCIA DE ABAS (PIX / CARTÃO)
