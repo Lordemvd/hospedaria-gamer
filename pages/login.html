@@ -3,17 +3,155 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nexus Inn | Login do Jogador</title>
+  <title>Nexus Inn | Login</title>
   <link rel="stylesheet" href="../style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%AE%3C/text%3E%3C/svg%3E">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%2300f0ff'/%3E%3Ctext x='50' y='65' font-size='48' text-anchor='middle' fill='%2307080c'%3E%F0%9F%8E%AE%3C/text%3E%3C/svg%3E">
 
-  <!-- SDK Oficial do Supabase + Arquivo de Conexão -->
-  <!-- NOSONAR -->
-  <script defer src="../supabase-sdk.js"></script>
-  <script defer src="../supabase.js"></script>
+  <!-- SDK Oficial do Supabase (Formato UMD Global) + Arquivo de Conexão na Raiz -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="../supabase.js"></script>
+
+  <style>
+    .auth-page-body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: radial-gradient(circle at 50% 10%, rgba(0, 240, 255, 0.08) 0%, #07080c 70%);
+    }
+
+    .auth-wrapper {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 110px 20px 40px;
+    }
+
+    .auth-card {
+      background: #0d0f18;
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      border-radius: 10px;
+      max-width: 440px;
+      width: 100%;
+      padding: 36px 30px;
+      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 240, 255, 0.15);
+    }
+
+    .auth-card-header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .auth-card-header h1 {
+      font-family: var(--font-display, 'Orbitron', sans-serif);
+      font-size: 1.6rem;
+      color: #ffffff;
+      margin: 8px 0 4px 0;
+    }
+
+    .auth-card-header p {
+      color: var(--text-muted, #94a3b8);
+      font-size: 0.92rem;
+      margin: 0;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-group label {
+      display: block;
+      font-family: var(--font-display, 'Orbitron', sans-serif);
+      font-size: 0.8rem;
+      color: var(--neon-cyan, #00f0ff);
+      margin-bottom: 6px;
+    }
+
+    .form-group input {
+      width: 100%;
+      background: #07080c;
+      border: 1px solid #1f2338;
+      color: #ffffff;
+      padding: 11px 14px;
+      border-radius: 6px;
+      font-family: var(--font-body, 'Rajdhani', sans-serif);
+      font-size: 1rem;
+      outline: none;
+      box-sizing: border-box;
+      transition: border-color 0.2s ease;
+    }
+
+    .form-group input:focus {
+      border-color: var(--neon-cyan, #00f0ff);
+    }
+
+    .pass-input-wrapper {
+      position: relative;
+    }
+
+    .btn-toggle-pass {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #94a3b8;
+      cursor: pointer;
+      font-size: 1.1rem;
+      padding: 0;
+    }
+
+    .form-options-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 18px;
+    }
+
+    .forgot-link {
+      color: #94a3b8;
+      font-size: 0.85rem;
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .forgot-link:hover {
+      color: var(--neon-cyan, #00f0ff);
+    }
+
+    .input-error-msg {
+      color: #ff6b8b;
+      font-size: 0.88rem;
+      margin-bottom: 16px;
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    /* MODAL DE RECUPERAÇÃO DE SENHA */
+    .recovery-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.88);
+      z-index: 2500;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .recovery-modal-box {
+      background: #0d0f18;
+      border: 1px solid var(--neon-cyan, #00f0ff);
+      border-radius: 8px;
+      max-width: 450px;
+      width: 100%;
+      padding: 26px;
+      box-shadow: 0 0 35px rgba(0, 240, 255, 0.25);
+    }
+  </style>
 </head>
 <body class="auth-page-body">
 
@@ -23,7 +161,7 @@
         <span class="logo-highlight">NEXUS</span>INN
       </a>
     </div>
-    <nav class="nav-links">
+    <nav class="nav-links" aria-label="Navegação principal">
       <a href="../index.html">Voltar ao Início</a>
     </nav>
   </header>
@@ -32,89 +170,97 @@
     <div class="auth-card">
       <div class="auth-card-header">
         <span class="badge">PLAYER ACCESS</span>
-        <h1 class="auth-title">FAÇA SEU LOGIN</h1>
-        <p class="auth-subtitle">Acesse suas reservas, histórico de estadias e pedidos do bar.</p>
+        <h1>FAÇA SEU LOGIN</h1>
+        <p>Acesse suas reservas, histórico de estadias e pedidos do bar.</p>
       </div>
 
-      <form id="loginForm" class="auth-form">
+      <form id="loginForm">
         <div class="form-group">
           <label for="loginEmail">E-mail ou GamerTag</label>
-          <input type="text" id="loginEmail" placeholder="player@nexusinn.com ou GamerTag" required autocomplete="username">
+          <input type="text" id="loginEmail" placeholder="seu-email@dominio.com ou GamerTag" required autocomplete="username">
         </div>
 
         <div class="form-group">
           <label for="loginPass">Senha</label>
-          <div class="input-password-wrapper" style="position: relative; display: flex; align-items: center;">
-            <input type="password" id="loginPass" placeholder="••••••••" required autocomplete="current-password" style="width: 100%; padding-right: 40px;">
-            <button type="button" id="btnTogglePass" class="toggle-pass-btn" style="position: absolute; right: 12px; background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 1.1rem;" aria-label="Alternar visibilidade da senha">👁</button>
+          <div class="pass-input-wrapper">
+            <input type="password" id="loginPass" placeholder="••••••••" required autocomplete="current-password">
+            <button type="button" class="btn-toggle-pass" id="btnTogglePass" title="Exibir/Ocultar senha" aria-label="Exibir senha">👁️</button>
           </div>
         </div>
 
-        <!-- Mensagem de feedback/erro -->
-        <div id="loginErrorMsg" style="display: none; color: #ff6b8b; text-align: center; font-size: 0.9rem; margin-top: 10px; font-family: var(--font-display);"></div>
+        <div class="form-options-row">
+          <a href="#" class="forgot-link" id="linkForgotPassword">Esqueceu a senha?</a>
+        </div>
 
-        <button type="submit" id="btnLoginSubmit" class="btn-primary btn-full-width" style="margin-top: 16px;">Iniciar Sessão</button>
+        <div id="loginErrorMsg" class="input-error-msg" style="display: none;"></div>
+
+        <button type="submit" id="btnLoginSubmit" class="btn-primary btn-full-width" style="padding: 12px; font-size: 1rem; cursor: pointer;">
+          Iniciar Sessão
+        </button>
       </form>
 
-      <div class="auth-card-footer">
-        <p>Ainda não tem conta? <a href="cadastro.html" class="link-highlight">Criar GamerTag</a></p>
+      <div style="text-align: center; margin-top: 22px; font-size: 0.9rem; color: #94a3b8;">
+        Ainda não tem conta? <a href="cadastro.html" style="color: var(--neon-cyan); font-weight: 700; text-decoration: none;">Criar GamerTag</a>
       </div>
     </div>
-    <!-- MODAL DE RECUPERAÇÃO DE SENHA (EMAIL OU CPF) -->
-      <div id="recoveryModal" class="crop-modal-overlay" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; align-items: center; justify-content: center;">
-        <div style="background: #0d0f18; border: 1px solid var(--neon-cyan); border-radius: 8px; max-width: 460px; width: 90%; padding: 26px; box-shadow: 0 0 30px rgba(0,240,255,0.25);">
-          
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-            <h3 style="font-family: var(--font-display); color: #fff; margin: 0; font-size: 1.15rem;">REDEFINIR SENHA</h3>
-            <button type="button" id="btnCloseRecovery" style="background: none; border: none; color: #ff6b8b; font-size: 1.4rem; cursor: pointer;">&times;</button>
-          </div>
+  </main>
 
-          <!-- ETAPA 1: LOCALIZAR CONTA POR EMAIL OU CPF -->
-          <div id="recoveryStep1">
-            <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 16px;">
-              Informe o <strong>e-mail</strong> ou <strong>CPF</strong> cadastrado na sua conta para enviarmos o código de redefinição:
-            </p>
-            <div class="form-group">
-              <label for="recoveryInput">E-mail ou CPF</label>
-              <input type="text" id="recoveryInput" placeholder="seu-email@dominio.com ou 000.000.000-00" required>
-            </div>
-            <button type="button" id="btnVerifyAccount" class="btn-primary btn-full-width" style="margin-top: 10px;">Verificar Identidade</button>
-            <div id="recoveryErrorMsg" style="color: #ff6b8b; font-size: 0.85rem; margin-top: 10px; display: none; text-align: center;"></div>
-          </div>
+  <!-- MODAL DE RECUPERAÇÃO DE SENHA -->
+  <div id="recoveryModal" class="recovery-modal-overlay">
+    <div class="recovery-modal-box">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <h3 style="font-family: var(--font-display); color: #fff; margin: 0; font-size: 1.15rem;">RECUPERAR ACESSO</h3>
+        <button type="button" id="btnCloseRecovery" style="background: none; border: none; color: #ff6b8b; font-size: 1.5rem; cursor: pointer;">&times;</button>
+      </div>
 
-          <!-- ETAPA 2: CÓDIGO E NOVA SENHA -->
-          <div id="recoveryStep2" style="display: none;">
-            <div style="background: rgba(0,240,255,0.08); border-left: 3px solid var(--neon-cyan); padding: 10px; margin-bottom: 15px;">
-              <p id="recoveryEmailNotice" style="color: #cbd5e1; font-size: 0.85rem; margin: 0;"></p>
-            </div>
+      <div id="recoveryStep1">
+        <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 16px;">
+          Informe o <strong>e-mail</strong> ou <strong>CPF</strong> cadastrado na sua conta para enviarmos o código de validação:
+        </p>
+        <div class="form-group">
+          <label for="recoveryInput">E-mail ou CPF</label>
+          <input type="text" id="recoveryInput" placeholder="seu-email@dominio.com ou 000.000.000-00">
+        </div>
+        <button type="button" id="btnVerifyAccount" class="btn-primary btn-full-width" style="padding: 10px;">Verificar Identidade</button>
+        <div id="recoveryErrorMsg" style="color: #ff6b8b; font-size: 0.85rem; margin-top: 10px; display: none; text-align: center;"></div>
+      </div>
 
-            <div class="form-group">
-              <label for="recoveryTokenInput">Código de Validação</label>
-              <input type="text" id="recoveryTokenInput" placeholder="Ex: 582914" maxlength="6">
-            </div>
+      <div id="recoveryStep2" style="display: none;">
+        <div style="background: rgba(0, 240, 255, 0.08); border-left: 3px solid var(--neon-cyan); padding: 10px; margin-bottom: 16px;">
+          <p id="recoveryEmailNotice" style="color: #cbd5e1; font-size: 0.88rem; margin: 0;"></p>
+        </div>
 
-            <div class="form-group">
-              <label for="newPassInput">Nova Senha</label>
-              <input type="password" id="newPassInput" placeholder="••••••••" required>
-            </div>
+        <div class="form-group">
+          <label for="recoveryTokenInput">Código de Validação</label>
+          <input type="text" id="recoveryTokenInput" placeholder="Ex: 582914" maxlength="6">
+        </div>
 
-            <button type="button" id="btnApplyNewPass" class="btn-primary btn-full-width" style="margin-top: 10px;">Atualizar Senha</button>
+        <div class="form-group">
+          <label for="newPassInput">Nova Senha</label>
+          <input type="password" id="newPassInput" placeholder="Mínimo 6 caracteres" minlength="6">
+        </div>
 
-            <div style="text-align: center; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 12px;">
-              <small style="color: #94a3b8;">Não tem mais acesso ao e-mail cadastrado?</small><br>
-              <a href="contato.html" style="color: var(--neon-cyan); font-size: 0.85rem; text-decoration: none; font-weight: 700;">
-                Falar com a Central Nexus Inn &rarr;
-              </a>
-            </div>
-          </div>
+        <button type="button" id="btnApplyNewPass" class="btn-primary btn-full-width" style="padding: 10px;">Atualizar Senha</button>
 
+        <div style="text-align: center; margin-top: 16px; border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 12px;">
+          <small style="color: #94a3b8;">Não tem mais acesso ao e-mail cadastrado?</small><br>
+          <a href="contato.html" style="color: var(--neon-cyan); font-size: 0.85rem; text-decoration: none; font-weight: 700;">
+            Falar com a Central Nexus Inn &rarr;
+          </a>
         </div>
       </div>
-  </main>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-content">
+      <p>&copy; 2026 Nexus Inn - Todos os direitos reservados.</p>
+    </div>
+  </footer>
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // 1. Alternador da visibilidade da senha
+      // 1. Alternador de Visibilidade da Senha
       const passInput = document.getElementById('loginPass');
       const btnToggle = document.getElementById('btnTogglePass');
 
@@ -122,15 +268,17 @@
         btnToggle.addEventListener('click', () => {
           if (passInput.type === 'password') {
             passInput.type = 'text';
+            btnToggle.textContent = '🙈';
             btnToggle.style.color = 'var(--neon-cyan)';
           } else {
             passInput.type = 'password';
-            btnToggle.style.color = 'var(--text-muted)';
+            btnToggle.textContent = '👁️';
+            btnToggle.style.color = '#94a3b8';
           }
         });
       }
 
-      // 2. Processamento do login com o Supabase
+      // 2. Processamento do Formulário de Login
       const loginForm = document.getElementById('loginForm');
       const errorMsg = document.getElementById('loginErrorMsg');
       const submitBtn = document.getElementById('btnLoginSubmit');
@@ -155,20 +303,20 @@
           }
 
           try {
-            if (typeof loginUserInDB !== 'function') {
-              throw new Error('Script supabase.js não carregado ou função indisponível.');
+            // Checagem segura com fallback para window
+            const loginFn = typeof loginUserInDB === 'function' ? loginUserInDB : (window.loginUserInDB || null);
+
+            if (!loginFn) {
+              throw new Error('Falha de conexão com o banco. Recarregue a página (Ctrl + F5).');
             }
 
-            const result = await loginUserInDB(identifier, password);
+            const result = await loginFn(identifier, password);
 
             if (!result.success) {
               if (errorMsg) {
-                errorMsg.textContent = result.message || 'Usuário ou senha inválidos.';
+                errorMsg.textContent = result.message || 'E-mail, GamerTag ou senha incorretos.';
                 errorMsg.style.display = 'block';
-              } else {
-                alert(result.message || 'Usuário ou senha inválidos.');
               }
-
               if (submitBtn) {
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Iniciar Sessão';
@@ -176,33 +324,30 @@
               return;
             }
 
-            // Armazena a sessão com perfil (admin/user)
+            // Grava a sessão do usuário no LocalStorage
             localStorage.setItem('nexus_current_user', JSON.stringify(result.user));
 
-            // 3. REDIRECIONAMENTO INTELIGENTE: Verifica se o usuário veio barrado da reserva
+            // Redirecionamento inteligente: se veio da reserva, retorna pra ela; se admin, vai para admin.html
             const urlParams = new URLSearchParams(window.location.search);
             const redirectTarget = urlParams.get('redirect');
 
             if (redirectTarget) {
-              alert(`🎮 Login confirmado: Bem-vindo, ${result.user.gamerTag}! Retornando à sua reserva...`);
+              alert(`🎮 Sessão iniciada! Bem-vindo(a), ${result.user.gamerTag}! Retornando à sua reserva...`);
               window.location.href = decodeURIComponent(redirectTarget);
             } else if (result.user.role === 'admin') {
               alert(`🛡️ Painel Master: Bem-vindo, Administrador ${result.user.gamerTag}!`);
               window.location.href = 'admin.html';
             } else {
-              alert(`🎮 Login confirmado: Bem-vindo, ${result.user.gamerTag}!`);
+              alert(`🎮 Login confirmado: Bem-vindo(a), ${result.user.gamerTag}!`);
               window.location.href = '../index.html';
             }
 
           } catch (err) {
             console.error('Falha no login:', err);
             if (errorMsg) {
-              errorMsg.textContent = err.message || 'Erro de conexão com o banco de dados.';
+              errorMsg.textContent = err.message || 'Erro de conexão com o servidor.';
               errorMsg.style.display = 'block';
-            } else {
-              alert(err.message || 'Erro de conexão.');
             }
-
             if (submitBtn) {
               submitBtn.disabled = false;
               submitBtn.textContent = 'Iniciar Sessão';
@@ -210,26 +355,25 @@
           }
         });
       }
-    
-    });
-    // ABERTURA E FLUXO DO MODAL DE RECUPERAÇÃO DE SENHA
-      const forgotLink = document.querySelector('.forgot-link');
+
+      // 3. Modal de Recuperação de Senha
+      const linkForgot = document.getElementById('linkForgotPassword');
       const recoveryModal = document.getElementById('recoveryModal');
       const btnCloseRecovery = document.getElementById('btnCloseRecovery');
       const btnVerifyAccount = document.getElementById('btnVerifyAccount');
       const btnApplyNewPass = document.getElementById('btnApplyNewPass');
       const recoveryErrorMsg = document.getElementById('recoveryErrorMsg');
 
-      let targetUserForRecovery = null;
-      let generatedCode = '';
+      let targetUser = null;
+      let generatedToken = '';
 
-      if (forgotLink && recoveryModal) {
-        forgotLink.addEventListener('click', (e) => {
+      if (linkForgot && recoveryModal) {
+        linkForgot.addEventListener('click', (e) => {
           e.preventDefault();
           recoveryModal.style.display = 'flex';
           document.getElementById('recoveryStep1').style.display = 'block';
           document.getElementById('recoveryStep2').style.display = 'none';
-          recoveryErrorMsg.style.display = 'none';
+          if (recoveryErrorMsg) recoveryErrorMsg.style.display = 'none';
         });
 
         btnCloseRecovery.addEventListener('click', () => {
@@ -244,28 +388,36 @@
           btnVerifyAccount.textContent = 'Verificando...';
           recoveryErrorMsg.style.display = 'none';
 
-          const res = await findUserForRecovery(idVal);
-
-          if (!res.success) {
-            recoveryErrorMsg.textContent = res.message;
+          const findFn = typeof findUserForRecovery === 'function' ? findUserForRecovery : (window.findUserForRecovery || null);
+          if (!findFn) {
+            recoveryErrorMsg.textContent = 'Serviço de recuperação indisponível.';
             recoveryErrorMsg.style.display = 'block';
             btnVerifyAccount.disabled = false;
             btnVerifyAccount.textContent = 'Verificar Identidade';
             return;
           }
 
-          targetUserForRecovery = res.user;
-          generatedCode = String(Math.floor(100000 + Math.random() * 900000));
+          const res = await findFn(idVal);
 
-          // Mascara o e-mail (ex: lo***@nexusinn.com)
-          const parts = targetUserForRecovery.email.split('@');
-          const maskedEmail = parts[0].slice(0, 2) + '***@' + parts[1];
+          if (!res.success) {
+            recoveryErrorMsg.textContent = res.message || 'Conta não localizada.';
+            recoveryErrorMsg.style.display = 'block';
+            btnVerifyAccount.disabled = false;
+            btnVerifyAccount.textContent = 'Verificar Identidade';
+            return;
+          }
+
+          targetUser = res.user;
+          generatedToken = String(Math.floor(100000 + Math.random() * 900000));
+
+          const parts = (targetUser.email || '').split('@');
+          const maskedEmail = parts.length === 2 ? parts[0].slice(0, 2) + '***@' + parts[1] : 'seu e-mail';
 
           document.getElementById('recoveryStep1').style.display = 'none';
           document.getElementById('recoveryStep2').style.display = 'block';
           document.getElementById('recoveryEmailNotice').innerHTML = `
-            Código de 6 dígitos enviado para <strong>${maskedEmail}</strong>. 
-            <br><small style="color: var(--neon-cyan);">(Ambiente de Testes: Seu código é <strong>${generatedCode}</strong>)</small>
+            Código de segurança enviado para <strong>${maskedEmail}</strong>.
+            <br><small style="color: var(--neon-cyan);">(Ambiente de testes: Código <strong>${generatedToken}</strong>)</small>
           `;
         });
 
@@ -273,31 +425,34 @@
           const codeInput = document.getElementById('recoveryTokenInput').value.trim();
           const newPass = document.getElementById('newPassInput').value;
 
-          if (codeInput !== generatedCode) {
+          if (codeInput !== generatedToken) {
             alert('Código de validação incorreto!');
             return;
           }
+
           if (newPass.length < 6) {
             alert('A nova senha deve ter no mínimo 6 caracteres.');
             return;
           }
 
           btnApplyNewPass.disabled = true;
-          btnApplyNewPass.textContent = 'Gravando nova senha...';
+          btnApplyNewPass.textContent = 'Atualizando...';
 
-          const resetRes = await resetUserPasswordInDB(targetUserForRecovery.id, newPass);
+          const resetFn = typeof resetUserPasswordInDB === 'function' ? resetUserPasswordInDB : (window.resetUserPasswordInDB || null);
+          const resetRes = await resetFn(targetUser.id, newPass);
 
           if (resetRes.success) {
-            alert('✅ Senha redefinida com sucesso! Você já pode fazer login.');
+            alert('✅ Senha redefinida com sucesso! Você já pode fazer login com a nova senha.');
             recoveryModal.style.display = 'none';
-            btnApplyNewPass.disabled = false;
-            btnApplyNewPass.textContent = 'Atualizar Senha';
           } else {
-            alert('Erro ao salvar nova senha: ' + resetRes.message);
-            btnApplyNewPass.disabled = false;
+            alert('Erro ao atualizar senha: ' + resetRes.message);
           }
+
+          btnApplyNewPass.disabled = false;
+          btnApplyNewPass.textContent = 'Atualizar Senha';
         });
       }
+    });
   </script>
 </body>
 </html>
