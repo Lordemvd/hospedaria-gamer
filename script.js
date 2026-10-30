@@ -273,7 +273,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ==========================================
-  // 5. HUB DO JOGADOR: AVATAR CIRCULAR, DROPDOWN & PERFIL (SUBSTITUI A SEÇÃO 5 ANTIGA)
+  // 5. HUB DO JOGADOR: AVATAR CIRCULAR, DROPDOWN & DASHBOARD DEDICADO
   // ==========================================
   // Sincroniza sessão caso venha o parâmetro ?user= na URL
   const urlParams = new URLSearchParams(window.location.search);
@@ -290,7 +290,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const tag = user.gamerTag || user.fullName || 'Player';
       const isAdmin = user.role === 'admin';
 
-      // Avatar padrão do jogador caso ainda não tenha subido foto
+      // Ajusta o caminho relativo dependendo de onde a página estiver rodando
+      const basePath = window.location.pathname.includes('/pages/') ? '' : 'pages/';
+
+      // Avatar oficial do jogador (salvo no perfil) ou ícone gamer padrão
       const defaultAvatar = user.avatar || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23090a12'/%3E%3Ctext x='50' y='62' font-size='42' text-anchor='middle' fill='%2300f0ff'%3E🎮%3C/text%3E%3C/svg%3E";
 
       // Localiza o botão "Entrar" na Navbar para substituição cirúrgica
@@ -306,7 +309,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       if (loginBtn) {
-        // Contêiner principal com suporte para o selo Admin + Hub do Jogador
+        // Wrapper principal da Navbar
         const hubWrapper = document.createElement('div');
         hubWrapper.className = 'user-nav-actions';
         hubWrapper.style.display = 'inline-flex';
@@ -315,7 +318,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         hubWrapper.innerHTML = `
           ${isAdmin ? `
-            <a href="pages/admin.html" style="background: rgba(255, 0, 85, 0.15); border: 1px solid var(--neon-pink); color: #ff6b8b; padding: 7px 12px; border-radius: 4px; font-family: var(--font-display); font-size: 0.85rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
+            <a href="${basePath}admin.html" style="background: rgba(255, 0, 85, 0.15); border: 1px solid var(--neon-pink); color: #ff6b8b; padding: 7px 12px; border-radius: 4px; font-family: var(--font-display); font-size: 0.85rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
               🛡️ Painel ADM
             </a>
           ` : ''}
@@ -348,116 +351,35 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
         `;
 
-        // Substitui apenas o botão Entrar (o botão "Reservar" permanece intacto ao lado)
+        // Substitui apenas o botão Entrar (mantém os outros links da Navbar intactos)
         loginBtn.replaceWith(hubWrapper);
 
-        // Injeta o Modal de Perfil Gamer dinamicamente
-        const modalPerfilMarkup = `
-          <div id="modalPerfilGamer" class="nexus-modal-overlay" style="display: none;">
-            <div class="nexus-modal-box">
-              <div class="nexus-modal-header">
-                <h3>PERFIL DO JOGADOR</h3>
-                <button type="button" class="nexus-modal-close" id="btnClosePerfil">&times;</button>
-              </div>
-              <div class="nexus-modal-body">
-                <div class="profile-avatar-row">
-                  <img src="${defaultAvatar}" alt="Preview" class="profile-avatar-preview" id="profileModalPreview">
-                  <div>
-                    <label class="avatar-upload-btn" for="inputAvatarFile">📷 Trocar Imagem</label>
-                    <input type="file" id="inputAvatarFile" accept="image/*" style="display: none;">
-                    <p style="font-size: 0.78rem; color: #94a3b8; margin: 6px 0 0 0;">JPG, PNG ou GIF (Máx 2MB)</p>
-                  </div>
-                </div>
-                <div class="profile-info-grid">
-                  <div class="profile-field">
-                    <small>GamerTag</small>
-                    <p>${tag}</p>
-                  </div>
-                  <div class="profile-field">
-                    <small>Status da Conta</small>
-                    <p style="color: #00ffaa;">● Ativa &bull; VIP</p>
-                  </div>
-                  <div class="profile-field" style="grid-column: 1 / -1;">
-                    <small>Nome Completo</small>
-                    <p>${user.fullName || 'Jogador Nexus'}</p>
-                  </div>
-                  <div class="profile-field" style="grid-column: 1 / -1;">
-                    <small>E-mail Vinculado</small>
-                    <p>${user.email || 'Não informado'}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        `;
-        document.body.insertAdjacentHTML('beforeend', modalPerfilMarkup);
-
-        // Seletores do Hub
         const hubBtn = document.getElementById('userHubBtn');
         const hubDropdown = document.getElementById('userHubDropdown');
-        const modalPerfil = document.getElementById('modalPerfilGamer');
-        const btnClosePerfil = document.getElementById('btnClosePerfil');
 
-        // Alterna abertura do Menu Dropdown
+        // Alterna abertura e fechamento do Dropdown
         hubBtn.addEventListener('click', (e) => {
           e.stopPropagation();
           hubDropdown.classList.toggle('active');
         });
 
-        // Fecha Dropdown ao clicar fora
         document.addEventListener('click', () => {
           hubDropdown.classList.remove('active');
         });
 
-        // Abertura do Modal de Dados
+        // 1. Redirecionamento para a aba "Dados da Conta" no Dashboard
         document.getElementById('btnHubDados').addEventListener('click', () => {
           hubDropdown.classList.remove('active');
-          modalPerfil.style.display = 'flex';
+          window.location.href = `${basePath}perfil.html?tab=dados`;
         });
 
-        btnClosePerfil.addEventListener('click', () => {
-          modalPerfil.style.display = 'none';
-        });
-
-        modalPerfil.addEventListener('click', (e) => {
-          if (e.target === modalPerfil) modalPerfil.style.display = 'none';
-        });
-
-        // Conecta "Minhas Reservas" diretamente ao Modal com Live Query Supabase da Seção 4
+        // 2. Redirecionamento para a aba "Minhas Reservas" no Dashboard
         document.getElementById('btnHubReservas').addEventListener('click', () => {
           hubDropdown.classList.remove('active');
-          if (modal) {
-            modal.classList.add('show');
-            if (inputBusca) inputBusca.value = tag;
-            executarBusca(tag);
-          }
+          window.location.href = `${basePath}perfil.html?tab=reservas`;
         });
 
-        // Upload da foto do jogador (Base64 gravado no LocalStorage)
-        const inputAvatar = document.getElementById('inputAvatarFile');
-        inputAvatar.addEventListener('change', (e) => {
-          const file = e.target.files[0];
-          if (!file) return;
-
-          if (file.size > 2 * 1024 * 1024) {
-            alert('A imagem é muito pesada! Escolha um arquivo de até 2MB.');
-            return;
-          }
-
-          const reader = new FileReader();
-          reader.onload = (event) => {
-            const base64Img = event.target.result;
-            user.avatar = base64Img;
-            localStorage.setItem('nexus_current_user', JSON.stringify(user));
-
-            document.getElementById('navbarAvatarImg').src = base64Img;
-            document.getElementById('dropdownThumbImg').src = base64Img;
-            document.getElementById('profileModalPreview').src = base64Img;
-          };
-          reader.readAsDataURL(file);
-        });
-
-        // Logout
+        // 3. Encerramento de Sessão
         document.getElementById('btnHubLogout').addEventListener('click', () => {
           if (confirm(`Deseja desconectar a conta de ${tag}?`)) {
             localStorage.removeItem('nexus_current_user');

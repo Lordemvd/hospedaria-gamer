@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexus Inn | Painel do Jogador</title>
+  <link rel="stylesheet" href="../style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%2300f0ff'/%3E%3Ctext x='50' y='65' font-size='48' text-anchor='middle' fill='%2307080c'%3E%F0%9F%8E%AE%3C/text%3E%3C/svg%3E">
+
+  <!-- SDK Oficial do Supabase + Conexão -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../supabase.js"></script>
+
+  <style>
+    /* ==========================================================================
+       DASHBOARD GAMER (PAINEL DE CONTROLE COM ABAS LATERAIS)
+       ========================================================================== */
+    .profile-dashboard {
+      max-width: 1200px;
+      margin: 40px auto 70px;
+      padding: 0 20px;
+    }
+
+    .profile-grid {
+      display: grid;
+      grid-template-columns: 290px 1fr;
+      gap: 30px;
+      align-items: start;
+    }
+
+    @media (max-width: 880px) {
+      .profile-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* BARRA LATERAL (SIDEBAR DE NAVEGAÇÃO) */
+    .profile-sidebar {
+      background: #0d0f18;
+      border: 1px solid rgba(0, 240, 255, 0.25);
+      border-radius: 10px;
+      padding: 24px 18px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+      position: sticky;
+      top: 95px;
+    }
+
+    .sidebar-user-brief {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding-bottom: 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      margin-bottom: 20px;
+    }
+
+    .sidebar-avatar-wrap {
+      position: relative;
+      width: 90px;
+      height: 90px;
+      margin-bottom: 12px;
+    }
+
+    .sidebar-avatar-img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--neon-cyan, #00f0ff);
+      box-shadow: 0 0 16px rgba(0, 240, 255, 0.4);
+      background: #090a12;
+    }
+
+    .sidebar-status-dot {
+      position: absolute;
+      bottom: 2px;
+      right: 2px;
+      width: 14px;
+      height: 14px;
+      background: #00ffaa;
+      border: 3px solid #0d0f18;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #00ffaa;
+    }
+
+    .sidebar-gamertag {
+      font-family: var(--font-display, 'Orbitron', sans-serif);
+      color: #ffffff;
+      font-size: 1.15rem;
+      margin: 0 0 4px 0;
+      letter-spacing: 0.5px;
+    }
+
+    .sidebar-role-badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-family: var(--font-display, 'Orbitron', sans-serif);
+      background: rgba(0, 240, 255, 0.12);
+      color: var(--neon-cyan, #00f0ff);
+      border: 1px solid rgba(0, 240, 255, 0.35);
+      padding: 3px 10px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* ABAS DE NAVEGAÇÃO */
+    .sidebar-tabs {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .tab-nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      color: #94a3b8;
+      font-family: var(--font-body, 'Rajdhani', sans-serif);
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.2s ease;
+      width: 100%;
+    }
+
+    .tab-nav-btn:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .tab-nav-btn.active {
+      color: var(--neon-cyan, #00f0ff);
+      background: rgba(0, 240, 255, 0.08);
+      border-color: rgba(0, 240, 255, 0.4);
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.15);
+    }
+
+    .tab-nav-btn .tab-icon {
+      font-size: 1.2rem;
+    }
+
+    .tab-badge {
+      margin-left: auto;
+      background: rgba(0, 240, 255, 0.2);
+      color: var(--neon-cyan, #00f0ff);
+      padding: 2px 7px;
+      border-radius: 10px;
+      font-size: 0.75rem;
+      font-family: var(--font-display, 'Orbitron', sans-serif);
+    }
+
+    .sidebar-logout-btn {
+      margin-top: 20px;
+      padding-top: 15px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      color: #ff6b8b;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: transparent;
+      border: none;
+      width: 100%;
+      cursor: pointer;
+      font-family: var(--font-body, 'Rajdhani', sans-serif);
+      font-size: 0.95rem;
+      font-weight: 600;
+      transition: color 0.2s ease;
+    }
+
+    .sidebar-logout-btn:hover {
+      color: #ff3366;
+    }
+
+    /* ÁREA PRINCIPAL DE CONTEÚDO */
+    .profile-content-area {
+      background: #0d0f18;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 32px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      min-height: 520px;
+    }
+
+    .tab-pane {
+      display: none;
+      animation: tabFadeIn 0.25s ease-out;
+    }
+
+    .tab-pane.active {
+      display: block;
+    }
+
+    @keyframes tabFadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .pane-header {
+      margin-bottom: 26px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 18px;
+    }
+
+    .pane-header h2 {
+      font-family: var(--font-display, 'Orbitron', sans-serif);
+      color: #ffffff;
+      font-size: 1.5rem;
+      margin: 6px 0 4px 0;
+    }
+
+    .pane-header p {
+      color: var(--text-muted, #94a3b8);
+      font-size: 0.95rem;
+      margin: 0;
+    }
+
+    /* CARDS DE RESERVAS DA ABA 1 */
+    .reservations-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .reservations-search {
+      flex: 1;
+      min-width: 240px;
+      background: #07080c;
+      border: 1px solid #1f2338;
+      color: #ffffff;
+      padding: 10px 14px;
+      border-radius: 6px;
+      outline: none;
+      font-family: var(--font-body, 'Rajdhani', sans-serif);
+      font-size: 0.95rem;
+    }
+
+    .reservations-search:focus {
+      border-color: var(--neon-cyan, #00f0ff);
+    }
+
+    .res-card-full {
+      background: #080910;
+      border: 1px solid rgba(0, 240, 255, 0.2);
+      border-radius: 8px;
+      padding: 22px;
+      margin-bottom: 18px;
+      transition: all 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .res-card-full:hover {
+      border-color: var(--neon-cyan, #00f0ff);
+      box-shadow: 0 6px 20px rgba(0, 240, 255, 0.12);
+    }
+
+    .res-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .res-code-tag {
+      font-family: var(--font-display, 'Orbitron', sans-serif);
+      font-size: 1rem;
+      color: var(--neon-cyan, #00f0ff);
+      font-weight: 700;
+    }
+
+    .res-status-confirmed {
+      background: rgba(0, 255, 170, 0.12);
+      color: #00ffaa;
+      border: 1px solid rgba(0, 255, 170, 0.4);
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-family: var(--font-display, 'Orbitron', sans-serif);
+      letter-spacing: 1px;
+    }
+
+    .res-body-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+      padding: 14px 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .res-field small {
+      display: block;
+      color: var(--text-muted, #94a3b8);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      font-family: var(--font-display, 'Orbitron', sans-serif);
+      margin-bottom: 3px;
+    }
+
+    .res-field strong {
+      color: #ffffff;
+      font-size: 1.05rem;
+    }
+
+    .res-footer-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .res-price-total {
+      font-family: var(--font-display, 'Orbitron', sans-serif);
+      font-size: 1.25rem;
+      color: #ffffff;
+    }
+
+    .res-actions-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    /* ESTILOS DA ABA 2 (DADOS DA CONTA) */
+    .avatar-edit-box {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      background: #080910;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 8px;
+      padding: 22px;
+      margin-bottom: 26px;
+    }
+
+    .avatar-edit-preview {
+      width: 95px;
+      height: 95px;
+      border-radius: 50%;
+      border: 2px solid var(--neon-cyan, #00f0ff);
+      object-fit: cover;
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+    }
+
+    .account-data-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 650px) {
+      .account-data-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .account-field label {
+      display: block;
+      font-family: var(--font-display, 'Orbitron', sans-serif);
+      font-size: 0.8rem;
+      color: var(--text-muted, #94a3b8);
+      margin-bottom: 6px;
+    }
+
+    .account-field input {
+      width: 100%;
+      background: #07080c;
+      border: 1px solid #1f2338;
+      color: #ffffff;
+      padding: 11px 14px;
+      border-radius: 6px;
+      font-family: var(--font-body, 'Rajdhani', sans-serif);
+      font-size: 1rem;
+      outline: none;
+      box-sizing: border-box;
+    }
+
+    .account-field input:focus {
+      border-color: var(--neon-cyan, #00f0ff);
+    }
+
+    .account-field input[readonly] {
+      background: #0a0c14;
+      color: #94a3b8;
+      cursor: not-allowed;
+    }
+
+    .badge-vip-pill {
+      background: rgba(0, 255, 170, 0.1);
+      color: #00ffaa;
+      border: 1px solid #00ffaa;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <div class="logo">
+      <a href="../index.html" style="text-decoration: none; color: inherit;">
+        <span class="logo-highlight">NEXUS</span>INN
+      </a>
+    </div>
+    <nav class="nav-links" aria-label="Navegação principal">
+      <a href="../index.html">Início</a>
+      <a href="../index.html#quartos">Quartos</a>
+      <a href="galeria.html">Galeria</a>
+      <a href="reserva.html" class="btn-primary">Reservar Setup</a>
+    </nav>
+  </header>
+
+  <main class="profile-dashboard">
+    <div class="profile-grid">
+
+      <!-- COLUNA DA ESQUERDA: SIDEBAR COM ABAS -->
+      <aside class="profile-sidebar">
+        <div class="sidebar-user-brief">
+          <div class="sidebar-avatar-wrap">
+            <img src="" alt="Avatar" class="sidebar-avatar-img" id="sidebarAvatar">
+            <span class="sidebar-status-dot" title="Gamer Online"></span>
+          </div>
+          <h3 class="sidebar-gamertag" id="sidebarGamerTag">Carregando...</h3>
+          <span class="sidebar-role-badge" id="sidebarRole">Player VIP</span>
+        </div>
+
+        <nav class="sidebar-tabs" aria-label="Abas do painel do jogador">
+          <button type="button" class="tab-nav-btn active" data-tab="tabReservas">
+            <span class="tab-icon">📋</span>
+            <span>Minhas Reservas</span>
+            <span class="tab-badge" id="resCountBadge">0</span>
+          </button>
+
+          <button type="button" class="tab-nav-btn" data-tab="tabDados">
+            <span class="tab-icon">👤</span>
+            <span>Dados da Conta</span>
+          </button>
+
+          <button type="button" class="tab-nav-btn" data-tab="tabSeguranca">
+            <span class="tab-icon">🛡️</span>
+            <span>Segurança & Regras</span>
+          </button>
+        </nav>
+
+        <button type="button" class="sidebar-logout-btn" id="btnSidebarLogout">
+          <span>🚪</span> Encerrar Sessão
+        </button>
+      </aside>
+
+      <!-- COLUNA DA DIREITA: PAINEL DE CONTEÚDO DAS ABAS -->
+      <section class="profile-content-area">
+
+        <!-- ABA 1: MINHAS RESERVAS -->
+        <div class="tab-pane active" id="tabReservas">
+          <div class="pane-header">
+            <span class="badge">HISTÓRICO OPERACIONAL</span>
+            <h2>MINHAS ESTADIAS & RESERVAS</h2>
+            <p>Acompanhe seus quartos garantidos, datas de check-in e acesse seus Gamer Passes.</p>
+          </div>
+
+          <div class="reservations-controls">
+            <input type="text" id="filterResInput" class="reservations-search" placeholder="Filtrar por quarto, código ou status..." aria-label="Filtrar histórico de reservas">
+            <button type="button" id="btnRefreshRes" class="btn-secondary" style="padding: 10px 16px; font-size: 0.9rem;">
+              🔄 Atualizar
+            </button>
+          </div>
+
+          <div id="reservationsList">
+            <div style="text-align: center; padding: 40px 10px; color: #94a3b8;">
+              <div class="spinner" style="width: 32px; height: 32px; margin: 0 auto 15px;"></div>
+              Consultando reservas no banco de dados...
+            </div>
+          </div>
+        </div>
+
+        <!-- ABA 2: DADOS DA CONTA -->
+        <div class="tab-pane" id="tabDados">
+          <div class="pane-header">
+            <span class="badge">IDENTIDADE DIGITAL</span>
+            <h2>DADOS DO JOGADOR</h2>
+            <p>Gerencie sua GamerTag, foto de perfil e dados vinculados à sua credencial.</p>
+          </div>
+
+          <!-- UPLOAD DE FOTO -->
+          <div class="avatar-edit-box">
+            <img src="" alt="Avatar Preview" class="avatar-edit-preview" id="editAvatarPreview">
+            <div>
+              <h4 style="font-family: var(--font-display); color: #fff; margin: 0 0 6px 0;">Foto de Avatar Oficial</h4>
+              <p style="color: #94a3b8; font-size: 0.88rem; margin: 0 0 12px 0;">Personalize o avatar exibido na Navbar e no Gamer Pass VIP.</p>
+              <label for="profileImgInput" class="btn-primary" style="padding: 8px 16px; font-size: 0.85rem; cursor: pointer; display: inline-block;">
+                📷 Carregar Nova Imagem
+              </label>
+              <input type="file" id="profileImgInput" accept="image/*" style="display: none;">
+            </div>
+          </div>
+
+          <!-- FORMULÁRIO DE DADOS -->
+          <form id="userDataForm" class="account-data-grid">
+            <div class="account-field">
+              <label for="fieldGamerTag">GamerTag / Nickname</label>
+              <input type="text" id="fieldGamerTag" required>
+            </div>
+
+            <div class="account-field">
+              <label for="fieldRole">Nível de Acesso</label>
+              <div class="badge-vip-pill" id="fieldRoleDisplay">● MEMBRO VIP</div>
+            </div>
+
+            <div class="account-field" style="grid-column: 1 / -1;">
+              <label for="fieldFullName">Nome Completo</label>
+              <input type="text" id="fieldFullName" required>
+            </div>
+
+            <div class="account-field" style="grid-column: 1 / -1;">
+              <label for="fieldEmail">E-mail Cadastrado</label>
+              <input type="email" id="fieldEmail" readonly title="E-mail principal não pode ser alterado diretamente">
+            </div>
+
+            <div style="grid-column: 1 / -1; margin-top: 10px;">
+              <button type="submit" class="btn-primary" style="padding: 12px 24px;">Salvar Alterações</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- ABA 3: SEGURANÇA & REGRAS -->
+        <div class="tab-pane" id="tabSeguranca">
+          <div class="pane-header">
+            <span class="badge">CENTRAL DE PROTEÇÃO</span>
+            <h2>SEGURANÇA & PROTOCOLOS</h2>
+            <p>Diretrizes de integridade, proteção de hardware e regras de cancelamento.</p>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 18px; color: #cbd5e1; line-height: 1.8;">
+            <div style="background: #080910; border-left: 3px solid var(--neon-cyan); padding: 18px; border-radius: 0 6px 6px 0;">
+              <strong style="color: #fff; font-family: var(--font-display);">Protocolo Cyber Captcha Ativo:</strong>
+              <p style="margin: 4px 0 0 0; font-size: 0.92rem; color: #94a3b8;">
+                Sua conta está protegida por verificação de integridade visual com distorção matemática via HTML5 Canvas.
+              </p>
+            </div>
+
+            <div style="background: #080910; border-left: 3px solid var(--neon-pink); padding: 18px; border-radius: 0 6px 6px 0;">
+              <strong style="color: #fff; font-family: var(--font-display);">Política de Cancelamento:</strong>
+              <p style="margin: 4px 0 0 0; font-size: 0.92rem; color: #94a3b8;">
+                Estornos de 100% são concedidos para solicitações realizadas com até 48 horas de antecedência.
+                <a href="cancelamento.html" style="color: var(--neon-cyan); margin-left: 6px;">Ler política completa &rarr;</a>
+              </p>
+            </div>
+
+            <div style="background: #080910; border-left: 3px solid #00ffaa; padding: 18px; border-radius: 0 6px 6px 0;">
+              <strong style="color: #fff; font-family: var(--font-display);">Precisa de Auxílio?</strong>
+              <p style="margin: 4px 0 0 0; font-size: 0.92rem; color: #94a3b8;">
+                Nossa equipe técnica atende 24 horas por dia para configurações de rede, consoles e check-in.
+                <a href="contato.html" style="color: var(--neon-cyan); margin-left: 6px;">Abrir chamado prioritário &rarr;</a>
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-content">
+      <p>&copy; 2026 Nexus Inn - Todos os direitos reservados.</p>
+    </div>
+  </footer>
+
+  <!-- SCRIPT DO DASHBOARD -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1. BARREIRA DE ACESSO: Redireciona para o login se não houver sessão ativa
+      const sessionRaw = localStorage.getItem('nexus_current_user');
+      if (!sessionRaw) {
+        alert('🔒 Acesso Restrito: Faça login para acessar o painel do jogador.');
+        window.location.href = 'login.html?redirect=perfil.html';
+        return;
+      }
+
+      let user = null;
+      try {
+        user = JSON.parse(sessionRaw);
+      } catch (e) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      const defaultAvatar = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23090a12'/%3E%3Ctext x='50' y='62' font-size='42' text-anchor='middle' fill='%2300f0ff'%3E🎮%3C/text%3E%3C/svg%3E";
+      const userAvatar = user.avatar || defaultAvatar;
+
+      // 2. PREENCHIMENTO DOS DADOS NA SIDEBAR E FORMULÁRIO
+      const sidebarAvatar = document.getElementById('sidebarAvatar');
+      const editAvatarPreview = document.getElementById('editAvatarPreview');
+      const sidebarGamerTag = document.getElementById('sidebarGamerTag');
+      const sidebarRole = document.getElementById('sidebarRole');
+
+      sidebarAvatar.src = userAvatar;
+      editAvatarPreview.src = userAvatar;
+      sidebarGamerTag.textContent = user.gamerTag || user.fullName || 'Gamer';
+      sidebarRole.textContent = user.role === 'admin' ? '🛡️ Administrador' : '● Player VIP';
+
+      document.getElementById('fieldGamerTag').value = user.gamerTag || '';
+      document.getElementById('fieldFullName').value = user.fullName || '';
+      document.getElementById('fieldEmail').value = user.email || '';
+      document.getElementById('fieldRoleDisplay').textContent = user.role === 'admin' ? '🛡️ ADMINISTRADOR MASTER' : '● MEMBRO VIP OFICIAL';
+
+      // 3. CONTROLE DE ABAS LATERAIS
+      const tabBtns = document.querySelectorAll('.tab-nav-btn');
+      const tabPanes = document.querySelectorAll('.tab-pane');
+
+      function switchTab(tabId) {
+        tabBtns.forEach(btn => btn.classList.toggle('active', btn.getAttribute('data-tab') === tabId));
+        tabPanes.forEach(pane => pane.classList.toggle('active', pane.id === tabId));
+      }
+
+      tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          switchTab(btn.getAttribute('data-tab'));
+        });
+      });
+
+      // Suporte a abertura direta via URL (ex: perfil.html?tab=dados)
+      const urlParams = new URLSearchParams(window.location.search);
+      const requestedTab = urlParams.get('tab');
+      if (requestedTab === 'dados') switchTab('tabDados');
+      else if (requestedTab === 'seguranca') switchTab('tabSeguranca');
+      else switchTab('tabReservas');
+
+      // 4. CONSULTA E RENDERIZAÇÃO DAS RESERVAS (SUPABASE + LOCALSTORAGE)
+      let cachedReservations = [];
+
+      async function carregarReservas() {
+        const listContainer = document.getElementById('reservationsList');
+        const countBadge = document.getElementById('resCountBadge');
+        const term = user.gamerTag || user.fullName || '';
+
+        listContainer.innerHTML = `
+          <div style="text-align: center; padding: 40px 10px; color: #94a3b8;">
+            <div class="spinner" style="width: 30px; height: 30px; margin: 0 auto 12px;"></div>
+            Sincronizando estadias no banco de dados...
+          </div>
+        `;
+
+        let results = [];
+
+        // 1ª Tentativa: Consulta ao PostgreSQL do Supabase
+        if (typeof fetchUserReservations === 'function' && term) {
+          try {
+            const dbRes = await fetchUserReservations(term);
+            if (dbRes && dbRes.success && Array.isArray(dbRes.data)) {
+              results = dbRes.data.map(item => ({
+                codigo: item.reservation_code,
+                quarto: item.room_name,
+                hospede: item.guest_name,
+                checkin: item.check_in,
+                checkout: item.check_out,
+                total: item.total_price,
+                metodo: item.payment_method,
+                status: item.status || 'Confirmada'
+              }));
+            }
+          } catch (err) {
+            console.warn('Falha na consulta remota, lendo LocalStorage:', err);
+          }
+        }
+
+        // 2ª Tentativa: Unifica com histórico do navegador caso o banco oscile
+        try {
+          const localRes = JSON.parse(localStorage.getItem('nexus_reservations') || '[]');
+          localRes.forEach(loc => {
+            if (!results.some(r => r.codigo === loc.codigo)) {
+              results.push({
+                codigo: loc.codigo || 'NX-' + Math.floor(100000 + Math.random() * 900000),
+                quarto: loc.quarto || 'Acomodação Gamer',
+                hospede: loc.hospede || user.gamerTag,
+                checkin: loc.checkin,
+                checkout: loc.checkout,
+                total: loc.total,
+                metodo: loc.metodo || 'PIX Instantâneo',
+                status: 'Confirmada'
+              });
+            }
+          });
+        } catch (e) {}
+
+        cachedReservations = results;
+        countBadge.textContent = results.length;
+        renderizarCards(results);
+      }
+
+      function renderizarCards(lista) {
+        const listContainer = document.getElementById('reservationsList');
+
+        if (!lista || lista.length === 0) {
+          listContainer.innerHTML = `
+            <div style="text-align: center; padding: 50px 20px; background: #080910; border-radius: 8px; border: 1px dashed rgba(255,255,255,0.1);">
+              <div style="font-size: 3rem; margin-bottom: 12px;">🎮</div>
+              <h3 style="font-family: var(--font-display); color: #fff; margin-bottom: 8px;">NENHUMA RESERVA ENCONTRADA</h3>
+              <p style="color: #94a3b8; font-size: 0.95rem; margin-bottom: 20px;">Você ainda não possui estadias ativas registradas.</p>
+              <a href="reserva.html" class="btn-primary" style="padding: 10px 22px; text-decoration: none; display: inline-block;">
+                Reservar um Setup Agora
+              </a>
+            </div>
+          `;
+          return;
+        }
+
+        listContainer.innerHTML = lista.map(res => {
+          const fmtIn = res.checkin && res.checkin.includes('-') ? res.checkin.split('-').reverse().join('/') : (res.checkin || 'A confirmar');
+          const fmtOut = res.checkout && res.checkout.includes('-') ? res.checkout.split('-').reverse().join('/') : (res.checkout || 'A confirmar');
+
+          return `
+            <article class="res-card-full">
+              <div class="res-top-row">
+                <span class="res-code-tag">${res.codigo}</span>
+                <span class="res-status-confirmed">● ${res.status.toUpperCase()}</span>
+              </div>
+
+              <div class="res-body-grid">
+                <div class="res-field">
+                  <small>Acomodação</small>
+                  <strong>${res.quarto}</strong>
+                </div>
+                <div class="res-field">
+                  <small>Período Agendado</small>
+                  <strong>${fmtIn} &rarr; ${fmtOut}</strong>
+                </div>
+                <div class="res-field">
+                  <small>Método</small>
+                  <strong style="color: #cbd5e1;">${res.metodo}</strong>
+                </div>
+              </div>
+
+              <div class="res-footer-row">
+                <span class="res-price-total">${res.total}</span>
+                <div class="res-actions-group">
+                  <a href="finalizacao.html?codigo=${res.codigo}&hospede=${encodeURIComponent(res.hospede)}&quarto=${encodeURIComponent(res.quarto)}&checkin=${res.checkin}&checkout=${res.checkout}&total=${encodeURIComponent(res.total)}&metodo=${encodeURIComponent(res.metodo)}" 
+                     class="btn-primary" 
+                     style="padding: 8px 16px; font-size: 0.85rem; text-decoration: none;">
+                    Ver Gamer Pass VIP
+                  </a>
+                </div>
+              </div>
+            </article>
+          `;
+        }).join('');
+      }
+
+      // Filtro de texto em tempo real
+      document.getElementById('filterResInput').addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase().trim();
+        const filtradas = cachedReservations.filter(r => 
+          (r.quarto && r.quarto.toLowerCase().includes(query)) ||
+          (r.codigo && r.codigo.toLowerCase().includes(query)) ||
+          (r.status && r.status.toLowerCase().includes(query))
+        );
+        renderizarCards(filtradas);
+      });
+
+      document.getElementById('btnRefreshRes').addEventListener('click', carregarReservas);
+
+      // 5. UPLOAD DE FOTO DE AVATAR (BASE64)
+      const profileImgInput = document.getElementById('profileImgInput');
+      profileImgInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        if (file.size > 2 * 1024 * 1024) {
+          alert('Arquivo muito grande! Escolha uma imagem de até 2MB.');
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const base64 = event.target.result;
+          user.avatar = base64;
+          localStorage.setItem('nexus_current_user', JSON.stringify(user));
+
+          sidebarAvatar.src = base64;
+          editAvatarPreview.src = base64;
+          alert('Foto de perfil atualizada com sucesso!');
+        };
+        reader.readAsDataURL(file);
+      });
+
+      // 6. ATUALIZAÇÃO DOS DADOS DA CONTA
+      document.getElementById('userDataForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const newTag = document.getElementById('fieldGamerTag').value.trim();
+        const newName = document.getElementById('fieldFullName').value.trim();
+
+        if (!newTag || !newName) return;
+
+        user.gamerTag = newTag;
+        user.fullName = newName;
+        localStorage.setItem('nexus_current_user', JSON.stringify(user));
+
+        sidebarGamerTag.textContent = newTag;
+        alert('Dados da conta salvos com sucesso!');
+      });
+
+      // 7. LOGOUT
+      document.getElementById('btnSidebarLogout').addEventListener('click', () => {
+        if (confirm(`Deseja desconectar a GamerTag ${user.gamerTag}?`)) {
+          localStorage.removeItem('nexus_current_user');
+          window.location.href = '../index.html';
+        }
+      });
+
+      // Carga inicial das reservas
+      carregarReservas();
+    });
+  </script>
+</body>
+</html>
