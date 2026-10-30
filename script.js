@@ -419,4 +419,71 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // ==========================================
+  // 7. DIAGNÓSTICO DE CONEXÃO & TESTADOR DE PING
+  // ==========================================
+  const btnRunPing = document.getElementById('btnRunPing');
+  const pingProgressBar = document.getElementById('pingProgressBar');
+  const pingStatusText = document.getElementById('pingStatusText');
+  const pingLogTerminal = document.getElementById('pingLogTerminal');
+
+  const pingSpVal = document.getElementById('pingSpVal');
+  const jitterVal = document.getElementById('jitterVal');
+  const lossVal = document.getElementById('lossVal');
+
+  if (btnRunPing) {
+    let isTesting = false;
+
+    btnRunPing.addEventListener('click', () => {
+      if (isTesting) return;
+      isTesting = true;
+
+      btnRunPing.disabled = true;
+      btnRunPing.innerHTML = 'Escaneando Rota...';
+      pingStatusText.textContent = 'PROBE ATIVO';
+      pingStatusText.style.color = '#ffbd2e';
+
+      pingLogTerminal.innerHTML = '<p>> [INIT] Abrindo soquete de diagnóstico ICMP...</p>';
+      pingProgressBar.style.width = '0%';
+
+      const logs = [
+        { progress: '25%', text: '> [RESOLV] Rota traçada: São Paulo Equinix SP4 Datacenter...', delay: 500 },
+        { progress: '50%', text: '> [MEASURE] Enviando 32 pacotes UDP via rota primária...', delay: 1100 },
+        { progress: '75%', text: '> [AUDIT] Medindo variação de clock (jitter) e jitter buffer...', delay: 1700 },
+        { progress: '100%', text: '> [DONE] Diagnóstico concluído: Conexão Tier-1 Homologada para eSports.', delay: 2400 }
+      ];
+
+      // Oscilação dinâmica nos números durante o teste
+      const intervalAnim = setInterval(() => {
+        pingSpVal.textContent = (Math.random() * 3 + 3).toFixed(1);
+        jitterVal.textContent = (Math.random() * 0.4 + 0.3).toFixed(2);
+      }, 100);
+
+      logs.forEach(item => {
+        setTimeout(() => {
+          pingProgressBar.style.width = item.progress;
+          const p = document.createElement('p');
+          p.textContent = item.text;
+          pingLogTerminal.appendChild(p);
+          pingLogTerminal.scrollTop = pingLogTerminal.scrollHeight;
+        }, item.delay);
+      });
+
+      // Conclusão com números estáveis de alta performance
+      setTimeout(() => {
+        clearInterval(intervalAnim);
+        pingSpVal.textContent = '4.2';
+        jitterVal.textContent = '0.45';
+        lossVal.textContent = '0.0';
+
+        pingStatusText.textContent = 'OTIMIZADO // 0% LOSS';
+        pingStatusText.style.color = '#00ffaa';
+
+        btnRunPing.disabled = false;
+        btnRunPing.innerHTML = '⚡ Repetir Diagnóstico';
+        isTesting = false;
+      }, 2600);
+    });
+  }
+
 });

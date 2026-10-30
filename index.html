@@ -194,6 +194,85 @@
   <p id="feedback-espera" class="feedback-msg" hidden></p>
 </section>
 
+<!-- SEÇÃO DIAGNÓSTICO DE REDE / TESTE DE PING -->
+  <section class="ping-section" id="conexao">
+    <div class="ping-container">
+      <div class="ping-header">
+        <span class="badge">NEXUS ULTRA FIBER 1GBPS</span>
+        <h2 class="section-title">DIAGNÓSTICO DE LATÊNCIA DA REDE</h2>
+        <p class="section-subtitle">Conexão redundante ponto a ponto com rota dedicada para servidores de eSports.</p>
+      </div>
+
+      <div class="ping-terminal">
+        <div class="terminal-topbar">
+          <div class="terminal-dots">
+            <span class="dot red"></span>
+            <span class="dot yellow"></span>
+            <span class="dot green"></span>
+          </div>
+          <span class="terminal-title">NEXUS_LINK_PROBE // V.2.6</span>
+          <span class="terminal-status" id="pingStatusText">AGUARDANDO TESTE</span>
+        </div>
+
+        <div class="terminal-body">
+          <div class="ping-stats-grid">
+            <div class="ping-stat-card">
+              <small>SERVIDOR PRIMÁRIO (SP)</small>
+              <div class="stat-value-group">
+                <strong id="pingSpVal">--</strong>
+                <span class="stat-unit">ms</span>
+              </div>
+              <span class="stat-label-sub">Datacenter B3 / Valve / Riot</span>
+            </div>
+
+            <div class="ping-stat-card">
+              <small>JITTER MÉDIO</small>
+              <div class="stat-value-group">
+                <strong id="jitterVal">--</strong>
+                <span class="stat-unit">ms</span>
+              </div>
+              <span class="stat-label-sub">Estabilidade de clock</span>
+            </div>
+
+            <div class="ping-stat-card">
+              <small>PACKET LOSS</small>
+              <div class="stat-value-group">
+                <strong id="lossVal" style="color: #00ffaa;">--</strong>
+                <span class="stat-unit">%</span>
+              </div>
+              <span class="stat-label-sub">Rota direta dedicada</span>
+            </div>
+
+            <div class="ping-stat-card">
+              <small>BANDA SIMÉTRICA</small>
+              <div class="stat-value-group">
+                <strong id="bandwidthVal">1.000</strong>
+                <span class="stat-unit">Mbps</span>
+              </div>
+              <span class="stat-label-sub">Download & Upload 1:1</span>
+            </div>
+          </div>
+
+          <!-- Barra de Progresso do Escaneamento -->
+          <div class="ping-progress-wrap">
+            <div class="ping-progress-bar" id="pingProgressBar"></div>
+          </div>
+
+          <!-- Log de Console em Tempo Real -->
+          <div class="ping-log-terminal" id="pingLogTerminal">
+            <p>> Link de fibra óptico ativo. Pressione o botão para executar o diagnóstico de rota...</p>
+          </div>
+
+          <div class="ping-action-row">
+            <button type="button" class="btn-primary" id="btnRunPing">
+              ⚡ Executar Diagnóstico de Ping
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- 6. BAR & GASTRONOMIA (TEXTO EM CIMA, IMAGEM EM BAIXO) -->
   <section id="bar" class="section bar-section">
     <h2 class="section-title">BAR & GASTRONOMIA 24H</h2>

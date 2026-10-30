@@ -3209,3 +3209,172 @@ span.flatpickr-weekday {
   font-size: 0.72rem;
   font-family: var(--font-display, 'Orbitron', sans-serif);
 }
+
+/* ==========================================================================
+   WIDGET: DIAGNÓSTICO DE REDE & TESTADOR DE PING
+   ========================================================================== */
+.ping-section {
+  padding: 60px 20px;
+  background: radial-gradient(circle at 50% 30%, rgba(0, 240, 255, 0.05) 0%, transparent 70%);
+}
+
+.ping-container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.ping-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.ping-terminal {
+  background: #090a12;
+  border: 1px solid rgba(0, 240, 255, 0.35);
+  border-radius: 10px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), 0 0 25px rgba(0, 240, 255, 0.15);
+  overflow: hidden;
+}
+
+.terminal-topbar {
+  background: #05060a;
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.terminal-dots {
+  display: flex;
+  gap: 7px;
+}
+
+.terminal-dots .dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+}
+
+.terminal-dots .dot.red { background: #ff5f56; }
+.terminal-dots .dot.yellow { background: #ffbd2e; }
+.terminal-dots .dot.green { background: #27c93f; }
+
+.terminal-title {
+  font-family: var(--font-display, 'Orbitron', sans-serif);
+  font-size: 0.78rem;
+  color: #94a3b8;
+  letter-spacing: 1.5px;
+}
+
+.terminal-status {
+  font-family: var(--font-display, 'Orbitron', sans-serif);
+  font-size: 0.75rem;
+  color: var(--neon-cyan, #00f0ff);
+  background: rgba(0, 240, 255, 0.1);
+  padding: 3px 10px;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 240, 255, 0.3);
+}
+
+.terminal-body {
+  padding: 26px;
+}
+
+.ping-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.ping-stat-card {
+  background: #0d0f1a;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  padding: 18px;
+  transition: all 0.3s ease;
+}
+
+.ping-stat-card:hover {
+  border-color: var(--neon-cyan, #00f0ff);
+  transform: translateY(-2px);
+}
+
+.ping-stat-card small {
+  display: block;
+  font-family: var(--font-display, 'Orbitron', sans-serif);
+  font-size: 0.7rem;
+  color: var(--text-muted, #94a3b8);
+  margin-bottom: 8px;
+  letter-spacing: 0.8px;
+}
+
+.stat-value-group {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.stat-value-group strong {
+  font-family: var(--font-display, 'Orbitron', sans-serif);
+  font-size: 1.8rem;
+  color: #ffffff;
+  transition: color 0.3s ease;
+}
+
+.stat-unit {
+  font-size: 0.85rem;
+  color: var(--neon-cyan, #00f0ff);
+  font-weight: 700;
+}
+
+.stat-label-sub {
+  font-size: 0.78rem;
+  color: #64748b;
+  display: block;
+}
+
+/* BARRA DE PROGRESSO DO TESTE */
+.ping-progress-wrap {
+  width: 100%;
+  height: 4px;
+  background: #141724;
+  border-radius: 2px;
+  margin-bottom: 18px;
+  overflow: hidden;
+}
+
+.ping-progress-bar {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, var(--neon-cyan, #00f0ff), #00ffaa);
+  transition: width 0.2s linear;
+  box-shadow: 0 0 10px var(--neon-cyan, #00f0ff);
+}
+
+/* TERMINAL DE LOGS */
+.ping-log-terminal {
+  background: #05060a;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  padding: 14px 18px;
+  min-height: 85px;
+  max-height: 110px;
+  overflow-y: auto;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.82rem;
+  color: #a5f3fc;
+  line-height: 1.6;
+  margin-bottom: 22px;
+}
+
+.ping-log-terminal p {
+  margin: 0 0 4px 0;
+}
+
+.ping-action-row {
+  display: flex;
+  justify-content: center;
+}
