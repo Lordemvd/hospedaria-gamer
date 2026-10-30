@@ -3378,3 +3378,35 @@ span.flatpickr-weekday {
   display: flex;
   justify-content: center;
 }
+
+/* ==========================================================================
+   FEEDBACK SONORO GAMER (SFX TOGGLE NA NAVBAR)
+   ========================================================================== */
+.sfx-toggle-btn {
+  background: rgba(0, 240, 255, 0.06);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  color: var(--neon-cyan, #00f0ff);
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: all 0.25s ease;
+  outline: none;
+}
+
+.sfx-toggle-btn:hover {
+  background: rgba(0, 240, 255, 0.18);
+  border-color: #ffffff;
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.5);
+  transform: scale(1.08);
+}
+
+.sfx-toggle-btn.muted {
+  border-color: rgba(255, 107, 139, 0.4);
+  color: #ff6b8b;
+  background: rgba(255, 107, 139, 0.08);
+}

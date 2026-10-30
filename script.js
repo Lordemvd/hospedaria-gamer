@@ -486,4 +486,138 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // ==========================================
+  // 8. MOTOR DE FEEDBACK SONORO GAMER (WEB AUDIO API)
+  // ==========================================
+  let audioCtx = null;
+  let isSoundEnabled = localStorage.getItem('nexus_sfx_enabled') !== 'false';
+
+  function initAudio() {
+    if (!audioCtx) {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (AudioContext) audioCtx = new AudioContext();
+    }
+    if (audioCtx && audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+  }
+
+  // 1. Som de Passagem do Mouse (Hover Sci-Fi Suave)
+  function playHoverSound() {
+    if (!isSoundEnabled) return;
+    initAudio();
+    if (!audioCtx) return;
+
+    try {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, audioCtx.currentTime); // Lá (A5)
+      osc.frequency.exponentialRampToValueAtTime(1320, audioCtx.currentTime + 0.04);
+
+      gain.gain.setValueAtTime(0.025, audioCtx.currentTime); // Volume suave
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.04);
+
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.04);
+    } catch(e) {}
+  }
+
+  // 2. Som de Clique / Confirmação Tática
+  function playClickSound() {
+    if (!isSoundEnabled) return;
+    initAudio();
+    if (!audioCtx) return;
+
+    try {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(220, audioCtx.currentTime + 0.06);
+
+      gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.06);
+
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.06);
+    } catch(e) {}
+  }
+
+  // 3. Som de Sucesso / Conclusão (Arpeggio Sci-Fi)
+  function playSuccessSound() {
+    if (!isSoundEnabled) return;
+    initAudio();
+    if (!audioCtx) return;
+
+    try {
+      const notes = [523.25, 659.25, 783.99, 1046.50]; // Acorde C Maior
+      notes.forEach((freq, idx) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime + (idx * 0.07));
+
+        gain.gain.setValueAtTime(0.04, audioCtx.currentTime + (idx * 0.07));
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + (idx * 0.07) + 0.15);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start(audioCtx.currentTime + (idx * 0.07));
+        osc.stop(audioCtx.currentTime + (idx * 0.07) + 0.15);
+      });
+    } catch(e) {}
+  }
+
+  // Injeção do Botão de Alternância de Áudio na Navbar
+  const navContainer = document.querySelector('.navbar .nav-links') || document.querySelector('.navbar');
+  if (navContainer) {
+    const sfxBtn = document.createElement('button');
+    sfxBtn.type = 'button';
+    sfxBtn.className = `sfx-toggle-btn ${isSoundEnabled ? '' : 'muted'}`;
+    sfxBtn.title = isSoundEnabled ? 'Som da Interface: Ativado' : 'Som da Interface: Mutado';
+    sfxBtn.innerHTML = isSoundEnabled ? '🔊' : '🔇';
+    sfxBtn.setAttribute('aria-label', 'Alternar efeitos sonoros');
+
+    sfxBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      initAudio();
+      isSoundEnabled = !isSoundEnabled;
+      localStorage.setItem('nexus_sfx_enabled', isSoundEnabled);
+
+      sfxBtn.innerHTML = isSoundEnabled ? '🔊' : '🔇';
+      sfxBtn.className = `sfx-toggle-btn ${isSoundEnabled ? '' : 'muted'}`;
+      sfxBtn.title = isSoundEnabled ? 'Som da Interface: Ativado' : 'Som da Interface: Mutado';
+
+      if (isSoundEnabled) playClickSound();
+    });
+
+    navContainer.appendChild(sfxBtn);
+  }
+
+  // Vinculação Automática aos Elementos Interativos
+  document.querySelectorAll('a, button, .room-card, .tab-nav-btn, .addon-checkbox').forEach(el => {
+    el.addEventListener('mouseenter', playHoverSound);
+    el.addEventListener('click', playClickSound);
+  });
+
+  // Vincula o som de sucesso ao término do Teste de Ping
+  if (btnRunPing) {
+    btnRunPing.addEventListener('click', () => {
+      setTimeout(() => {
+        if (typeof playSuccessSound === 'function') playSuccessSound();
+      }, 2400);
+    });
+  }
+
 });
