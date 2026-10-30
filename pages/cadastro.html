@@ -113,18 +113,17 @@
 
     /* ESTILOS DO CYBER CAPTCHA */
     .captcha-container {
-      background: #080910;
-      border: 1px solid rgba(0, 240, 255, 0.2);
-      border-radius: 6px;
-      padding: 14px;
-      margin-bottom: 18px;
+      background: transparent;
+      border: none;
+      border-radius: 0;
+      padding: 0;
+      margin-bottom: 20px;
     }
 
     .captcha-row {
       display: flex;
       align-items: center;
       gap: 12px;
-      flex-wrap: wrap;
     }
 
     .canvas-wrap {
@@ -172,8 +171,8 @@
 
     /* CAMPO DO CAPTCHA ESCURO (MODO DARK & CIANO) */
     .captcha-input-field {
-      flex: 1;
-      min-width: 140px;
+      width: 170px;
+      flex: none;
     }
 
     #captchaInput {
@@ -182,7 +181,7 @@
       border: 1px solid #1f2338 !important;
       color: var(--neon-cyan, #00f0ff) !important;
       border-radius: 6px !important;
-      padding: 0 14px !important;
+      padding: 0 12px !important;
       text-transform: uppercase !important;
       font-family: var(--font-display, 'Orbitron', monospace) !important;
       letter-spacing: 2px !important;
@@ -191,18 +190,17 @@
       height: 42px !important;
       outline: none !important;
       box-sizing: border-box !important;
-      transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease !important;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
     }
 
     #captchaInput:focus {
       border-color: var(--neon-cyan, #00f0ff) !important;
       box-shadow: 0 0 10px rgba(0, 240, 255, 0.4) !important;
-      background: #090a14 !important;
     }
 
     #captchaInput::placeholder {
       color: #64748b !important;
-      font-size: 0.8rem !important;
+      font-size: 0.78rem !important;
       letter-spacing: 1px !important;
     }
 
@@ -342,9 +340,7 @@
 
         <!-- PROTOCOLO DE SEGURANÇA: CYBER CAPTCHA -->
         <div class="captcha-container">
-          <label for="captchaInput" style="display: block; font-family: var(--font-display); font-size: 0.78rem; color: var(--neon-cyan); margin-bottom: 8px;">
-            VERIFICAÇÃO DE SEGURANÇA
-          </label>
+          <label for="captchaInput">VERIFICAÇÃO DE SEGURANÇA</label>
           <div class="captcha-row">
             <div class="canvas-wrap">
               <canvas id="captchaCanvas" width="160" height="42" title="Código de verificação"></canvas>
@@ -352,7 +348,9 @@
             </div>
 
             <button type="button" id="btnRefreshCaptcha" class="btn-refresh-captcha" title="Gerar novo código" aria-label="Gerar novo código">
-              🔄
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+              </svg>
             </button>
 
             <div class="captcha-input-field">
