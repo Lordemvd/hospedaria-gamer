@@ -11,16 +11,17 @@
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%2300f0ff'/%3E%3Ctext x='50' y='65' font-size='48' text-anchor='middle' fill='%2307080c'%3E%F0%9F%8E%AE%3C/text%3E%3C/svg%3E">
 
   <!-- Cropper.js CSS para recorte com zoom -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
 
   <!-- SDK Oficial do Supabase + Conexão -->
   <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script defer src="../supabase.js"></script>
 
   <style>
+    /* ESPAÇAMENTO PRINCIPAL: 110px no topo para afastar da Navbar fixa */
     .profile-dashboard {
       max-width: 1200px;
-      margin: 40px auto 70px;
+      margin: 110px auto 70px;
       padding: 0 20px;
     }
     .profile-grid {
@@ -30,7 +31,12 @@
       align-items: start;
     }
     @media (max-width: 880px) {
-      .profile-grid { grid-template-columns: 1fr; }
+      .profile-dashboard {
+        margin-top: 90px;
+      }
+      .profile-grid { 
+        grid-template-columns: 1fr; 
+      }
     }
     .profile-sidebar {
       background: #0d0f18;
@@ -39,7 +45,7 @@
       padding: 24px 18px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
       position: sticky;
-      top: 95px;
+      top: 100px;
     }
     .sidebar-user-brief {
       display: flex;
@@ -402,7 +408,7 @@
           <div class="pane-header">
             <span class="badge">HISTÓRICO OPERACIONAL</span>
             <h2>MINHAS ESTADIAS & RESERVAS</h2>
-            <p>Seus setups garantidos no Supabase e acessos rápidos ao Gamer Pass.</p>
+            <p>Seus setups garantidos e acessos rápidos ao Gamer Pass.</p>
           </div>
 
           <div style="display: flex; gap: 12px; margin-bottom: 22px; flex-wrap: wrap;">
@@ -420,7 +426,7 @@
           <div class="pane-header">
             <span class="badge">IDENTIDADE DIGITAL</span>
             <h2>DADOS DO JOGADOR</h2>
-            <p>Gerencie sua GamerTag única, foto com recorte e credenciais.</p>
+            <p>Gerencie sua GamerTag, foto de perfil e dados de acesso.</p>
           </div>
 
           <!-- AVATAR COM RECORTE E ZOOM -->
@@ -428,7 +434,7 @@
             <img src="" alt="Avatar Preview" class="avatar-edit-preview" id="editAvatarPreview">
             <div>
               <h4 style="font-family: var(--font-display); color: #fff; margin: 0 0 4px 0;">Avatar Oficial</h4>
-              <p style="color: #94a3b8; font-size: 0.85rem; margin: 0 0 10px 0;">Recorte e aplique zoom antes de salvar no banco de dados.</p>
+              <p style="color: #94a3b8; font-size: 0.85rem; margin: 0 0 10px 0;">Recorte e enquadre sua imagem oficial.</p>
               <label for="profileImgInput" class="btn-primary" style="padding: 8px 16px; font-size: 0.82rem; cursor: pointer; display: inline-block;">
                 📷 Ajustar & Trocar Foto
               </label>
@@ -457,7 +463,7 @@
             </div>
 
             <div style="grid-column: 1 / -1; margin-top: 10px;">
-              <button type="submit" id="btnSaveProfile" class="btn-primary" style="padding: 12px 24px;">Salvar Alterações no Banco</button>
+              <button type="submit" id="btnSaveProfile" class="btn-primary" style="padding: 12px 24px;">Salvar Alterações</button>
             </div>
           </form>
         </div>
@@ -505,7 +511,7 @@
       <p style="color: #94a3b8; font-size: 0.85rem; margin: 0;">Arraste para posicionar e use os botões para dar zoom:</p>
       
       <div class="crop-stage">
-        <img id="imageToCrop" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E" alt="Imagem para recorte">
+        <img id="imageToCrop" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E" alt="Imagem para recorte" width="400" height="300">
       </div>
 
       <div class="crop-controls">
@@ -528,8 +534,7 @@
   </footer>
 
   <!-- Cropper.js Script CDN -->
-  <!-- NOSONAR -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -579,16 +584,13 @@
         btn.addEventListener('click', () => switchTab(btn.getAttribute('data-tab')));
       });
 
-      // Suporte a abertura via query param (?tab=dados ou ?tab=reservas)
       const urlParams = new URLSearchParams(window.location.search);
       const reqTab = urlParams.get('tab');
       if (reqTab === 'dados') switchTab('tabDados');
       else if (reqTab === 'seguranca') switchTab('tabSeguranca');
       else switchTab('tabReservas');
 
-      // ==========================================
       // 1. CARREGAMENTO E RENDERIZAÇÃO DAS RESERVAS
-      // ==========================================
       let cachedReservations = [];
 
       async function carregarReservas() {
@@ -598,13 +600,11 @@
         listContainer.innerHTML = `
           <div style="text-align: center; padding: 40px 10px; color: #94a3b8;">
             <div class="nexus-spinner"></div>
-            Sincronizando estadias no banco de dados...
+            Carregando suas estadias...
           </div>
         `;
 
         let results = [];
-
-        // Identificadores de busca: tag atual, nome e apelidos anteriores
         const searchTerms = [user.gamerTag, user.fullName].filter(Boolean);
         if (user.previousTags) {
           user.previousTags.split(',').map(t => t.trim()).forEach(t => {
@@ -612,7 +612,6 @@
           });
         }
 
-        // 1ª Tentativa: Consulta ao PostgreSQL do Supabase para cada identificador
         if (typeof fetchUserReservations === 'function') {
           try {
             for (const term of searchTerms) {
@@ -639,7 +638,6 @@
           }
         }
 
-        // 2ª Tentativa: Unifica com histórico do navegador caso o banco oscile
         try {
           const localRes = JSON.parse(localStorage.getItem('nexus_reservations') || '[]');
           localRes.forEach(loc => {
@@ -720,7 +718,6 @@
         }).join('');
       }
 
-      // Filtro de busca das reservas
       const filterInput = document.getElementById('filterResInput');
       if (filterInput) {
         filterInput.addEventListener('input', (e) => {
@@ -739,9 +736,7 @@
         btnRefresh.addEventListener('click', carregarReservas);
       }
 
-      // ==========================================
-      // 2. RECORTE COM ZOOM (CROPPER.JS) E GRAVAÇÃO NO DB
-      // ==========================================
+      // 2. RECORTE COM ZOOM (CROPPER.JS)
       const cropModal = document.getElementById('cropModal');
       const imageToCrop = document.getElementById('imageToCrop');
       const profileImgInput = document.getElementById('profileImgInput');
@@ -776,7 +771,6 @@
         if (cropper) cropper.destroy();
       });
 
-      // Aplica o corte e salva no DB de forma ultra leve (~15KB)
       document.getElementById('btnApplyCrop').addEventListener('click', async () => {
         if (!cropper) return;
 
@@ -798,14 +792,12 @@
         if (typeof updateUserProfileInDB === 'function' && user.id) {
           const res = await updateUserProfileInDB(user.id, { avatar: compressedBase64 });
           if (res.success) {
-            alert('✅ Avatar cortado e salvo com sucesso no banco de dados!');
+            alert('Foto de perfil atualizada com sucesso!');
           }
         }
       });
 
-      // ==========================================
-      // 3. ATUALIZAÇÃO COM ANTI-DUPLICIDADE CASE-INSENSITIVE E HISTÓRICO
-      // ==========================================
+      // 3. ATUALIZAÇÃO DOS DADOS
       document.getElementById('userDataForm').addEventListener('submit', async (e) => {
         e.preventDefault();
 
@@ -813,23 +805,21 @@
         const newName = document.getElementById('fieldFullName').value.trim();
         const btnSave = document.getElementById('btnSaveProfile');
 
-        // Validação de formato: 3 a 16 caracteres
         const tagRegex = /^[a-zA-Z0-9_-]{3,16}$/;
         if (!tagRegex.test(rawNewTag)) {
-          alert('⚠️ Formato inválido! A GamerTag deve ter entre 3 e 16 caracteres (somente letras, números, hífen e underline).');
+          alert('Formato inválido! A GamerTag deve ter entre 3 e 16 caracteres (somente letras, números, hífen e underline).');
           return;
         }
 
         btnSave.disabled = true;
-        btnSave.textContent = 'Verificando e salvando...';
+        btnSave.textContent = 'Salvando alterações...';
 
         const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
         const currentTag = user.gamerTag || '';
 
-        // Se alterou a tag, checa duplicatas case-insensitive
         if (rawNewTag.toLowerCase() !== currentTag.toLowerCase() && client) {
           try {
-            const { data: tagExists, error: checkErr } = await client
+            const { data: tagExists } = await client
               .from('users')
               .select('id, gamer_tag')
               .ilike('gamer_tag', rawNewTag)
@@ -837,9 +827,9 @@
               .limit(1);
 
             if (tagExists && tagExists.length > 0) {
-              alert(`❌ A GamerTag "${rawNewTag}" já está sendo usada por outro jogador (respeitando maiúsculas e minúsculas). Escolha outro nome.`);
+              alert(`A GamerTag "${rawNewTag}" já está sendo usada por outro jogador. Escolha outro nome.`);
               btnSave.disabled = false;
-              btnSave.textContent = 'Salvar Alterações no Banco';
+              btnSave.textContent = 'Salvar Alterações';
               return;
             }
           } catch (err) {
@@ -847,7 +837,6 @@
           }
         }
 
-        // Histórico de nomes antigos
         let updatedPreviousTags = user.previousTags || '';
         if (rawNewTag.toLowerCase() !== currentTag.toLowerCase() && currentTag) {
           const list = updatedPreviousTags ? updatedPreviousTags.split(', ') : [];
@@ -861,15 +850,13 @@
           previous_tags: updatedPreviousTags
         };
 
-        // Grava no Supabase
         if (typeof updateUserProfileInDB === 'function' && user.id) {
           const dbRes = await updateUserProfileInDB(user.id, updatePayload);
           if (!dbRes.success) {
-            alert('Aviso: Atualizado localmente, mas oscilou no banco: ' + dbRes.message);
+            alert('Não foi possível sincronizar suas alterações no momento. Tente novamente.');
           }
         }
 
-        // Grava no LocalStorage
         user.gamerTag = rawNewTag;
         user.fullName = newName;
         user.previousTags = updatedPreviousTags;
@@ -877,8 +864,8 @@
 
         syncUI();
         btnSave.disabled = false;
-        btnSave.textContent = 'Salvar Alterações no Banco';
-        alert(`🎉 Perfil atualizado com sucesso no PostgreSQL! Nova GamerTag: ${rawNewTag}`);
+        btnSave.textContent = 'Salvar Alterações';
+        alert(`Perfil atualizado com sucesso! GamerTag: ${rawNewTag}`);
       });
 
       // Logout
@@ -889,7 +876,7 @@
         }
       });
 
-      // DISPARO AUTOMÁTICO INICIAL DAS RESERVAS
+      // Disparo inicial
       carregarReservas();
     });
   </script>
