@@ -86,7 +86,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      const originalBtnText = submitBtn ? submitBtn.innerHTML : 'Buscar';
       if (submitBtn) {
         submitBtn.disabled = true;
         submitBtn.innerHTML = 'Verificando vagas...';
@@ -128,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ==========================================
-  // 3. MENU HAMBÚRGUER E CALENDÁRIO
+  // 3. MENU HAMBÚRGUER E CALENDÁRIO FLATPICKR
   // ==========================================
   const menuToggle = document.getElementById('menuToggle');
   const navLinks = document.getElementById('navLinks') || document.querySelector('.nav-links');
@@ -155,7 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-// Configuração Flatpickr para o Hero da Home
+  // Configuração Flatpickr para o Hero da Home
   if (typeof flatpickr !== 'undefined') {
     const fpCheckout = flatpickr("#checkout", {
       locale: "pt",
@@ -173,7 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
       altFormat: "d/m/Y",
       minDate: "today",
       disableMobile: true,
-      onChange: function(selectedDates, dateStr) {
+      onChange: function(selectedDates) {
         if (selectedDates[0]) {
           const nextDay = new Date(selectedDates[0]);
           nextDay.setDate(nextDay.getDate() + 1);
@@ -184,7 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ==========================================
-  // 4. INJEÇÃO DO MODAL DE "MINHAS RESERVAS"
+  // 4. INJEÇÃO DO MODAL DE "MINHAS RESERVAS" (POSTGRESQL QUERY)
   // ==========================================
   const modalHTML = `
     <div id="modalReservas" class="reservas-modal">
@@ -274,9 +273,9 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ==========================================
-  // 5. GERENCIAMENTO VISUAL DA SESSÃO (NAVBAR)
+  // 5. HUB DO JOGADOR: AVATAR CIRCULAR, DROPDOWN & PERFIL (SUBSTITUI A SEÇÃO 5 ANTIGA)
   // ==========================================
-  // Sincroniza sessão se vier parâmetro na URL
+  // Sincroniza sessão caso venha o parâmetro ?user= na URL
   const urlParams = new URLSearchParams(window.location.search);
   const userFromUrl = urlParams.get('user');
   if (userFromUrl) {
@@ -291,7 +290,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const tag = user.gamerTag || user.fullName || 'Player';
       const isAdmin = user.role === 'admin';
 
-      // Localiza o botão "Entrar"
+      // Avatar padrão do jogador caso ainda não tenha subido foto
+      const defaultAvatar = user.avatar || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23090a12'/%3E%3Ctext x='50' y='62' font-size='42' text-anchor='middle' fill='%2300f0ff'%3E🎮%3C/text%3E%3C/svg%3E";
+
+      // Localiza o botão "Entrar" na Navbar para substituição cirúrgica
       let loginBtn = navLinks.querySelector('.btn-link');
       if (!loginBtn) {
         const links = navLinks.querySelectorAll('a');
@@ -304,48 +306,164 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       if (loginBtn) {
-        const navActions = document.createElement('div');
-        navActions.className = 'user-nav-actions';
-        navActions.style.display = 'inline-flex';
-        navActions.style.alignItems = 'center';
-        navActions.style.gap = '8px';
+        // Contêiner principal com suporte para o selo Admin + Hub do Jogador
+        const hubWrapper = document.createElement('div');
+        hubWrapper.className = 'user-nav-actions';
+        hubWrapper.style.display = 'inline-flex';
+        hubWrapper.style.alignItems = 'center';
+        hubWrapper.style.gap = '12px';
 
-        navActions.innerHTML = `
+        hubWrapper.innerHTML = `
           ${isAdmin ? `
             <a href="pages/admin.html" style="background: rgba(255, 0, 85, 0.15); border: 1px solid var(--neon-pink); color: #ff6b8b; padding: 7px 12px; border-radius: 4px; font-family: var(--font-display); font-size: 0.85rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
               🛡️ Painel ADM
             </a>
           ` : ''}
-          <button type="button" id="btnMinhasReservas" style="background: rgba(0,240,255,0.08); border: 1px solid var(--border-glow); color: var(--neon-cyan); padding: 7px 12px; border-radius: 4px; font-family: var(--font-display); font-size: 0.85rem; cursor: pointer;">
-            🎮 ${tag} &bull; Reservas
-          </button>
-          <button id="btnLogout" type="button" style="background: transparent; border: 1px solid rgba(255,0,85,0.4); color: #ff6b8b; padding: 7px 10px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; font-family: var(--font-display);">
-            Sair
-          </button>
+
+          <!-- AVATAR CIRCULAR COM STATUS ONLINE E DROPDOWN -->
+          <div class="user-hub-container">
+            <button type="button" class="user-hub-btn" id="userHubBtn" title="Hub do Jogador: ${tag}">
+              <img src="${defaultAvatar}" alt="Avatar" class="user-hub-avatar" id="navbarAvatarImg">
+              <span class="user-status-dot"></span>
+            </button>
+
+            <div class="user-hub-dropdown" id="userHubDropdown">
+              <div class="hub-user-header">
+                <img src="${defaultAvatar}" alt="Thumb" class="hub-header-thumb" id="dropdownThumbImg">
+                <div class="hub-user-meta">
+                  <small>Gamer Conectado</small>
+                  <strong>${tag}</strong>
+                </div>
+              </div>
+              <button type="button" class="hub-item" id="btnHubDados">
+                <span>👤</span> Dados da Conta
+              </button>
+              <button type="button" class="hub-item" id="btnHubReservas">
+                <span>📋</span> Minhas Reservas
+              </button>
+              <button type="button" class="hub-item hub-logout" id="btnHubLogout">
+                <span>🚪</span> Sair da Conta
+              </button>
+            </div>
+          </div>
         `;
 
-        loginBtn.replaceWith(navActions);
+        // Substitui apenas o botão Entrar (o botão "Reservar" permanece intacto ao lado)
+        loginBtn.replaceWith(hubWrapper);
 
-        // Abertura do modal ao clicar no botão
-        const btnMinhasReservas = document.getElementById('btnMinhasReservas');
-        if (btnMinhasReservas) {
-          btnMinhasReservas.addEventListener('click', () => {
+        // Injeta o Modal de Perfil Gamer dinamicamente
+        const modalPerfilMarkup = `
+          <div id="modalPerfilGamer" class="nexus-modal-overlay" style="display: none;">
+            <div class="nexus-modal-box">
+              <div class="nexus-modal-header">
+                <h3>PERFIL DO JOGADOR</h3>
+                <button type="button" class="nexus-modal-close" id="btnClosePerfil">&times;</button>
+              </div>
+              <div class="nexus-modal-body">
+                <div class="profile-avatar-row">
+                  <img src="${defaultAvatar}" alt="Preview" class="profile-avatar-preview" id="profileModalPreview">
+                  <div>
+                    <label class="avatar-upload-btn" for="inputAvatarFile">📷 Trocar Imagem</label>
+                    <input type="file" id="inputAvatarFile" accept="image/*" style="display: none;">
+                    <p style="font-size: 0.78rem; color: #94a3b8; margin: 6px 0 0 0;">JPG, PNG ou GIF (Máx 2MB)</p>
+                  </div>
+                </div>
+                <div class="profile-info-grid">
+                  <div class="profile-field">
+                    <small>GamerTag</small>
+                    <p>${tag}</p>
+                  </div>
+                  <div class="profile-field">
+                    <small>Status da Conta</small>
+                    <p style="color: #00ffaa;">● Ativa &bull; VIP</p>
+                  </div>
+                  <div class="profile-field" style="grid-column: 1 / -1;">
+                    <small>Nome Completo</small>
+                    <p>${user.fullName || 'Jogador Nexus'}</p>
+                  </div>
+                  <div class="profile-field" style="grid-column: 1 / -1;">
+                    <small>E-mail Vinculado</small>
+                    <p>${user.email || 'Não informado'}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', modalPerfilMarkup);
+
+        // Seletores do Hub
+        const hubBtn = document.getElementById('userHubBtn');
+        const hubDropdown = document.getElementById('userHubDropdown');
+        const modalPerfil = document.getElementById('modalPerfilGamer');
+        const btnClosePerfil = document.getElementById('btnClosePerfil');
+
+        // Alterna abertura do Menu Dropdown
+        hubBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          hubDropdown.classList.toggle('active');
+        });
+
+        // Fecha Dropdown ao clicar fora
+        document.addEventListener('click', () => {
+          hubDropdown.classList.remove('active');
+        });
+
+        // Abertura do Modal de Dados
+        document.getElementById('btnHubDados').addEventListener('click', () => {
+          hubDropdown.classList.remove('active');
+          modalPerfil.style.display = 'flex';
+        });
+
+        btnClosePerfil.addEventListener('click', () => {
+          modalPerfil.style.display = 'none';
+        });
+
+        modalPerfil.addEventListener('click', (e) => {
+          if (e.target === modalPerfil) modalPerfil.style.display = 'none';
+        });
+
+        // Conecta "Minhas Reservas" diretamente ao Modal com Live Query Supabase da Seção 4
+        document.getElementById('btnHubReservas').addEventListener('click', () => {
+          hubDropdown.classList.remove('active');
+          if (modal) {
             modal.classList.add('show');
-            inputBusca.value = tag;
+            if (inputBusca) inputBusca.value = tag;
             executarBusca(tag);
-          });
-        }
+          }
+        });
 
-        // Ação de logout
-        const btnLogout = document.getElementById('btnLogout');
-        if (btnLogout) {
-          btnLogout.addEventListener('click', () => {
-            if (confirm(`Deseja desconectar a conta de ${tag}?`)) {
-              localStorage.removeItem('nexus_current_user');
-              window.location.reload();
-            }
-          });
-        }
+        // Upload da foto do jogador (Base64 gravado no LocalStorage)
+        const inputAvatar = document.getElementById('inputAvatarFile');
+        inputAvatar.addEventListener('change', (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+
+          if (file.size > 2 * 1024 * 1024) {
+            alert('A imagem é muito pesada! Escolha um arquivo de até 2MB.');
+            return;
+          }
+
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            const base64Img = event.target.result;
+            user.avatar = base64Img;
+            localStorage.setItem('nexus_current_user', JSON.stringify(user));
+
+            document.getElementById('navbarAvatarImg').src = base64Img;
+            document.getElementById('dropdownThumbImg').src = base64Img;
+            document.getElementById('profileModalPreview').src = base64Img;
+          };
+          reader.readAsDataURL(file);
+        });
+
+        // Logout
+        document.getElementById('btnHubLogout').addEventListener('click', () => {
+          if (confirm(`Deseja desconectar a conta de ${tag}?`)) {
+            localStorage.removeItem('nexus_current_user');
+            window.location.reload();
+          }
+        });
       }
     } catch (e) {
       console.error('Erro ao ler sessão do usuário:', e);
