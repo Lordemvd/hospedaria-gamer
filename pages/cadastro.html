@@ -10,18 +10,23 @@
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%2300f0ff'/%3E%3Ctext x='50' y='65' font-size='48' text-anchor='middle' fill='%2307080c'%3E%F0%9F%8E%AE%3C/text%3E%3C/svg%3E">
 
-  <!-- SDK Oficial do Supabase + Conexão -->
-  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script defer src="../supabase.js"></script>
+  <!-- SDK Oficial do Supabase (UMD Global) + Conexão na raiz -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="../supabase.js"></script>
 
   <style>
+    /* FUNDO CIBERNÉTICO ESCURO CONTÍNUO */
     .auth-page-body {
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      background: radial-gradient(circle at 50% 20%, #151829 0%, var(--bg-dark, #0a0b10) 80%) no-repeat center center fixed;
-      background-size: cover;
       background-color: #07080c;
+      background-image: 
+        radial-gradient(circle at 50% 15%, rgba(0, 240, 255, 0.08) 0%, transparent 65%),
+        linear-gradient(rgba(0, 240, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 240, 255, 0.02) 1px, transparent 1px);
+      background-size: 100% 100%, 40px 40px, 40px 40px;
+      background-attachment: fixed;
     }
 
     .auth-wrapper {
@@ -137,7 +142,6 @@
       display: block;
     }
 
-    /* Camada transparente anti-download */
     .canvas-shield {
       position: absolute;
       inset: 0;
@@ -166,18 +170,40 @@
       transform: rotate(90deg);
     }
 
+    /* CAMPO DO CAPTCHA ESCURO (MODO DARK & CIANO) */
     .captcha-input-field {
       flex: 1;
       min-width: 140px;
     }
 
-    .captcha-input-field input {
-      text-transform: uppercase;
-      font-family: var(--font-display, 'Orbitron', monospace);
-      letter-spacing: 2px;
-      text-align: center;
-      font-weight: 700;
-      height: 42px;
+    #captchaInput {
+      width: 100% !important;
+      background: #07080c !important;
+      border: 1px solid #1f2338 !important;
+      color: var(--neon-cyan, #00f0ff) !important;
+      border-radius: 6px !important;
+      padding: 0 14px !important;
+      text-transform: uppercase !important;
+      font-family: var(--font-display, 'Orbitron', monospace) !important;
+      letter-spacing: 2px !important;
+      text-align: center !important;
+      font-weight: 700 !important;
+      height: 42px !important;
+      outline: none !important;
+      box-sizing: border-box !important;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease !important;
+    }
+
+    #captchaInput:focus {
+      border-color: var(--neon-cyan, #00f0ff) !important;
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.4) !important;
+      background: #090a14 !important;
+    }
+
+    #captchaInput::placeholder {
+      color: #64748b !important;
+      font-size: 0.8rem !important;
+      letter-spacing: 1px !important;
     }
 
     .input-error-msg {
@@ -187,20 +213,65 @@
       display: block;
     }
 
+    /* CHECKBOX PERSONALIZADO (SEM FUNDO BRANCO NATIVO) */
     .terms-row {
       display: flex;
       align-items: center;
-      gap: 8px;
-      margin-bottom: 20px;
-      font-size: 0.88rem;
+      gap: 10px;
+      margin-bottom: 22px;
+      font-size: 0.9rem;
       color: #94a3b8;
+      user-select: none;
+    }
+
+    .terms-row label {
+      cursor: pointer;
+      color: #94a3b8;
+      transition: color 0.2s ease;
+    }
+
+    .terms-row:hover label {
+      color: #e2e8f0;
     }
 
     .terms-row input[type="checkbox"] {
-      accent-color: var(--neon-cyan, #00f0ff);
-      width: 16px;
-      height: 16px;
+      appearance: none;
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      background: #07080c !important;
+      border: 1px solid #1f2338 !important;
+      border-radius: 4px;
       cursor: pointer;
+      outline: none;
+      display: grid;
+      place-content: center;
+      flex-shrink: 0;
+      transition: all 0.2s ease;
+    }
+
+    .terms-row input[type="checkbox"]:hover {
+      border-color: var(--neon-cyan, #00f0ff) !important;
+      box-shadow: 0 0 8px rgba(0, 240, 255, 0.25);
+    }
+
+    .terms-row input[type="checkbox"]:checked {
+      background: rgba(0, 240, 255, 0.15) !important;
+      border-color: var(--neon-cyan, #00f0ff) !important;
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+    }
+
+    .terms-row input[type="checkbox"]::before {
+      content: "✔";
+      font-size: 0.75rem;
+      color: var(--neon-cyan, #00f0ff);
+      transform: scale(0);
+      transition: transform 0.15s ease-in-out;
+      font-weight: 900;
+    }
+
+    .terms-row input[type="checkbox"]:checked::before {
+      transform: scale(1);
     }
   </style>
 </head>
@@ -229,13 +300,14 @@
         <div class="form-row-2">
           <div class="form-group">
             <label for="fullName">Nome Completo</label>
-            <input type="text" id="fullName" placeholder="Ex: Gabriel Souza" required>
+            <input type="text" id="fullName" name="fullName" placeholder="Ex: Gabriel Souza" required>
           </div>
           <div class="form-group">
             <label for="gamerTag">GamerTag (3 a 16 caracteres)</label>
             <input 
               type="text" 
               id="gamerTag" 
+              name="gamerTag"
               placeholder="Ex: Shadow_21" 
               maxlength="16" 
               required 
@@ -248,35 +320,34 @@
         <div class="form-row-2">
           <div class="form-group">
             <label for="signupEmail">E-mail Principal</label>
-            <input type="email" id="signupEmail" placeholder="seu-email@dominio.com" required>
+            <input type="email" id="signupEmail" name="signupEmail" placeholder="seu-email@dominio.com" required>
           </div>
           <div class="form-group">
             <label for="cpf">CPF (apenas números)</label>
-            <input type="text" id="cpf" placeholder="000.000.000-00" maxlength="14" required>
+            <input type="text" id="cpf" name="cpf" placeholder="000.000.000-00" maxlength="14" required>
           </div>
         </div>
 
         <div class="form-row-2">
           <div class="form-group">
             <label for="newPass">Senha de Acesso</label>
-            <input type="password" id="newPass" placeholder="Mínimo de 6 caracteres" minlength="6" required>
+            <input type="password" id="newPass" name="newPass" placeholder="Mínimo de 6 caracteres" minlength="6" required>
           </div>
           <div class="form-group">
             <label for="confirmPass">Confirmar Senha</label>
-            <input type="password" id="confirmPass" placeholder="Repita a senha" minlength="6" required>
+            <input type="password" id="confirmPass" name="confirmPass" placeholder="Repita a senha" minlength="6" required>
             <small id="passError" class="input-error-msg" style="display: none;"></small>
           </div>
         </div>
 
         <!-- PROTOCOLO DE SEGURANÇA: CYBER CAPTCHA -->
         <div class="captcha-container">
-          <label style="display: block; font-family: var(--font-display); font-size: 0.78rem; color: var(--neon-cyan); margin-bottom: 8px;">
+          <label for="captchaInput" style="display: block; font-family: var(--font-display); font-size: 0.78rem; color: var(--neon-cyan); margin-bottom: 8px;">
             VERIFICAÇÃO DE SEGURANÇA
           </label>
           <div class="captcha-row">
             <div class="canvas-wrap">
               <canvas id="captchaCanvas" width="160" height="42" title="Código de verificação"></canvas>
-              <!-- Bloqueador transparente que intercepta o clique do mouse -->
               <div class="canvas-shield" id="canvasShield"></div>
             </div>
 
@@ -288,6 +359,8 @@
               <input 
                 type="text" 
                 id="captchaInput" 
+                name="captchaInput"
+                aria-label="Código de verificação de segurança"
                 placeholder="DIGITE O CÓDIGO" 
                 maxlength="6" 
                 required 
@@ -300,7 +373,7 @@
         </div>
 
         <div class="terms-row">
-          <input type="checkbox" id="termsCheck" required>
+          <input type="checkbox" id="termsCheck" name="termsCheck" required>
           <label for="termsCheck">Li e concordo com as diretrizes e regras de estadia da Nexus Inn.</label>
         </div>
 
@@ -335,7 +408,6 @@
       }
 
       function generateRandomString() {
-        // Caracteres legíveis sem ambiguidade (sem 0, O, 1, I, l)
         const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
         let code = '';
         for (let i = 0; i < 5; i++) {
@@ -352,11 +424,9 @@
         const rawCode = generateRandomString();
         expectedHash = await computeHash(rawCode.toLowerCase());
 
-        // Fundo escuro com micro gradiente
         ctx.fillStyle = '#05060a';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Linhas de interferência (Glitch lines)
         for (let i = 0; i < 5; i++) {
           ctx.strokeStyle = i % 2 === 0 ? 'rgba(0, 240, 255, 0.4)' : 'rgba(255, 0, 85, 0.4)';
           ctx.lineWidth = 1.2;
@@ -366,7 +436,6 @@
           ctx.stroke();
         }
 
-        // Ruído de partículas
         for (let i = 0; i < 30; i++) {
           ctx.fillStyle = i % 2 === 0 ? '#00f0ff' : '#00ffaa';
           ctx.beginPath();
@@ -374,7 +443,6 @@
           ctx.fill();
         }
 
-        // Renderização dos caracteres com inclinação aleatória
         const palette = ['#00f0ff', '#00ffaa', '#ff0055', '#ffffff'];
         ctx.font = 'bold 22px "Orbitron", monospace';
         ctx.textBaseline = 'middle';
@@ -396,7 +464,6 @@
         }
       }
 
-      // Bloqueio rigoroso de clique direito e arrasto no canvas e no protetor
       ['captchaCanvas', 'canvasShield'].forEach(id => {
         const el = document.getElementById(id);
         if (el) {
@@ -405,7 +472,6 @@
         }
       });
 
-      // Validação assíncrona única exposta ao escopo do formulário
       window.validateCyberCaptcha = async function(userInput) {
         if (!userInput || !expectedHash) return false;
         const candidateHash = await computeHash(userInput.trim().toLowerCase());
@@ -427,7 +493,6 @@
       const btnSubmit = document.getElementById('btnSubmitForm');
       const captchaInput = document.getElementById('captchaInput');
 
-      // Botão de regerar captcha
       if (btnRefresh) {
         btnRefresh.addEventListener('click', () => {
           if (typeof window.reloadCyberCaptcha === 'function') {
@@ -438,7 +503,6 @@
         });
       }
 
-      // Máscara dinâmica de CPF
       const cpfInput = document.getElementById('cpf');
       if (cpfInput) {
         cpfInput.addEventListener('input', (e) => {
@@ -455,7 +519,6 @@
         });
       }
 
-      // Submissão do formulário
       signupForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         passError.style.display = 'none';
@@ -464,7 +527,6 @@
         const pass = document.getElementById('newPass').value;
         const confirm = document.getElementById('confirmPass').value;
 
-        // 1. Validação de Senha
         if (pass !== confirm) {
           passError.textContent = 'As senhas não coincidem!';
           passError.style.display = 'block';
@@ -472,7 +534,6 @@
           return;
         }
 
-        // 2. BARREIRA ZERO: Validação Criptográfica do Cyber Captcha
         const isCaptchaValid = typeof window.validateCyberCaptcha === 'function' 
           ? await window.validateCyberCaptcha(captchaInput.value)
           : false;
@@ -488,7 +549,6 @@
           return;
         }
 
-        // 3. Captura dos Dados Sanitizados
         const fullName = document.getElementById('fullName').value.trim();
         const gamerTag = document.getElementById('gamerTag').value.trim();
         const email = document.getElementById('signupEmail').value.trim();
@@ -497,9 +557,10 @@
         btnSubmit.disabled = true;
         btnSubmit.textContent = 'Gravando perfil...';
 
-        // 4. Gravação Segura no Supabase com Trava Anti-Duplicidade
-        if (typeof registerUserInDB === 'function') {
-          const result = await registerUserInDB({
+        const registerFn = typeof registerUserInDB === 'function' ? registerUserInDB : (window.registerUserInDB || null);
+
+        if (registerFn) {
+          const result = await registerFn({
             fullName,
             gamerTag,
             email,
@@ -521,8 +582,7 @@
           alert(`🎉 Perfil criado com sucesso! Seja bem-vindo à Nexus Inn, ${gamerTag}!`);
           window.location.href = 'login.html';
         } else {
-          // Fallback caso a conexão remota não responda
-          alert('Serviço temporariamente indisponível. Tente novamente em instantes.');
+          alert('Serviço temporariamente indisponível. Recarregue a página.');
           btnSubmit.disabled = false;
           btnSubmit.textContent = 'Concluir Cadastro';
         }
