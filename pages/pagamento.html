@@ -198,21 +198,28 @@
   <script>
     document.addEventListener('DOMContentLoaded', () => {
 
-      // 1. Trava de Segurança: impede acesso sem login e preserva os dados da URL no retorno
+      // 1. TRAVA DE AUTENTICAÇÃO: Redireciona para o login e, após autenticar, leva para a RESERVA
       const activeSession = localStorage.getItem('nexus_current_user');
       if (!activeSession) {
-        alert('Acesso negado: faça login para acessar a área de pagamento seguro.');
-        const currentDestination = 'pagamento.html' + window.location.search;
-        window.location.href = `login.html?redirect=${encodeURIComponent(currentDestination)}`;
+        alert('🔒 Acesso restrito: identifique-se com sua GamerTag para configurar sua estadia.');
+        window.location.href = 'login.html?redirect=reserva.html';
         return;
       }
 
-      // 2. Resgate de dados da URL e identificação do jogador
+      // 2. TRAVA DE CARRINHO VAZIO: Impede acesso direto à página sem dados de reserva
       const params = new URLSearchParams(window.location.search);
+      const checkinParam = params.get('checkin');
+      const totalParam = params.get('total');
+
+      if (!checkinParam || !totalParam) {
+        alert('⚠️ Nenhum setup selecionado. Escolha a acomodação e o período antes de avançar para o pagamento.');
+        window.location.href = 'reserva.html';
+        return;
+      }
+
+      // 3. SE LOGADO E COM DADOS VÁLIDOS: Carrega a tela de pagamento normalmente
       const roomParam = params.get('room') || 'duo';
-      const checkinParam = params.get('checkin') || '';
       const checkoutParam = params.get('checkout') || '';
-      const totalParam = params.get('total') || 'R$ 0,00';
 
       let currentGuestName = 'Player Convidado';
       try {
@@ -241,14 +248,11 @@
       const roomEl = document.getElementById('displayRoom');
       if (roomEl) roomEl.textContent = roomTitle;
 
-      const checkinFormatted = checkinParam ? (checkinParam.includes('-') ? checkinParam.split('-').reverse().join('/') : checkinParam) : 'A confirmar';
-      const checkoutFormatted = checkoutParam ? (checkoutParam.includes('-') ? checkoutParam.split('-').reverse().join('/') : checkoutParam) : 'A confirmar';
-
       const checkinEl = document.getElementById('displayCheckin');
-      if (checkinEl) checkinEl.textContent = checkinFormatted;
+      if (checkinEl) checkinEl.textContent = checkinParam.includes('-') ? checkinParam.split('-').reverse().join('/') : checkinParam;
 
       const checkoutEl = document.getElementById('displayCheckout');
-      if (checkoutEl) checkoutEl.textContent = checkoutFormatted;
+      if (checkoutEl) checkoutEl.textContent = checkoutParam.includes('-') ? checkoutParam.split('-').reverse().join('/') : checkoutParam;
 
       const totalEl = document.getElementById('displayTotal');
       if (totalEl) totalEl.textContent = totalParam;
