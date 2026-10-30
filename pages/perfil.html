@@ -10,34 +10,28 @@
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%2300f0ff'/%3E%3Ctext x='50' y='65' font-size='48' text-anchor='middle' fill='%2307080c'%3E%F0%9F%8E%AE%3C/text%3E%3C/svg%3E">
 
+  <!-- Cropper.js CSS para recorte com zoom -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
+
   <!-- SDK Oficial do Supabase + Conexão -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../supabase.js"></script>
 
   <style>
-    /* ==========================================================================
-       DASHBOARD GAMER (PAINEL DE CONTROLE COM ABAS LATERAIS)
-       ========================================================================== */
     .profile-dashboard {
       max-width: 1200px;
       margin: 40px auto 70px;
       padding: 0 20px;
     }
-
     .profile-grid {
       display: grid;
       grid-template-columns: 290px 1fr;
       gap: 30px;
       align-items: start;
     }
-
     @media (max-width: 880px) {
-      .profile-grid {
-        grid-template-columns: 1fr;
-      }
+      .profile-grid { grid-template-columns: 1fr; }
     }
-
-    /* BARRA LATERAL (SIDEBAR DE NAVEGAÇÃO) */
     .profile-sidebar {
       background: #0d0f18;
       border: 1px solid rgba(0, 240, 255, 0.25);
@@ -47,7 +41,6 @@
       position: sticky;
       top: 95px;
     }
-
     .sidebar-user-brief {
       display: flex;
       flex-direction: column;
@@ -57,14 +50,12 @@
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
       margin-bottom: 20px;
     }
-
     .sidebar-avatar-wrap {
       position: relative;
       width: 90px;
       height: 90px;
       margin-bottom: 12px;
     }
-
     .sidebar-avatar-img {
       width: 100%;
       height: 100%;
@@ -74,7 +65,6 @@
       box-shadow: 0 0 16px rgba(0, 240, 255, 0.4);
       background: #090a12;
     }
-
     .sidebar-status-dot {
       position: absolute;
       bottom: 2px;
@@ -86,15 +76,12 @@
       border-radius: 50%;
       box-shadow: 0 0 8px #00ffaa;
     }
-
     .sidebar-gamertag {
       font-family: var(--font-display, 'Orbitron', sans-serif);
       color: #ffffff;
       font-size: 1.15rem;
       margin: 0 0 4px 0;
-      letter-spacing: 0.5px;
     }
-
     .sidebar-role-badge {
       display: inline-block;
       font-size: 0.72rem;
@@ -107,14 +94,11 @@
       text-transform: uppercase;
       letter-spacing: 1px;
     }
-
-    /* ABAS DE NAVEGAÇÃO */
     .sidebar-tabs {
       display: flex;
       flex-direction: column;
       gap: 6px;
     }
-
     .tab-nav-btn {
       display: flex;
       align-items: center;
@@ -132,34 +116,17 @@
       transition: all 0.2s ease;
       width: 100%;
     }
-
     .tab-nav-btn:hover {
       color: #ffffff;
       background: rgba(255, 255, 255, 0.04);
       border-color: rgba(255, 255, 255, 0.08);
     }
-
     .tab-nav-btn.active {
       color: var(--neon-cyan, #00f0ff);
       background: rgba(0, 240, 255, 0.08);
       border-color: rgba(0, 240, 255, 0.4);
       box-shadow: 0 0 15px rgba(0, 240, 255, 0.15);
     }
-
-    .tab-nav-btn .tab-icon {
-      font-size: 1.2rem;
-    }
-
-    .tab-badge {
-      margin-left: auto;
-      background: rgba(0, 240, 255, 0.2);
-      color: var(--neon-cyan, #00f0ff);
-      padding: 2px 7px;
-      border-radius: 10px;
-      font-size: 0.75rem;
-      font-family: var(--font-display, 'Orbitron', sans-serif);
-    }
-
     .sidebar-logout-btn {
       margin-top: 20px;
       padding-top: 15px;
@@ -175,14 +142,7 @@
       font-family: var(--font-body, 'Rajdhani', sans-serif);
       font-size: 0.95rem;
       font-weight: 600;
-      transition: color 0.2s ease;
     }
-
-    .sidebar-logout-btn:hover {
-      color: #ff3366;
-    }
-
-    /* ÁREA PRINCIPAL DE CONTEÚDO */
     .profile-content-area {
       background: #0d0f18;
       border: 1px solid rgba(255, 255, 255, 0.08);
@@ -191,153 +151,26 @@
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
       min-height: 520px;
     }
-
-    .tab-pane {
-      display: none;
-      animation: tabFadeIn 0.25s ease-out;
-    }
-
-    .tab-pane.active {
-      display: block;
-    }
-
-    @keyframes tabFadeIn {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
     .pane-header {
       margin-bottom: 26px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
       padding-bottom: 18px;
     }
-
     .pane-header h2 {
       font-family: var(--font-display, 'Orbitron', sans-serif);
       color: #ffffff;
       font-size: 1.5rem;
       margin: 6px 0 4px 0;
     }
-
-    .pane-header p {
-      color: var(--text-muted, #94a3b8);
-      font-size: 0.95rem;
-      margin: 0;
-    }
-
-    /* CARDS DE RESERVAS DA ABA 1 */
-    .reservations-controls {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-      gap: 15px;
-      flex-wrap: wrap;
-    }
-
-    .reservations-search {
-      flex: 1;
-      min-width: 240px;
-      background: #07080c;
-      border: 1px solid #1f2338;
-      color: #ffffff;
-      padding: 10px 14px;
-      border-radius: 6px;
-      outline: none;
-      font-family: var(--font-body, 'Rajdhani', sans-serif);
-      font-size: 0.95rem;
-    }
-
-    .reservations-search:focus {
-      border-color: var(--neon-cyan, #00f0ff);
-    }
-
     .res-card-full {
       background: #080910;
       border: 1px solid rgba(0, 240, 255, 0.2);
       border-radius: 8px;
       padding: 22px;
       margin-bottom: 18px;
-      transition: all 0.25s ease;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
     }
-
-    .res-card-full:hover {
-      border-color: var(--neon-cyan, #00f0ff);
-      box-shadow: 0 6px 20px rgba(0, 240, 255, 0.12);
-    }
-
-    .res-top-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .res-code-tag {
-      font-family: var(--font-display, 'Orbitron', sans-serif);
-      font-size: 1rem;
-      color: var(--neon-cyan, #00f0ff);
-      font-weight: 700;
-    }
-
-    .res-status-confirmed {
-      background: rgba(0, 255, 170, 0.12);
-      color: #00ffaa;
-      border: 1px solid rgba(0, 255, 170, 0.4);
-      padding: 4px 10px;
-      border-radius: 4px;
-      font-size: 0.75rem;
-      font-family: var(--font-display, 'Orbitron', sans-serif);
-      letter-spacing: 1px;
-    }
-
-    .res-body-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 14px;
-      padding: 14px 0;
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    .res-field small {
-      display: block;
-      color: var(--text-muted, #94a3b8);
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      font-family: var(--font-display, 'Orbitron', sans-serif);
-      margin-bottom: 3px;
-    }
-
-    .res-field strong {
-      color: #ffffff;
-      font-size: 1.05rem;
-    }
-
-    .res-footer-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    .res-price-total {
-      font-family: var(--font-display, 'Orbitron', sans-serif);
-      font-size: 1.25rem;
-      color: #ffffff;
-    }
-
-    .res-actions-group {
-      display: flex;
-      gap: 10px;
-    }
-
-    /* ESTILOS DA ABA 2 (DADOS DA CONTA) */
     .avatar-edit-box {
       display: flex;
       align-items: center;
@@ -348,7 +181,6 @@
       padding: 22px;
       margin-bottom: 26px;
     }
-
     .avatar-edit-preview {
       width: 95px;
       height: 95px;
@@ -357,19 +189,14 @@
       object-fit: cover;
       box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
     }
-
     .account-data-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 20px;
     }
-
     @media (max-width: 650px) {
-      .account-data-grid {
-        grid-template-columns: 1fr;
-      }
+      .account-data-grid { grid-template-columns: 1fr; }
     }
-
     .account-field label {
       display: block;
       font-family: var(--font-display, 'Orbitron', sans-serif);
@@ -377,7 +204,6 @@
       color: var(--text-muted, #94a3b8);
       margin-bottom: 6px;
     }
-
     .account-field input {
       width: 100%;
       background: #07080c;
@@ -390,26 +216,56 @@
       outline: none;
       box-sizing: border-box;
     }
+    .account-field input:focus { border-color: var(--neon-cyan, #00f0ff); }
+    .account-field input[readonly] { background: #0a0c14; color: #94a3b8; cursor: not-allowed; }
 
-    .account-field input:focus {
-      border-color: var(--neon-cyan, #00f0ff);
+    /* MODAL DE RECORTE COM CROPPER.JS */
+    .crop-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 3000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
     }
-
-    .account-field input[readonly] {
-      background: #0a0c14;
-      color: #94a3b8;
-      cursor: not-allowed;
+    .crop-modal-box {
+      background: #0d0f18;
+      border: 1px solid var(--neon-cyan, #00f0ff);
+      border-radius: 8px;
+      max-width: 520px;
+      width: 100%;
+      padding: 20px;
+      box-shadow: 0 0 35px rgba(0, 240, 255, 0.3);
     }
-
-    .badge-vip-pill {
-      background: rgba(0, 255, 170, 0.1);
-      color: #00ffaa;
-      border: 1px solid #00ffaa;
-      padding: 6px 12px;
-      border-radius: 4px;
-      font-size: 0.85rem;
-      font-weight: 700;
+    .crop-stage {
+      max-height: 340px;
+      width: 100%;
+      overflow: hidden;
+      margin: 15px 0;
+      background: #000;
+    }
+    .crop-stage img {
+      max-width: 100%;
+      display: block;
+    }
+    .crop-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      gap: 10px;
+    }
+    .tag-history-badge {
       display: inline-block;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px dashed rgba(255, 255, 255, 0.2);
+      color: #94a3b8;
+      font-size: 0.8rem;
+      padding: 4px 10px;
+      border-radius: 4px;
+      margin-top: 6px;
     }
   </style>
 </head>
@@ -433,7 +289,7 @@
   <main class="profile-dashboard">
     <div class="profile-grid">
 
-      <!-- COLUNA DA ESQUERDA: SIDEBAR COM ABAS -->
+      <!-- SIDEBAR -->
       <aside class="profile-sidebar">
         <div class="sidebar-user-brief">
           <div class="sidebar-avatar-wrap">
@@ -446,19 +302,13 @@
 
         <nav class="sidebar-tabs" aria-label="Abas do painel do jogador">
           <button type="button" class="tab-nav-btn active" data-tab="tabReservas">
-            <span class="tab-icon">📋</span>
-            <span>Minhas Reservas</span>
-            <span class="tab-badge" id="resCountBadge">0</span>
+            <span>📋</span> <span>Minhas Reservas</span>
           </button>
-
           <button type="button" class="tab-nav-btn" data-tab="tabDados">
-            <span class="tab-icon">👤</span>
-            <span>Dados da Conta</span>
+            <span>👤</span> <span>Dados da Conta</span>
           </button>
-
           <button type="button" class="tab-nav-btn" data-tab="tabSeguranca">
-            <span class="tab-icon">🛡️</span>
-            <span>Segurança & Regras</span>
+            <span>🛡️</span> <span>Segurança & Regras</span>
           </button>
         </nav>
 
@@ -467,30 +317,20 @@
         </button>
       </aside>
 
-      <!-- COLUNA DA DIREITA: PAINEL DE CONTEÚDO DAS ABAS -->
+      <!-- ÁREA DE CONTEÚDO -->
       <section class="profile-content-area">
 
-        <!-- ABA 1: MINHAS RESERVAS -->
+        <!-- ABA 1: RESERVAS -->
         <div class="tab-pane active" id="tabReservas">
           <div class="pane-header">
             <span class="badge">HISTÓRICO OPERACIONAL</span>
             <h2>MINHAS ESTADIAS & RESERVAS</h2>
-            <p>Acompanhe seus quartos garantidos, datas de check-in e acesse seus Gamer Passes.</p>
+            <p>Seus quartos garantidos no Supabase e acessos rápidos ao Gamer Pass.</p>
           </div>
-
-          <div class="reservations-controls">
-            <input type="text" id="filterResInput" class="reservations-search" placeholder="Filtrar por quarto, código ou status..." aria-label="Filtrar histórico de reservas">
-            <button type="button" id="btnRefreshRes" class="btn-secondary" style="padding: 10px 16px; font-size: 0.9rem;">
-              🔄 Atualizar
-            </button>
+          <div class="reservations-controls" style="margin-bottom: 20px;">
+            <input type="text" id="filterResInput" class="account-field" placeholder="Filtrar por quarto, código ou status..." aria-label="Filtrar histórico de reservas" style="width: 100%; background: #07080c; color: #fff; padding: 10px 14px; border: 1px solid #1f2338; border-radius: 6px;">
           </div>
-
-          <div id="reservationsList">
-            <div style="text-align: center; padding: 40px 10px; color: #94a3b8;">
-              <div class="spinner" style="width: 32px; height: 32px; margin: 0 auto 15px;"></div>
-              Consultando reservas no banco de dados...
-            </div>
-          </div>
+          <div id="reservationsList"></div>
         </div>
 
         <!-- ABA 2: DADOS DA CONTA -->
@@ -498,32 +338,35 @@
           <div class="pane-header">
             <span class="badge">IDENTIDADE DIGITAL</span>
             <h2>DADOS DO JOGADOR</h2>
-            <p>Gerencie sua GamerTag, foto de perfil e dados vinculados à sua credencial.</p>
+            <p>Gerencie sua GamerTag única, foto com recorte e credenciais.</p>
           </div>
 
-          <!-- UPLOAD DE FOTO -->
+          <!-- AVATAR COM RECORTE E ZOOM -->
           <div class="avatar-edit-box">
             <img src="" alt="Avatar Preview" class="avatar-edit-preview" id="editAvatarPreview">
             <div>
-              <h4 style="font-family: var(--font-display); color: #fff; margin: 0 0 6px 0;">Foto de Avatar Oficial</h4>
-              <p style="color: #94a3b8; font-size: 0.88rem; margin: 0 0 12px 0;">Personalize o avatar exibido na Navbar e no Gamer Pass VIP.</p>
-              <label for="profileImgInput" class="btn-primary" style="padding: 8px 16px; font-size: 0.85rem; cursor: pointer; display: inline-block;">
-                📷 Carregar Nova Imagem
+              <h4 style="font-family: var(--font-display); color: #fff; margin: 0 0 4px 0;">Avatar Oficial</h4>
+              <p style="color: #94a3b8; font-size: 0.85rem; margin: 0 0 10px 0;">Recorte e aplique zoom antes de salvar no banco de dados.</p>
+              <label for="profileImgInput" class="btn-primary" style="padding: 8px 16px; font-size: 0.82rem; cursor: pointer; display: inline-block;">
+                📷 Ajustar & Trocar Foto
               </label>
               <input type="file" id="profileImgInput" accept="image/*" style="display: none;">
             </div>
           </div>
 
-          <!-- FORMULÁRIO DE DADOS -->
+          <!-- FORMULÁRIO -->
           <form id="userDataForm" class="account-data-grid">
             <div class="account-field">
-              <label for="fieldGamerTag">GamerTag / Nickname</label>
-              <input type="text" id="fieldGamerTag" required>
+              <label for="fieldGamerTag">GamerTag (3 a 16 caracteres)</label>
+              <input type="text" id="fieldGamerTag" maxlength="16" required pattern="^[a-zA-Z0-9_-]{3,16}$" title="Use de 3 a 16 caracteres (letras, números, hífen e underline).">
+              <div id="previousTagsArea" class="tag-history-badge" style="display: none;">
+                🏷️ Nicknames anteriores: <span id="previousTagsText"></span>
+              </div>
             </div>
 
             <div class="account-field">
-              <label for="fieldRole">Nível de Acesso</label>
-              <div class="badge-vip-pill" id="fieldRoleDisplay">● MEMBRO VIP</div>
+              <label for="fieldEmail">E-mail Cadastrado</label>
+              <input type="email" id="fieldEmail" readonly>
             </div>
 
             <div class="account-field" style="grid-column: 1 / -1;">
@@ -531,55 +374,49 @@
               <input type="text" id="fieldFullName" required>
             </div>
 
-            <div class="account-field" style="grid-column: 1 / -1;">
-              <label for="fieldEmail">E-mail Cadastrado</label>
-              <input type="email" id="fieldEmail" readonly title="E-mail principal não pode ser alterado diretamente">
-            </div>
-
             <div style="grid-column: 1 / -1; margin-top: 10px;">
-              <button type="submit" class="btn-primary" style="padding: 12px 24px;">Salvar Alterações</button>
+              <button type="submit" id="btnSaveProfile" class="btn-primary" style="padding: 12px 24px;">Salvar Alterações no Banco</button>
             </div>
           </form>
         </div>
 
-        <!-- ABA 3: SEGURANÇA & REGRAS -->
+        <!-- ABA 3: SEGURANÇA -->
         <div class="tab-pane" id="tabSeguranca">
           <div class="pane-header">
             <span class="badge">CENTRAL DE PROTEÇÃO</span>
             <h2>SEGURANÇA & PROTOCOLOS</h2>
-            <p>Diretrizes de integridade, proteção de hardware e regras de cancelamento.</p>
           </div>
-
-          <div style="display: flex; flex-direction: column; gap: 18px; color: #cbd5e1; line-height: 1.8;">
-            <div style="background: #080910; border-left: 3px solid var(--neon-cyan); padding: 18px; border-radius: 0 6px 6px 0;">
-              <strong style="color: #fff; font-family: var(--font-display);">Protocolo Cyber Captcha Ativo:</strong>
-              <p style="margin: 4px 0 0 0; font-size: 0.92rem; color: #94a3b8;">
-                Sua conta está protegida por verificação de integridade visual com distorção matemática via HTML5 Canvas.
-              </p>
-            </div>
-
-            <div style="background: #080910; border-left: 3px solid var(--neon-pink); padding: 18px; border-radius: 0 6px 6px 0;">
-              <strong style="color: #fff; font-family: var(--font-display);">Política de Cancelamento:</strong>
-              <p style="margin: 4px 0 0 0; font-size: 0.92rem; color: #94a3b8;">
-                Estornos de 100% são concedidos para solicitações realizadas com até 48 horas de antecedência.
-                <a href="cancelamento.html" style="color: var(--neon-cyan); margin-left: 6px;">Ler política completa &rarr;</a>
-              </p>
-            </div>
-
-            <div style="background: #080910; border-left: 3px solid #00ffaa; padding: 18px; border-radius: 0 6px 6px 0;">
-              <strong style="color: #fff; font-family: var(--font-display);">Precisa de Auxílio?</strong>
-              <p style="margin: 4px 0 0 0; font-size: 0.92rem; color: #94a3b8;">
-                Nossa equipe técnica atende 24 horas por dia para configurações de rede, consoles e check-in.
-                <a href="contato.html" style="color: var(--neon-cyan); margin-left: 6px;">Abrir chamado prioritário &rarr;</a>
-              </p>
-            </div>
-          </div>
+          <p style="color: #cbd5e1; line-height: 1.8;">
+            A sua conta é protegida pelo <strong>Cyber Captcha Autoral</strong> e chaves de verificação de sessão. Se precisar redefinir a sua senha ou atualizar documentos, acesse nossa <a href="contato.html" style="color: var(--neon-cyan);">Central de Atendimento</a>.
+          </p>
         </div>
 
       </section>
-
     </div>
   </main>
+
+  <!-- MODAL DE RECORTE COM ZOOM (CROPPER.JS) -->
+  <div id="cropModal" class="crop-modal-overlay">
+    <div class="crop-modal-box">
+      <h3 style="font-family: var(--font-display); color: #fff; margin: 0 0 6px 0;">ENQUADRAR AVATAR</h3>
+      <p style="color: #94a3b8; font-size: 0.85rem; margin: 0;">Arraste para posicionar e use os botões para dar zoom:</p>
+      
+      <div class="crop-stage">
+        <img id="imageToCrop" src="" alt="Imagem para recorte">
+      </div>
+
+      <div class="crop-controls">
+        <div style="display: flex; gap: 8px;">
+          <button type="button" id="btnZoomIn" class="btn-secondary" style="padding: 6px 12px;">➕ Zoom In</button>
+          <button type="button" id="btnZoomOut" class="btn-secondary" style="padding: 6px 12px;">➖ Zoom Out</button>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" id="btnCancelCrop" class="btn-secondary" style="padding: 6px 12px;">Cancelar</button>
+          <button type="button" id="btnApplyCrop" class="btn-primary" style="padding: 6px 16px;">Salvar Foto</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <footer class="footer">
     <div class="footer-content">
@@ -587,278 +424,207 @@
     </div>
   </footer>
 
-  <!-- SCRIPT DO DASHBOARD -->
+  <!-- Cropper.js Script CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // 1. BARREIRA DE ACESSO: Redireciona para o login se não houver sessão ativa
       const sessionRaw = localStorage.getItem('nexus_current_user');
       if (!sessionRaw) {
-        alert('🔒 Acesso Restrito: Faça login para acessar o painel do jogador.');
         window.location.href = 'login.html?redirect=perfil.html';
         return;
       }
 
-      let user = null;
-      try {
-        user = JSON.parse(sessionRaw);
-      } catch (e) {
-        window.location.href = 'login.html';
-        return;
-      }
-
+      let user = JSON.parse(sessionRaw);
       const defaultAvatar = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23090a12'/%3E%3Ctext x='50' y='62' font-size='42' text-anchor='middle' fill='%2300f0ff'%3E🎮%3C/text%3E%3C/svg%3E";
-      const userAvatar = user.avatar || defaultAvatar;
 
-      // 2. PREENCHIMENTO DOS DADOS NA SIDEBAR E FORMULÁRIO
+      // Elementos visuais
       const sidebarAvatar = document.getElementById('sidebarAvatar');
       const editAvatarPreview = document.getElementById('editAvatarPreview');
       const sidebarGamerTag = document.getElementById('sidebarGamerTag');
-      const sidebarRole = document.getElementById('sidebarRole');
+      const previousTagsArea = document.getElementById('previousTagsArea');
+      const previousTagsText = document.getElementById('previousTagsText');
 
-      sidebarAvatar.src = userAvatar;
-      editAvatarPreview.src = userAvatar;
-      sidebarGamerTag.textContent = user.gamerTag || user.fullName || 'Gamer';
-      sidebarRole.textContent = user.role === 'admin' ? '🛡️ Administrador' : '● Player VIP';
+      function syncUI() {
+        sidebarAvatar.src = user.avatar || defaultAvatar;
+        editAvatarPreview.src = user.avatar || defaultAvatar;
+        sidebarGamerTag.textContent = user.gamerTag || 'Player';
+        document.getElementById('fieldGamerTag').value = user.gamerTag || '';
+        document.getElementById('fieldFullName').value = user.fullName || '';
+        document.getElementById('fieldEmail').value = user.email || '';
 
-      document.getElementById('fieldGamerTag').value = user.gamerTag || '';
-      document.getElementById('fieldFullName').value = user.fullName || '';
-      document.getElementById('fieldEmail').value = user.email || '';
-      document.getElementById('fieldRoleDisplay').textContent = user.role === 'admin' ? '🛡️ ADMINISTRADOR MASTER' : '● MEMBRO VIP OFICIAL';
+        if (user.previousTags) {
+          previousTagsArea.style.display = 'inline-block';
+          previousTagsText.textContent = user.previousTags;
+        } else {
+          previousTagsArea.style.display = 'none';
+        }
+      }
+      syncUI();
 
-      // 3. CONTROLE DE ABAS LATERAIS
+      // Navegação por abas
       const tabBtns = document.querySelectorAll('.tab-nav-btn');
       const tabPanes = document.querySelectorAll('.tab-pane');
-
-      function switchTab(tabId) {
-        tabBtns.forEach(btn => btn.classList.toggle('active', btn.getAttribute('data-tab') === tabId));
-        tabPanes.forEach(pane => pane.classList.toggle('active', pane.id === tabId));
-      }
-
       tabBtns.forEach(btn => {
         btn.addEventListener('click', () => {
-          switchTab(btn.getAttribute('data-tab'));
+          const tabId = btn.getAttribute('data-tab');
+          tabBtns.forEach(b => b.classList.toggle('active', b === btn));
+          tabPanes.forEach(p => p.classList.toggle('active', p.id === tabId));
         });
       });
 
-      // Suporte a abertura direta via URL (ex: perfil.html?tab=dados)
-      const urlParams = new URLSearchParams(window.location.search);
-      const requestedTab = urlParams.get('tab');
-      if (requestedTab === 'dados') switchTab('tabDados');
-      else if (requestedTab === 'seguranca') switchTab('tabSeguranca');
-      else switchTab('tabReservas');
-
-      // 4. CONSULTA E RENDERIZAÇÃO DAS RESERVAS (SUPABASE + LOCALSTORAGE)
-      let cachedReservations = [];
-
-      async function carregarReservas() {
-        const listContainer = document.getElementById('reservationsList');
-        const countBadge = document.getElementById('resCountBadge');
-        const term = user.gamerTag || user.fullName || '';
-
-        listContainer.innerHTML = `
-          <div style="text-align: center; padding: 40px 10px; color: #94a3b8;">
-            <div class="spinner" style="width: 30px; height: 30px; margin: 0 auto 12px;"></div>
-            Sincronizando estadias no banco de dados...
-          </div>
-        `;
-
-        let results = [];
-
-        // 1ª Tentativa: Consulta ao PostgreSQL do Supabase
-        if (typeof fetchUserReservations === 'function' && term) {
-          try {
-            const dbRes = await fetchUserReservations(term);
-            if (dbRes && dbRes.success && Array.isArray(dbRes.data)) {
-              results = dbRes.data.map(item => ({
-                codigo: item.reservation_code,
-                quarto: item.room_name,
-                hospede: item.guest_name,
-                checkin: item.check_in,
-                checkout: item.check_out,
-                total: item.total_price,
-                metodo: item.payment_method,
-                status: item.status || 'Confirmada'
-              }));
-            }
-          } catch (err) {
-            console.warn('Falha na consulta remota, lendo LocalStorage:', err);
-          }
-        }
-
-        // 2ª Tentativa: Unifica com histórico do navegador caso o banco oscile
-        try {
-          const localRes = JSON.parse(localStorage.getItem('nexus_reservations') || '[]');
-          localRes.forEach(loc => {
-            if (!results.some(r => r.codigo === loc.codigo)) {
-              results.push({
-                codigo: loc.codigo || 'NX-' + Math.floor(100000 + Math.random() * 900000),
-                quarto: loc.quarto || 'Acomodação Gamer',
-                hospede: loc.hospede || user.gamerTag,
-                checkin: loc.checkin,
-                checkout: loc.checkout,
-                total: loc.total,
-                metodo: loc.metodo || 'PIX Instantâneo',
-                status: 'Confirmada'
-              });
-            }
-          });
-        } catch (e) {}
-
-        cachedReservations = results;
-        countBadge.textContent = results.length;
-        renderizarCards(results);
-      }
-
-      function renderizarCards(lista) {
-        const listContainer = document.getElementById('reservationsList');
-
-        if (!lista || lista.length === 0) {
-          listContainer.innerHTML = `
-            <div style="text-align: center; padding: 50px 20px; background: #080910; border-radius: 8px; border: 1px dashed rgba(255,255,255,0.1);">
-              <div style="font-size: 3rem; margin-bottom: 12px;">🎮</div>
-              <h3 style="font-family: var(--font-display); color: #fff; margin-bottom: 8px;">NENHUMA RESERVA ENCONTRADA</h3>
-              <p style="color: #94a3b8; font-size: 0.95rem; margin-bottom: 20px;">Você ainda não possui estadias ativas registradas.</p>
-              <a href="reserva.html" class="btn-primary" style="padding: 10px 22px; text-decoration: none; display: inline-block;">
-                Reservar um Setup Agora
-              </a>
-            </div>
-          `;
-          return;
-        }
-
-        listContainer.innerHTML = lista.map(res => {
-          const fmtIn = res.checkin && res.checkin.includes('-') ? res.checkin.split('-').reverse().join('/') : (res.checkin || 'A confirmar');
-          const fmtOut = res.checkout && res.checkout.includes('-') ? res.checkout.split('-').reverse().join('/') : (res.checkout || 'A confirmar');
-
-          return `
-            <article class="res-card-full">
-              <div class="res-top-row">
-                <span class="res-code-tag">${res.codigo}</span>
-                <span class="res-status-confirmed">● ${res.status.toUpperCase()}</span>
-              </div>
-
-              <div class="res-body-grid">
-                <div class="res-field">
-                  <small>Acomodação</small>
-                  <strong>${res.quarto}</strong>
-                </div>
-                <div class="res-field">
-                  <small>Período Agendado</small>
-                  <strong>${fmtIn} &rarr; ${fmtOut}</strong>
-                </div>
-                <div class="res-field">
-                  <small>Método</small>
-                  <strong style="color: #cbd5e1;">${res.metodo}</strong>
-                </div>
-              </div>
-
-              <div class="res-footer-row">
-                <span class="res-price-total">${res.total}</span>
-                <div class="res-actions-group">
-                  <a href="finalizacao.html?codigo=${res.codigo}&hospede=${encodeURIComponent(res.hospede)}&quarto=${encodeURIComponent(res.quarto)}&checkin=${res.checkin}&checkout=${res.checkout}&total=${encodeURIComponent(res.total)}&metodo=${encodeURIComponent(res.metodo)}" 
-                     class="btn-primary" 
-                     style="padding: 8px 16px; font-size: 0.85rem; text-decoration: none;">
-                    Ver Gamer Pass VIP
-                  </a>
-                </div>
-              </div>
-            </article>
-          `;
-        }).join('');
-      }
-
-      // Filtro de texto em tempo real
-      document.getElementById('filterResInput').addEventListener('input', (e) => {
-        const query = e.target.value.toLowerCase().trim();
-        const filtradas = cachedReservations.filter(r => 
-          (r.quarto && r.quarto.toLowerCase().includes(query)) ||
-          (r.codigo && r.codigo.toLowerCase().includes(query)) ||
-          (r.status && r.status.toLowerCase().includes(query))
-        );
-        renderizarCards(filtradas);
-      });
-
-      document.getElementById('btnRefreshRes').addEventListener('click', carregarReservas);
-
-      // 5. UPLOAD DE FOTO DE AVATAR (BASE64)
+      // ==========================================
+      // 1. RECORTE COM ZOOM (CROPPER.JS) E GRAVAÇÃO NO DB
+      // ==========================================
+      const cropModal = document.getElementById('cropModal');
+      const imageToCrop = document.getElementById('imageToCrop');
       const profileImgInput = document.getElementById('profileImgInput');
+      let cropper = null;
+
       profileImgInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (!file) return;
 
-        if (file.size > 2 * 1024 * 1024) {
-          alert('Arquivo muito grande! Escolha uma imagem de até 2MB.');
-          return;
-        }
-
         const reader = new FileReader();
         reader.onload = (event) => {
-          const base64 = event.target.result;
-          user.avatar = base64;
-          localStorage.setItem('nexus_current_user', JSON.stringify(user));
+          imageToCrop.src = event.target.result;
+          cropModal.style.display = 'flex';
 
-          sidebarAvatar.src = base64;
-          editAvatarPreview.src = base64;
-          alert('Foto de perfil atualizada com sucesso!');
+          if (cropper) cropper.destroy();
+          cropper = new Cropper(imageToCrop, {
+            aspectRatio: 1,
+            viewMode: 1,
+            dragMode: 'move',
+            autoCropArea: 1,
+            responsive: true,
+            background: false
+          });
         };
         reader.readAsDataURL(file);
       });
 
-      // 6. ATUALIZAÇÃO DOS DADOS DA CONTA COM VALIDAÇÃO ANTI-DUPLICIDADE
+      document.getElementById('btnZoomIn').addEventListener('click', () => cropper && cropper.zoom(0.1));
+      document.getElementById('btnZoomOut').addEventListener('click', () => cropper && cropper.zoom(-0.1));
+      document.getElementById('btnCancelCrop').addEventListener('click', () => {
+        cropModal.style.display = 'none';
+        if (cropper) cropper.destroy();
+      });
+
+      // Aplica o corte e salva no DB de forma ultra leve (~15KB)
+      document.getElementById('btnApplyCrop').addEventListener('click', async () => {
+        if (!cropper) return;
+
+        const canvas = cropper.getCroppedCanvas({
+          width: 200,
+          height: 200,
+          imageSmoothingQuality: 'high'
+        });
+
+        // Converte para JPEG 80% (mínimo peso, sem estourar o DB)
+        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.8);
+
+        cropModal.style.display = 'none';
+        cropper.destroy();
+
+        // 1. Atualiza LocalStorage
+        user.avatar = compressedBase64;
+        localStorage.setItem('nexus_current_user', JSON.stringify(user));
+        syncUI();
+
+        // 2. Persiste direto no Supabase
+        if (typeof updateUserProfileInDB === 'function' && user.id) {
+          const res = await updateUserProfileInDB(user.id, { avatar: compressedBase64 });
+          if (res.success) {
+            alert('✅ Avatar cortado e salvo com sucesso no banco de dados!');
+          }
+        }
+      });
+
+      // ==========================================
+      // 2 e 3. ATUALIZAÇÃO COM ANTI-DUPLICIDADE CASE-INSENSITIVE E HISTÓRICO
+      // ==========================================
       document.getElementById('userDataForm').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const newTag = document.getElementById('fieldGamerTag').value.trim();
+
+        const rawNewTag = document.getElementById('fieldGamerTag').value.trim();
         const newName = document.getElementById('fieldFullName').value.trim();
+        const btnSave = document.getElementById('btnSaveProfile');
 
-        if (!newTag || !newName) return;
-
-        // Se o usuário não alterou a GamerTag atual dele, apenas atualiza o nome
-        if (newTag.toLowerCase() === (user.gamerTag || '').toLowerCase()) {
-          user.fullName = newName;
-          localStorage.setItem('nexus_current_user', JSON.stringify(user));
-          alert('Dados atualizados com sucesso!');
+        // Validação de limite e formato: 3 a 16 caracteres
+        const tagRegex = /^[a-zA-Z0-9_-]{3,16}$/;
+        if (!tagRegex.test(rawNewTag)) {
+          alert('⚠️ Formato inválido! A GamerTag deve ter entre 3 e 16 caracteres (somente letras, números, hífen e underline).');
           return;
         }
 
-        // Se tentou mudar a GamerTag, checa no Supabase se outro player já possui
+        btnSave.disabled = true;
+        btnSave.textContent = 'Verificando e salvando...';
+
         const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
-        if (client) {
+        const currentTag = user.gamerTag || '';
+
+        // Se alterou a tag, checa duplicatas case-insensitive
+        if (rawNewTag.toLowerCase() !== currentTag.toLowerCase() && client) {
           try {
             const { data: tagExists, error: checkErr } = await client
               .from('users')
-              .select('id')
-              .ilike('gamer_tag', newTag)
-              .neq('id', user.id || '') // ignora o próprio usuário
+              .select('id, gamer_tag')
+              .ilike('gamer_tag', rawNewTag)
+              .neq('id', user.id || '')
               .limit(1);
 
             if (tagExists && tagExists.length > 0) {
-              alert(`⚠️ A GamerTag "${newTag}" já está em uso por outro jogador! Escolha outro nickname.`);
+              alert(`❌ A GamerTag "${rawNewTag}" já está sendo usada por outro jogador (respeitando maiúsculas e minúsculas). Escolha outro nome.`);
+              btnSave.disabled = false;
+              btnSave.textContent = 'Salvar Alterações no Banco';
               return;
             }
           } catch (err) {
-            console.warn('Falha na verificação de tag remota:', err);
+            console.warn('Erro ao consultar tag no Supabase:', err);
           }
         }
 
-        // Se liberado, atualiza
-        user.gamerTag = newTag;
+        // Histórico de nomes antigos
+        let updatedPreviousTags = user.previousTags || '';
+        if (rawNewTag.toLowerCase() !== currentTag.toLowerCase() && currentTag) {
+          const list = updatedPreviousTags ? updatedPreviousTags.split(', ') : [];
+          if (!list.includes(currentTag)) list.push(currentTag);
+          updatedPreviousTags = list.join(', ');
+        }
+
+        const updatePayload = {
+          gamer_tag: rawNewTag,
+          full_name: newName,
+          previous_tags: updatedPreviousTags
+        };
+
+        // Grava no Supabase
+        if (typeof updateUserProfileInDB === 'function' && user.id) {
+          const dbRes = await updateUserProfileInDB(user.id, updatePayload);
+          if (!dbRes.success) {
+            alert('Aviso: Atualizado localmente, mas oscilou no banco: ' + dbRes.message);
+          }
+        }
+
+        // Grava no LocalStorage
+        user.gamerTag = rawNewTag;
         user.fullName = newName;
+        user.previousTags = updatedPreviousTags;
         localStorage.setItem('nexus_current_user', JSON.stringify(user));
 
-        sidebarGamerTag.textContent = newTag;
-        alert('GamerTag e dados salvos com sucesso!');
+        syncUI();
+        btnSave.disabled = false;
+        btnSave.textContent = 'Salvar Alterações no Banco';
+        alert(`🎉 Perfil atualizado com sucesso no PostgreSQL! Nova GamerTag: ${rawNewTag}`);
       });
 
-      // 7. LOGOUT
+      // Logout
       document.getElementById('btnSidebarLogout').addEventListener('click', () => {
-        if (confirm(`Deseja desconectar a GamerTag ${user.gamerTag}?`)) {
+        if (confirm(`Deseja desconectar a conta de ${user.gamerTag}?`)) {
           localStorage.removeItem('nexus_current_user');
           window.location.href = '../index.html';
         }
       });
-
-      // Carga inicial das reservas
-      carregarReservas();
     });
   </script>
 </body>

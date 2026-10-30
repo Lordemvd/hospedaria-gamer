@@ -60,6 +60,56 @@
         <p>Ainda não tem conta? <a href="cadastro.html" class="link-highlight">Criar GamerTag</a></p>
       </div>
     </div>
+    <!-- MODAL DE RECUPERAÇÃO DE SENHA (EMAIL OU CPF) -->
+      <div id="recoveryModal" class="crop-modal-overlay" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; align-items: center; justify-content: center;">
+        <div style="background: #0d0f18; border: 1px solid var(--neon-cyan); border-radius: 8px; max-width: 460px; width: 90%; padding: 26px; box-shadow: 0 0 30px rgba(0,240,255,0.25);">
+          
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h3 style="font-family: var(--font-display); color: #fff; margin: 0; font-size: 1.15rem;">REDEFINIR SENHA</h3>
+            <button type="button" id="btnCloseRecovery" style="background: none; border: none; color: #ff6b8b; font-size: 1.4rem; cursor: pointer;">&times;</button>
+          </div>
+
+          <!-- ETAPA 1: LOCALIZAR CONTA POR EMAIL OU CPF -->
+          <div id="recoveryStep1">
+            <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 16px;">
+              Informe o <strong>e-mail</strong> ou <strong>CPF</strong> cadastrado na sua conta para enviarmos o código de redefinição:
+            </p>
+            <div class="form-group">
+              <label for="recoveryInput">E-mail ou CPF</label>
+              <input type="text" id="recoveryInput" placeholder="seu-email@dominio.com ou 000.000.000-00" required>
+            </div>
+            <button type="button" id="btnVerifyAccount" class="btn-primary btn-full-width" style="margin-top: 10px;">Verificar Identidade</button>
+            <div id="recoveryErrorMsg" style="color: #ff6b8b; font-size: 0.85rem; margin-top: 10px; display: none; text-align: center;"></div>
+          </div>
+
+          <!-- ETAPA 2: CÓDIGO E NOVA SENHA -->
+          <div id="recoveryStep2" style="display: none;">
+            <div style="background: rgba(0,240,255,0.08); border-left: 3px solid var(--neon-cyan); padding: 10px; margin-bottom: 15px;">
+              <p id="recoveryEmailNotice" style="color: #cbd5e1; font-size: 0.85rem; margin: 0;"></p>
+            </div>
+
+            <div class="form-group">
+              <label for="recoveryTokenInput">Código de Validação</label>
+              <input type="text" id="recoveryTokenInput" placeholder="Ex: 582914" maxlength="6">
+            </div>
+
+            <div class="form-group">
+              <label for="newPassInput">Nova Senha</label>
+              <input type="password" id="newPassInput" placeholder="••••••••" required>
+            </div>
+
+            <button type="button" id="btnApplyNewPass" class="btn-primary btn-full-width" style="margin-top: 10px;">Atualizar Senha</button>
+
+            <div style="text-align: center; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 12px;">
+              <small style="color: #94a3b8;">Não tem mais acesso ao e-mail cadastrado?</small><br>
+              <a href="contato.html" style="color: var(--neon-cyan); font-size: 0.85rem; text-decoration: none; font-weight: 700;">
+                Falar com a Central Nexus Inn &rarr;
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </div>
   </main>
 
   <script>
@@ -162,6 +212,92 @@
       }
     
     });
+    // ABERTURA E FLUXO DO MODAL DE RECUPERAÇÃO DE SENHA
+      const forgotLink = document.querySelector('.forgot-link');
+      const recoveryModal = document.getElementById('recoveryModal');
+      const btnCloseRecovery = document.getElementById('btnCloseRecovery');
+      const btnVerifyAccount = document.getElementById('btnVerifyAccount');
+      const btnApplyNewPass = document.getElementById('btnApplyNewPass');
+      const recoveryErrorMsg = document.getElementById('recoveryErrorMsg');
+
+      let targetUserForRecovery = null;
+      let generatedCode = '';
+
+      if (forgotLink && recoveryModal) {
+        forgotLink.addEventListener('click', (e) => {
+          e.preventDefault();
+          recoveryModal.style.display = 'flex';
+          document.getElementById('recoveryStep1').style.display = 'block';
+          document.getElementById('recoveryStep2').style.display = 'none';
+          recoveryErrorMsg.style.display = 'none';
+        });
+
+        btnCloseRecovery.addEventListener('click', () => {
+          recoveryModal.style.display = 'none';
+        });
+
+        btnVerifyAccount.addEventListener('click', async () => {
+          const idVal = document.getElementById('recoveryInput').value.trim();
+          if (!idVal) return;
+
+          btnVerifyAccount.disabled = true;
+          btnVerifyAccount.textContent = 'Verificando...';
+          recoveryErrorMsg.style.display = 'none';
+
+          const res = await findUserForRecovery(idVal);
+
+          if (!res.success) {
+            recoveryErrorMsg.textContent = res.message;
+            recoveryErrorMsg.style.display = 'block';
+            btnVerifyAccount.disabled = false;
+            btnVerifyAccount.textContent = 'Verificar Identidade';
+            return;
+          }
+
+          targetUserForRecovery = res.user;
+          generatedCode = String(Math.floor(100000 + Math.random() * 900000));
+
+          // Mascara o e-mail (ex: lo***@nexusinn.com)
+          const parts = targetUserForRecovery.email.split('@');
+          const maskedEmail = parts[0].slice(0, 2) + '***@' + parts[1];
+
+          document.getElementById('recoveryStep1').style.display = 'none';
+          document.getElementById('recoveryStep2').style.display = 'block';
+          document.getElementById('recoveryEmailNotice').innerHTML = `
+            Código de 6 dígitos enviado para <strong>${maskedEmail}</strong>. 
+            <br><small style="color: var(--neon-cyan);">(Ambiente de Testes: Seu código é <strong>${generatedCode}</strong>)</small>
+          `;
+        });
+
+        btnApplyNewPass.addEventListener('click', async () => {
+          const codeInput = document.getElementById('recoveryTokenInput').value.trim();
+          const newPass = document.getElementById('newPassInput').value;
+
+          if (codeInput !== generatedCode) {
+            alert('Código de validação incorreto!');
+            return;
+          }
+          if (newPass.length < 6) {
+            alert('A nova senha deve ter no mínimo 6 caracteres.');
+            return;
+          }
+
+          btnApplyNewPass.disabled = true;
+          btnApplyNewPass.textContent = 'Gravando nova senha...';
+
+          const resetRes = await resetUserPasswordInDB(targetUserForRecovery.id, newPass);
+
+          if (resetRes.success) {
+            alert('✅ Senha redefinida com sucesso! Você já pode fazer login.');
+            recoveryModal.style.display = 'none';
+            btnApplyNewPass.disabled = false;
+            btnApplyNewPass.textContent = 'Atualizar Senha';
+          } else {
+            alert('Erro ao salvar nova senha: ' + resetRes.message);
+            btnApplyNewPass.disabled = false;
+          }
+        });
+      }
   </script>
 </body>
 </html>
