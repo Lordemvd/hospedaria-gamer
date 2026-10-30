@@ -590,8 +590,69 @@
       else if (reqTab === 'seguranca') switchTab('tabSeguranca');
       else switchTab('tabReservas');
 
-// 1. CARREGAMENTO E RENDERIZAÇÃO COM FILTRO ESTRITO DE IDENTIDADE
+// ==========================================
+      // 1. CARREGAMENTO E RENDERIZAÇÃO BLINDADA DAS RESERVAS
+      // ==========================================
       let cachedReservations = [];
+
+      function renderizarCards(lista) {
+        const listContainer = document.getElementById('reservationsList');
+        if (!listContainer) return;
+
+        if (!lista || lista.length === 0) {
+          listContainer.innerHTML = `
+            <div style="text-align: center; padding: 50px 20px; background: #080910; border-radius: 8px; border: 1px dashed rgba(255,255,255,0.1);">
+              <div style="font-size: 3rem; margin-bottom: 12px;">🎮</div>
+              <h3 style="font-family: var(--font-display); color: #fff; margin-bottom: 8px;">NENHUMA RESERVA ENCONTRADA</h3>
+              <p style="color: #94a3b8; font-size: 0.95rem; margin-bottom: 20px;">Não foram localizadas reservas associadas a esta conta.</p>
+              <a href="reserva.html" class="btn-primary" style="padding: 10px 22px; text-decoration: none; display: inline-block;">
+                Reservar um Setup Agora
+              </a>
+            </div>
+          `;
+          return;
+        }
+
+        listContainer.innerHTML = lista.map(res => {
+          const fmtIn = res.checkin && res.checkin.includes('-') ? res.checkin.split('-').reverse().join('/') : (res.checkin || 'A confirmar');
+          const fmtOut = res.checkout && res.checkout.includes('-') ? res.checkout.split('-').reverse().join('/') : (res.checkout || 'A confirmar');
+
+          return `
+            <article class="res-card-full">
+              <div class="res-top-row">
+                <span class="res-code-tag">${res.codigo}</span>
+                <span class="res-status-confirmed">● ${(res.status || 'Confirmada').toUpperCase()}</span>
+              </div>
+
+              <div class="res-body-grid">
+                <div class="res-field">
+                  <small>Acomodação</small>
+                  <strong>${res.quarto}</strong>
+                </div>
+                <div class="res-field">
+                  <small>Período Agendado</small>
+                  <strong>${fmtIn} &rarr; ${fmtOut}</strong>
+                </div>
+                <div class="res-field">
+                  <small>Método</small>
+                  <strong style="color: #cbd5e1;">${res.metodo}</strong>
+                </div>
+              </div>
+
+              <div class="res-footer-row">
+                <span class="res-price-total">${res.total}</span>
+                <div>
+                  <a href="finalizacao.html?codigo=${res.codigo}&hospede=${encodeURIComponent(res.hospede || '')}&quarto=${encodeURIComponent(res.quarto || '')}&checkin=${res.checkin || ''}&checkout=${res.checkout || ''}&total=${encodeURIComponent(res.total || '')}&metodo=${encodeURIComponent(res.metodo || '')}" 
+                     class="btn-primary" 
+                     style="padding: 8px 16px; font-size: 0.85rem; text-decoration: none;">
+                    Ver Gamer Pass VIP
+                  </a>
+                </div>
+              </div>
+            </article>
+          `;
+        }).join('');
+      }
 
       async function carregarReservas() {
         const listContainer = document.getElementById('reservationsList');
@@ -606,71 +667,79 @@
 
         let results = [];
 
-        // Identificadores válidos e exclusivos DESTE jogador (em minúsculas)
-        const myIdentifiers = [
-          user.gamerTag?.trim().toLowerCase(),
-          user.fullName?.trim().toLowerCase(),
-          ...(user.previousTags ? user.previousTags.split(',').map(t => t.trim().toLowerCase()) : [])
-        ].filter(Boolean);
+        try {
+          // Identificadores estritos do utilizador autenticado
+          const myIdentifiers = [];
+          if (user && user.gamerTag) myIdentifiers.push(user.gamerTag.trim().toLowerCase());
+          if (user && user.fullName) myIdentifiers.push(user.fullName.trim().toLowerCase());
+          if (user && user.previousTags && typeof user.previousTags === 'string') {
+            user.previousTags.split(',').forEach(t => {
+              const clean = t.trim().toLowerCase();
+              if (clean && !myIdentifiers.includes(clean)) myIdentifiers.push(clean);
+            });
+          }
 
-        // 1ª Tentativa: Consulta no Supabase
-        if (typeof fetchUserReservations === 'function') {
-          try {
+          // 1ª Tentativa: Consulta na base de dados remota do Supabase
+          if (typeof fetchUserReservations === 'function' && myIdentifiers.length > 0) {
             for (const idTag of myIdentifiers) {
-              const dbRes = await fetchUserReservations(idTag);
-              if (dbRes && dbRes.success && Array.isArray(dbRes.data)) {
-                dbRes.data.forEach(item => {
-                  const guestClean = (item.guest_name || '').trim().toLowerCase();
-                  
-                  // TRAVA 1: Só inclui se o hóspede for EXATAMENTE uma das suas tags/nomes
-                  const isMine = myIdentifiers.includes(guestClean);
+              try {
+                const dbRes = await fetchUserReservations(idTag);
+                if (dbRes && dbRes.success && Array.isArray(dbRes.data)) {
+                  dbRes.data.forEach(item => {
+                    const guestClean = (item.guest_name || '').trim().toLowerCase();
+                    const isMine = myIdentifiers.includes(guestClean);
 
-                  if (isMine && !results.some(r => r.codigo === item.reservation_code)) {
-                    results.push({
-                      codigo: item.reservation_code,
-                      quarto: item.room_name,
-                      hospede: item.guest_name,
-                      checkin: item.check_in,
-                      checkout: item.check_out,
-                      total: item.total_price,
-                      metodo: item.payment_method,
-                      status: item.status || 'Confirmada'
-                    });
-                  }
-                });
+                    if (isMine && !results.some(r => r.codigo === item.reservation_code)) {
+                      results.push({
+                        codigo: item.reservation_code,
+                        quarto: item.room_name,
+                        hospede: item.guest_name,
+                        checkin: item.check_in,
+                        checkout: item.check_out,
+                        total: item.total_price,
+                        metodo: item.payment_method,
+                        status: item.status || 'Confirmada'
+                      });
+                    }
+                  });
+                }
+              } catch (qErr) {
+                console.warn('Erro ao consultar idTag:', idTag, qErr);
               }
             }
-          } catch (err) {
-            console.warn('Falha na consulta remota, lendo LocalStorage:', err);
           }
-        }
 
-        // 2ª Tentativa: Histórico local do navegador com filtro estrito de titularidade
-        try {
-          const localRes = JSON.parse(localStorage.getItem('nexus_reservations') || '[]');
-          localRes.forEach(loc => {
-            const localGuestClean = (loc.hospede || '').trim().toLowerCase();
-            
-            // TRAVA 2: Rejeita qualquer reserva local de teste que não seja sua
-            const isLocalMine = myIdentifiers.includes(localGuestClean);
+          // 2ª Tentativa: Histórico local do browser com filtro estrito de titularidade
+          try {
+            const localRes = JSON.parse(localStorage.getItem('nexus_reservations') || '[]');
+            if (Array.isArray(localRes)) {
+              localRes.forEach(loc => {
+                const localGuestClean = (loc.hospede || '').trim().toLowerCase();
+                const isLocalMine = myIdentifiers.includes(localGuestClean);
 
-            if (isLocalMine && !results.some(r => r.codigo === loc.codigo)) {
-              results.push({
-                codigo: loc.codigo || 'NX-' + Math.floor(100000 + Math.random() * 900000),
-                quarto: loc.quarto || 'Acomodação Gamer',
-                hospede: loc.hospede,
-                checkin: loc.checkin,
-                checkout: loc.checkout,
-                total: loc.total,
-                metodo: loc.metodo || 'PIX Instantâneo',
-                status: 'Confirmada'
+                if (isLocalMine && !results.some(r => r.codigo === loc.codigo)) {
+                  results.push({
+                    codigo: loc.codigo || 'NX-' + Math.floor(100000 + Math.random() * 900000),
+                    quarto: loc.quarto || 'Acomodação Gamer',
+                    hospede: loc.hospede,
+                    checkin: loc.checkin,
+                    checkout: loc.checkout,
+                    total: loc.total,
+                    metodo: loc.metodo || 'PIX Instantâneo',
+                    status: 'Confirmada'
+                  });
+                }
               });
             }
-          });
-        } catch (e) {}
+          } catch (e) {}
 
-        cachedReservations = results;
-        renderizarCards(results);
+        } catch (globalErr) {
+          console.error('Erro geral ao processar histórico:', globalErr);
+        } finally {
+          // O bloco finally é executado obrigatoriamente, retirando o spinner do ecrã
+          cachedReservations = results;
+          renderizarCards(results);
+        }
       }
 
       // 2. RECORTE COM ZOOM (CROPPER.JS)
