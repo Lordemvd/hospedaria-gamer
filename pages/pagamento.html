@@ -9,6 +9,33 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%AE%3C/text%3E%3C/svg%3E">
+
+/* Descola o título do subtítulo na tela de pagamento */
+<style>
+    .checkout-header,
+    .payment-header {
+      margin-bottom: 25px !important;
+    }
+
+    .checkout-header h1,
+    .payment-header h1,
+    h1.page-title {
+      margin-top: 10px !important;
+      margin-bottom: 12px !important;
+      line-height: 1.2 !important;
+      font-family: var(--font-display, 'Orbitron', sans-serif) !important;
+    }
+
+    .section-subtitle,
+    .payment-subtitle {
+      margin-top: 0 !important; /* Anula a margem negativa que fazia o texto subir */
+      margin-bottom: 25px !important;
+      line-height: 1.5 !important;
+      color: var(--text-muted, #94a3b8) !important;
+      display: block !important;
+    }
+</style>
+
 </head>
 <body>
 
@@ -127,7 +154,7 @@
         
         <div class="summary-row">
           <span>Hóspede:</span>
-          <strong id="displayPlayer">Player Convidado</strong>
+          <strong id="displayGuest">Player Convidado</strong>
         </div>
         <div class="summary-row">
           <span>Acomodação:</span>
@@ -171,7 +198,7 @@
       const roomParam = params.get('room') || 'duo';
       const checkinParam = params.get('checkin') || '';
       const checkoutParam = params.get('checkout') || '';
-      const totalParam = params.get('total') || 'R$ 520,00';
+      const totalParam = params.get('total') || 'R$ 0,00';
 
       // Identifica o jogador conectado no LocalStorage
       let currentGuestName = 'Player Convidado';
@@ -193,10 +220,22 @@
 
       const roomTitle = roomNames[roomParam] || 'Suíte Duo Next-Gen';
 
-      document.getElementById('displayRoom').textContent = roomTitle;
-      document.getElementById('displayCheckin').textContent = checkinParam.includes('-') ? checkinParam.split('-').reverse().join('/') : checkinParam;
-      document.getElementById('displayCheckout').textContent = checkoutParam.includes('-') ? checkoutParam.split('-').reverse().join('/') : checkoutParam;
-      document.getElementById('displayTotal').textContent = totalParam;
+      // Atualiza os dados na barra lateral "Resumo do Pedido"
+      const guestEl = document.getElementById('displayGuest') || 
+                      Array.from(document.querySelectorAll('strong')).find(el => el.textContent.includes('Player Convidado'));
+      if (guestEl) guestEl.textContent = currentGuestName;
+
+      const roomEl = document.getElementById('displayRoom');
+      if (roomEl) roomEl.textContent = roomTitle;
+
+      const checkinEl = document.getElementById('displayCheckin');
+      if (checkinEl) checkinEl.textContent = checkinParam.includes('-') ? checkinParam.split('-').reverse().join('/') : checkinParam;
+
+      const checkoutEl = document.getElementById('displayCheckout');
+      if (checkoutEl) checkoutEl.textContent = checkoutParam.includes('-') ? checkoutParam.split('-').reverse().join('/') : checkoutParam;
+
+      const totalEl = document.getElementById('displayTotal');
+      if (totalEl) totalEl.textContent = totalParam;
 
       // 2. Processar Pagamento e Gravar Reserva no Supabase
       async function executePayment(metodo) {
