@@ -179,7 +179,11 @@
     </div>
   </footer>
 
-  <!-- SCRIPT DE CÁLCULO, PARÂMETROS E VALIDAÇÃO SUPABASE -->
+<!-- Flatpickr Core & Tradução PT -->
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
+
+  <!-- SCRIPT UNIFICADO: FLATPICKR, CÁLCULOS, SUPABASE E TRAVA DE LOGIN -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const roomSelect = document.getElementById('roomSelect');
@@ -196,59 +200,46 @@
       const summaryAddonsPrice = document.getElementById('summaryAddonsPrice');
       const summaryTotalPrice = document.getElementById('summaryTotalPrice');
 
-      // 1. Resgata usuário logado se existir
+      // 1. IDENTIFICAÇÃO DO JOGADOR CONECTADO
       const currentUserRaw = localStorage.getItem('nexus_current_user');
       if (currentUserRaw) {
         try {
           const user = JSON.parse(currentUserRaw);
-          summaryPlayer.textContent = user.gamerTag || user.fullName || 'Player Conectado';
+          if (summaryPlayer) summaryPlayer.textContent = user.gamerTag || user.fullName || 'Player Conectado';
         } catch(e){}
       }
 
-      // 2. Define datas padrão (Hoje e Amanhã)
-      const today = new Date();
-      const tomorrow = new Date();
-      tomorrow.setDate(today.getDate() + 1);
-
-      const toISO = d => d.toISOString().split('T')[0];
-      checkinInput.min = toISO(today);
-      checkinInput.value = toISO(today);
-      checkoutInput.min = toISO(tomorrow);
-      checkoutInput.value = toISO(tomorrow);
-
-      // 3. Lê parâmetros passados pela URL (Home, Cards ou Galeria)
-      const urlParams = new URLSearchParams(window.location.search);
-      const roomParam = urlParams.get('room');
-      const checkinParam = urlParams.get('checkin');
-      const checkoutParam = urlParams.get('checkout');
-
-      if (roomParam && ['solo', 'duo', 'squad'].includes(roomParam)) {
-        roomSelect.value = roomParam;
-      }
-      if (checkinParam) {
-        checkinInput.value = checkinParam;
-        checkoutInput.min = checkinParam;
-      }
-      if (checkoutParam) {
-        checkoutInput.value = checkoutParam;
-      }
-
-      // 4. Cálculo dinâmico
+      // 2. FUNÇÃO DE CÁLCULO DINÂMICO DOS VALORES
       function calculateTotal() {
+        if (!roomSelect) return {};
         const selectedOption = roomSelect.options[roomSelect.selectedIndex];
         const pricePerNight = parseFloat(selectedOption.getAttribute('data-price')) || 260;
-        summaryRoomTitle.textContent = selectedOption.text.split('—')[0].trim();
+        if (summaryRoomTitle) summaryRoomTitle.textContent = selectedOption.text.split('—')[0].trim();
 
-        const checkinDate = new Date(checkinInput.value);
-        const checkoutDate = new Date(checkoutInput.value);
+        const inVal = checkinInput.value;
+        const outVal = checkoutInput.value;
+
+        if (!inVal || !outVal) {
+          if (summaryDates) summaryDates.textContent = 'Selecione as datas';
+          return {
+            room: roomSelect.value,
+            roomName: summaryRoomTitle ? summaryRoomTitle.textContent : '',
+            checkin: '',
+            checkout: '',
+            total: summaryTotalPrice ? summaryTotalPrice.textContent : 'R$ 0,00'
+          };
+        }
+
+        const checkinDate = new Date(inVal);
+        const checkoutDate = new Date(outVal);
         let diffDays = Math.ceil((checkoutDate - checkinDate) / (1000 * 60 * 60 * 24));
         if (isNaN(diffDays) || diffDays <= 0) diffDays = 1;
 
-        summaryNights.textContent = `${diffDays} noite${diffDays > 1 ? 's' : ''}`;
-        summaryDates.textContent = `${checkinInput.value.split('-').reverse().join('/')} até ${checkoutInput.value.split('-').reverse().join('/')}`;
+        if (summaryNights) summaryNights.textContent = `${diffDays} noite${diffDays > 1 ? 's' : ''}`;
+        if (summaryDates) summaryDates.textContent = `${inVal.split('-').reverse().join('/')} até ${outVal.split('-').reverse().join('/')}`;
 
         const baseTotal = pricePerNight * diffDays;
-        summaryBasePrice.textContent = `R$ ${baseTotal.toFixed(2).replace('.', ',')}`;
+        if (summaryBasePrice) summaryBasePrice.textContent = `R$ ${baseTotal.toFixed(2).replace('.', ',')}`;
 
         let addonsTotal = 0;
         addonCheckboxes.forEach(cb => {
@@ -257,116 +248,23 @@
           }
         });
 
-        summaryAddonsPrice.textContent = `R$ ${addonsTotal.toFixed(2).replace('.', ',')}`;
+        if (summaryAddonsPrice) summaryAddonsPrice.textContent = `R$ ${addonsTotal.toFixed(2).replace('.', ',')}`;
 
         const grandTotal = baseTotal + addonsTotal;
-        summaryTotalPrice.textContent = `R$ ${grandTotal.toFixed(2).replace('.', ',')}`;
+        if (summaryTotalPrice) summaryTotalPrice.textContent = `R$ ${grandTotal.toFixed(2).replace('.', ',')}`;
 
         return {
           room: roomSelect.value,
-          roomName: summaryRoomTitle.textContent,
-          checkin: checkinInput.value,
-          checkout: checkoutInput.value,
+          roomName: summaryRoomTitle ? summaryRoomTitle.textContent : '',
+          checkin: inVal,
+          checkout: outVal,
           total: `R$ ${grandTotal.toFixed(2).replace('.', ',')}`
         };
       }
 
-      // Listeners de alteração
-      roomSelect.addEventListener('change', calculateTotal);
-      checkinInput.addEventListener('change', () => {
-        checkoutInput.min = checkinInput.value;
-        if (checkoutInput.value <= checkinInput.value) {
-          const nextDay = new Date(checkinInput.value);
-          nextDay.setDate(nextDay.getDate() + 1);
-          checkoutInput.value = toISO(nextDay);
-        }
-        calculateTotal();
-      });
-      checkoutInput.addEventListener('change', calculateTotal);
-      addonCheckboxes.forEach(cb => cb.addEventListener('change', calculateTotal));
-
-     // 5. Envio com Login Obrigatório, Anti-Overbooking e Proteção contra Travamento
-      reservationForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-
-        const submitBtn = reservationForm.querySelector('button[type="submit"]');
-        const originalText = 'Avançar para Pagamento Seguro';
-
-        // 1. CHECAGEM DE AUTENTICAÇÃO OBRIGATÓRIA (BARREIRA IMEDIATA)
-        const currentUser = localStorage.getItem('nexus_current_user');
-        const data = calculateTotal();
-
-        if (!currentUser) {
-          alert('🔒 Acesso Restrito: Identifique-se com sua GamerTag para confirmar a reserva do setup.');
-
-          const returnParams = new URLSearchParams({
-            room: data.room,
-            checkin: data.checkin,
-            checkout: data.checkout,
-            total: data.total
-          });
-
-          window.location.href = `login.html?redirect=${encodeURIComponent('reserva.html?' + returnParams.toString())}`;
-          return;
-        }
-
-        // 2. FEEDBACK VISUAL DE PROCESSAMENTO
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Checando disponibilidade no banco...';
-
-        try {
-          // 3. CHECAGEM ANTI-OVERBOOKING COM TIMEOUT DE SEGURANÇA (3.5s)
-          if (typeof checkRoomAvailability === 'function') {
-            const timeoutPromise = new Promise((resolve) =>
-              setTimeout(() => resolve({ available: true, timeout: true }), 3500)
-            );
-
-            // Disputa entre a resposta do Supabase e o limite de tempo
-            const check = await Promise.race([
-              checkRoomAvailability(data.room, data.checkin, data.checkout),
-              timeoutPromise
-            ]);
-
-            if (check && !check.available) {
-              alert('Atenção: Este setup já está reservado nas datas selecionadas! Redirecionando para a lista de espera...');
-              const params = new URLSearchParams({
-                room: data.room,
-                checkin: data.checkin,
-                checkout: data.checkout,
-                console: data.room
-              });
-              window.location.href = `ocupado.html?${params.toString()}`;
-              return;
-            }
-          }
-
-          // 4. SETUP LIBERADO: AVANÇA PARA O CHECKOUT COM IDENTIDADE CONFIRMADA
-          const params = new URLSearchParams({
-            room: data.room,
-            checkin: data.checkin,
-            checkout: data.checkout,
-            total: data.total
-          });
-          window.location.href = `pagamento.html?${params.toString()}`;
-
-        } catch (err) {
-          console.error('Falha na verificação de reserva:', err);
-          submitBtn.disabled = false;
-          submitBtn.textContent = originalText;
-          alert('Houve uma oscilação momentânea na checagem. Tente clicar em avançar novamente.');
-        }
-      });
-
-  </script>
-
-  <!-- Flatpickr Core & Tradução PT -->
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // 1. Instâncias Flatpickr Dark Neon integradas ao cálculo dinâmico
-      let fpOut, fpIn;
+      // 3. INICIALIZAÇÃO DO FLATPICKR DARK NEON
+      let fpIn = null;
+      let fpOut = null;
 
       if (typeof flatpickr !== 'undefined') {
         fpOut = flatpickr("#checkoutDate", {
@@ -377,7 +275,7 @@
           minDate: "today",
           disableMobile: true,
           onChange: () => {
-            if (typeof calculateTotal === 'function') calculateTotal();
+            calculateTotal();
           }
         });
 
@@ -392,28 +290,125 @@
             if (selectedDates[0]) {
               const nextDay = new Date(selectedDates[0]);
               nextDay.setDate(nextDay.getDate() + 1);
-              fpOut.set('minDate', nextDay);
-              
-              // Se o checkout for anterior ao novo checkin, avança 1 dia
-              if (fpOut.selectedDates[0] && fpOut.selectedDates[0] <= selectedDates[0]) {
-                fpOut.setDate(nextDay);
+              if (fpOut) {
+                fpOut.set('minDate', nextDay);
+                if (fpOut.selectedDates[0] && fpOut.selectedDates[0] <= selectedDates[0]) {
+                  fpOut.setDate(nextDay, true);
+                }
               }
             }
-            if (typeof calculateTotal === 'function') calculateTotal();
+            calculateTotal();
           }
         });
       }
 
-      // 2. Leitura de parâmetros da URL (caso venha da Home)
+      // 4. PARÂMETROS DA URL E DATAS PADRÃO
       const urlParams = new URLSearchParams(window.location.search);
-      const urlIn = urlParams.get('checkin');
-      const urlOut = urlParams.get('checkout');
+      const roomParam = urlParams.get('room');
+      const checkinParam = urlParams.get('checkin');
+      const checkoutParam = urlParams.get('checkout');
 
-      if (urlIn && fpIn) fpIn.setDate(urlIn);
-      if (urlOut && fpOut) fpOut.setDate(urlOut);
+      if (roomParam && roomSelect) {
+        roomSelect.value = roomParam;
+      }
 
-      // Dispara o cálculo inicial
-      if (typeof calculateTotal === 'function') calculateTotal();
+      // Injeta datas na instância ativa do Flatpickr
+      if (checkinParam && fpIn) {
+        fpIn.setDate(checkinParam, true);
+      } else if (fpIn) {
+        const today = new Date();
+        fpIn.setDate(today, false);
+      }
+
+      if (checkoutParam && fpOut) {
+        fpOut.setDate(checkoutParam, true);
+      } else if (fpOut) {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        fpOut.setDate(tomorrow, false);
+      }
+
+      // 5. OUVINTES DE EVENTOS
+      if (roomSelect) roomSelect.addEventListener('change', calculateTotal);
+      addonCheckboxes.forEach(cb => cb.addEventListener('change', calculateTotal));
+
+      // 6. SUBMISSÃO COM LOGIN OBRIGATÓRIO E ANTI-OVERBOOKING
+      if (reservationForm) {
+        reservationForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+
+          const submitBtn = reservationForm.querySelector('button[type="submit"]');
+          const originalText = 'Avançar para Pagamento Seguro';
+          const currentUser = localStorage.getItem('nexus_current_user');
+          const data = calculateTotal();
+
+          // BARREIRA: Se não estiver logado, redireciona para o login e, ao autenticar, vai DIRETO para o pagamento
+          if (!currentUser) {
+            alert('🔒 Acesso Restrito: Identifique-se com sua GamerTag para confirmar a reserva do setup.');
+
+            const paymentTarget = new URLSearchParams({
+              room: data.room,
+              checkin: data.checkin,
+              checkout: data.checkout,
+              total: data.total
+            });
+
+            window.location.href = `login.html?redirect=${encodeURIComponent('pagamento.html?' + paymentTarget.toString())}`;
+            return;
+          }
+
+          // SE LOGADO: Checagem Anti-Overbooking no Supabase
+          if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Checando disponibilidade no banco...';
+          }
+
+          try {
+            if (typeof checkRoomAvailability === 'function') {
+              const timeoutPromise = new Promise((resolve) =>
+                setTimeout(() => resolve({ available: true, timeout: true }), 3500)
+              );
+
+              const check = await Promise.race([
+                checkRoomAvailability(data.room, data.checkin, data.checkout),
+                timeoutPromise
+              ]);
+
+              if (check && !check.available) {
+                alert('Atenção: Este setup já está reservado nas datas selecionadas! Redirecionando para a lista de espera...');
+                const params = new URLSearchParams({
+                  room: data.room,
+                  checkin: data.checkin,
+                  checkout: data.checkout,
+                  console: data.room
+                });
+                window.location.href = `ocupado.html?${params.toString()}`;
+                return;
+              }
+            }
+
+            // Tudo liberado: segue para checkout com parâmetros consolidados
+            const params = new URLSearchParams({
+              room: data.room,
+              checkin: data.checkin,
+              checkout: data.checkout,
+              total: data.total
+            });
+            window.location.href = `pagamento.html?${params.toString()}`;
+
+          } catch (err) {
+            console.error('Falha na checagem:', err);
+            if (submitBtn) {
+              submitBtn.disabled = false;
+              submitBtn.textContent = originalText;
+            }
+            alert('Houve uma oscilação momentânea na checagem. Tente clicar em avançar novamente.');
+          }
+        });
+      }
+
+      // Disparo do cálculo inicial
+      calculateTotal();
     });
   </script>
 </body>

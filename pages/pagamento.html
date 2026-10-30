@@ -191,18 +191,23 @@
     </div>
   </footer>
 
-<script>
+<!-- SDK Oficial do Supabase + Arquivo de Conexão -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../supabase.js"></script>
+
+  <script>
     document.addEventListener('DOMContentLoaded', () => {
 
-    // Trava de Segurança: impede acesso direto à tela de pagamento sem estar autenticado
+      // 1. Trava de Segurança: impede acesso sem login e preserva os dados da URL no retorno
       const activeSession = localStorage.getItem('nexus_current_user');
       if (!activeSession) {
         alert('Acesso negado: faça login para acessar a área de pagamento seguro.');
-        window.location.href = 'login.html';
+        const currentDestination = 'pagamento.html' + window.location.search;
+        window.location.href = `login.html?redirect=${encodeURIComponent(currentDestination)}`;
         return;
       }
 
-      // 1. RESGATE DE DADOS DA URL E IDENTIFICAÇÃO DO JOGADOR
+      // 2. Resgate de dados da URL e identificação do jogador
       const params = new URLSearchParams(window.location.search);
       const roomParam = params.get('room') || 'duo';
       const checkinParam = params.get('checkin') || '';
@@ -236,16 +241,19 @@
       const roomEl = document.getElementById('displayRoom');
       if (roomEl) roomEl.textContent = roomTitle;
 
+      const checkinFormatted = checkinParam ? (checkinParam.includes('-') ? checkinParam.split('-').reverse().join('/') : checkinParam) : 'A confirmar';
+      const checkoutFormatted = checkoutParam ? (checkoutParam.includes('-') ? checkoutParam.split('-').reverse().join('/') : checkoutParam) : 'A confirmar';
+
       const checkinEl = document.getElementById('displayCheckin');
-      if (checkinEl) checkinEl.textContent = checkinParam.includes('-') ? checkinParam.split('-').reverse().join('/') : checkinParam;
+      if (checkinEl) checkinEl.textContent = checkinFormatted;
 
       const checkoutEl = document.getElementById('displayCheckout');
-      if (checkoutEl) checkoutEl.textContent = checkoutParam.includes('-') ? checkoutParam.split('-').reverse().join('/') : checkoutParam;
+      if (checkoutEl) checkoutEl.textContent = checkoutFormatted;
 
       const totalEl = document.getElementById('displayTotal');
       if (totalEl) totalEl.textContent = totalParam;
 
-      // 2. TEMPORIZADOR DE RETENÇÃO (15 MINUTOS)
+      // 3. Temporizador de Retenção (15 Minutos)
       let timeLeft = 15 * 60;
       const timerElement = document.getElementById('timer');
       if (timerElement) {
@@ -263,7 +271,7 @@
         }, 1000);
       }
 
-      // 3. ALTERNÂNCIA DE ABAS (PIX / CARTÃO)
+      // 4. Alternância de abas (PIX / Cartão)
       const tabBtns = document.querySelectorAll('.tab-btn');
       const tabContents = document.querySelectorAll('.tab-content');
 
@@ -278,7 +286,7 @@
         });
       });
 
-      // 4. MÁSCARAS DE ENTRADA DO CARTÃO DE CRÉDITO
+      // 5. Máscaras de entrada do Cartão de Crédito
       const cardNumber = document.getElementById('cardNumber');
       if (cardNumber) {
         cardNumber.addEventListener('input', (e) => {
@@ -299,7 +307,7 @@
         });
       }
 
-      // 5. BOTÃO COPIAR CÓDIGO PIX COM FEEDBACK VISUAL
+      // 6. Botão Copiar Código PIX com feedback visual
       const btnCopyPix = document.getElementById('btnCopyPix');
       const pixKey = document.getElementById('pixKey');
       if (btnCopyPix && pixKey) {
@@ -316,7 +324,7 @@
         });
       }
 
-      // 6. PROCESSAMENTO E GRAVAÇÃO DA RESERVA (ÚNICA E COM PROTEÇÃO DE TIMEOUT)
+      // 7. Processamento e gravação da reserva no Supabase com Timeout
       let isProcessing = false;
 
       async function executePayment(metodo) {
@@ -329,7 +337,6 @@
 
         if (modal) modal.classList.add('show');
 
-        // Código de reserva único NX-XXXXXX
         const reservationCode = 'NX-' + Math.floor(100000 + Math.random() * 900000);
 
         try {
@@ -356,7 +363,6 @@
           console.warn('Persistência Supabase superou o tempo limite ou oscilou. Prosseguindo:', dbErr);
         }
 
-        // Feedback Visual de Aprovação
         setTimeout(() => {
           if (heading) {
             heading.textContent = 'Pagamento Aprovado!';
@@ -366,7 +372,6 @@
             desc.textContent = 'Emitindo Gamer Pass VIP e credenciais de acesso...';
           }
 
-          // Redirecionamento Garantido para a Tela de Finalização
           setTimeout(() => {
             const redirectParams = new URLSearchParams({
               codigo: reservationCode,
@@ -382,7 +387,7 @@
         }, 1500);
       }
 
-      // 7. LISTENERS DE CONFIRMAÇÃO
+      // 8. Listeners de confirmação
       const btnConfirmPix = document.getElementById('btnConfirmPix');
       if (btnConfirmPix) {
         btnConfirmPix.addEventListener('click', (e) => {
@@ -401,8 +406,5 @@
     });
   </script>
 
-  <!-- SDK Oficial do Supabase + Arquivo de Configuração -->
- <script defer src="../supabase-sdk.js"></script>
-  <script defer src="../supabase.js"></script>
 </body>
 </html>
