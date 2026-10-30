@@ -191,16 +191,15 @@
     </div>
   </footer>
 
-  <script>
+<script>
     document.addEventListener('DOMContentLoaded', () => {
-// 1. Resgatar dados da URL e do utilizador autenticado
+      // 1. RESGATE DE DADOS DA URL E IDENTIFICAÇÃO DO JOGADOR
       const params = new URLSearchParams(window.location.search);
       const roomParam = params.get('room') || 'duo';
       const checkinParam = params.get('checkin') || '';
       const checkoutParam = params.get('checkout') || '';
       const totalParam = params.get('total') || 'R$ 0,00';
 
-      // Identifica o jogador conectado no LocalStorage
       let currentGuestName = 'Player Convidado';
       try {
         const storedUser = localStorage.getItem('nexus_current_user');
@@ -237,22 +236,97 @@
       const totalEl = document.getElementById('displayTotal');
       if (totalEl) totalEl.textContent = totalParam;
 
-      // 2. Processar Pagamento e Gravar Reserva no Supabase (Com Timeout de Proteção)
+      // 2. TEMPORIZADOR DE RETENÇÃO (15 MINUTOS)
+      let timeLeft = 15 * 60;
+      const timerElement = document.getElementById('timer');
+      if (timerElement) {
+        const timerInterval = setInterval(() => {
+          timeLeft--;
+          const minutes = Math.floor(timeLeft / 60);
+          const seconds = timeLeft % 60;
+          timerElement.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+          if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            alert('O tempo de retenção expirou. O quarto foi liberado.');
+            window.location.href = '../index.html';
+          }
+        }, 1000);
+      }
+
+      // 3. ALTERNÂNCIA DE ABAS (PIX / CARTÃO)
+      const tabBtns = document.querySelectorAll('.tab-btn');
+      const tabContents = document.querySelectorAll('.tab-content');
+
+      tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          tabBtns.forEach(b => b.classList.remove('active'));
+          tabContents.forEach(c => c.classList.remove('active'));
+
+          btn.classList.add('active');
+          const target = document.getElementById(`tab-${btn.dataset.tab}`);
+          if (target) target.classList.add('active');
+        });
+      });
+
+      // 4. MÁSCARAS DE ENTRADA DO CARTÃO DE CRÉDITO
+      const cardNumber = document.getElementById('cardNumber');
+      if (cardNumber) {
+        cardNumber.addEventListener('input', (e) => {
+          let value = e.target.value.replace(/\D/g, '');
+          value = value.match(/.{1,4}/g)?.join(' ') || '';
+          e.target.value = value.substring(0, 19);
+        });
+      }
+
+      const cardExp = document.getElementById('cardExp');
+      if (cardExp) {
+        cardExp.addEventListener('input', (e) => {
+          let value = e.target.value.replace(/\D/g, '');
+          if (value.length > 2) {
+            value = value.substring(0, 2) + '/' + value.substring(2, 4);
+          }
+          e.target.value = value.substring(0, 5);
+        });
+      }
+
+      // 5. BOTÃO COPIAR CÓDIGO PIX COM FEEDBACK VISUAL
+      const btnCopyPix = document.getElementById('btnCopyPix');
+      const pixKey = document.getElementById('pixKey');
+      if (btnCopyPix && pixKey) {
+        btnCopyPix.addEventListener('click', () => {
+          pixKey.select();
+          navigator.clipboard.writeText(pixKey.value).then(() => {
+            btnCopyPix.textContent = 'Copiado!';
+            btnCopyPix.style.borderColor = 'var(--neon-cyan)';
+            setTimeout(() => {
+              btnCopyPix.textContent = 'Copiar';
+              btnCopyPix.style.borderColor = '';
+            }, 2000);
+          });
+        });
+      }
+
+      // 6. PROCESSAMENTO E GRAVAÇÃO DA RESERVA (ÚNICA E COM PROTEÇÃO DE TIMEOUT)
+      let isProcessing = false;
+
       async function executePayment(metodo) {
+        if (isProcessing) return;
+        isProcessing = true;
+
         const modal = document.getElementById('processingModal');
         const heading = document.getElementById('statusHeading') || modal?.querySelector('h3');
         const desc = document.getElementById('statusDesc') || modal?.querySelector('p');
 
         if (modal) modal.classList.add('show');
 
-        // Gera código de reserva único NX-XXXXXX
+        // Código de reserva único NX-XXXXXX
         const reservationCode = 'NX-' + Math.floor(100000 + Math.random() * 900000);
 
         try {
-          // 1. Gravação no Supabase com Timeout Limite de 3s (Impede congelamento por AdBlocker)
           if (typeof saveReservationToDB === 'function') {
             const timeoutPromise = new Promise(resolve => 
-              setTimeout(() => resolve({ success: false, timeout: true }), 3000)
+              setTimeout(() => resolve({ success: false, timeout: true }), 2500)
             );
 
             await Promise.race([
@@ -270,10 +344,10 @@
             ]);
           }
         } catch (dbErr) {
-          console.warn('Persistência Supabase superou o tempo limite ou oscilou. Prosseguindo com checkout local:', dbErr);
+          console.warn('Persistência Supabase superou o tempo limite ou oscilou. Prosseguindo:', dbErr);
         }
 
-        // 2. Feedback Visual de Aprovação
+        // Feedback Visual de Aprovação
         setTimeout(() => {
           if (heading) {
             heading.textContent = 'Pagamento Aprovado!';
@@ -283,7 +357,7 @@
             desc.textContent = 'Emitindo Gamer Pass VIP e credenciais de acesso...';
           }
 
-          // 3. Redirecionamento Garantido para a Tela de Finalização
+          // Redirecionamento Garantido para a Tela de Finalização
           setTimeout(() => {
             const redirectParams = new URLSearchParams({
               codigo: reservationCode,
@@ -299,103 +373,22 @@
         }, 1500);
       }
 
-      // 3. ALTERNÂNCIA DE ABAS (PIX / CARTÃO)
-      const tabBtns = document.querySelectorAll('.tab-btn');
-      const tabContents = document.querySelectorAll('.tab-content');
-
-      tabBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-          tabBtns.forEach(b => b.classList.remove('active'));
-          tabContents.forEach(c => c.classList.remove('active'));
-
-          btn.classList.add('active');
-          document.getElementById(`tab-${btn.dataset.tab}`).classList.add('active');
+      // 7. LISTENERS DE CONFIRMAÇÃO
+      const btnConfirmPix = document.getElementById('btnConfirmPix');
+      if (btnConfirmPix) {
+        btnConfirmPix.addEventListener('click', (e) => {
+          e.preventDefault();
+          executePayment('PIX Instantâneo');
         });
-      });
-
-      // 4. MÁSCARAS DE ENTRADA DO CARTÃO DE CRÉDITO
-      const cardNumber = document.getElementById('cardNumber');
-      cardNumber.addEventListener('input', (e) => {
-        let value = e.target.value.replace(/\D/g, '');
-        value = value.match(/.{1,4}/g)?.join(' ') || '';
-        e.target.value = value.substring(0, 19);
-      });
-
-      const cardExp = document.getElementById('cardExp');
-      cardExp.addEventListener('input', (e) => {
-        let value = e.target.value.replace(/\D/g, '');
-        if (value.length > 2) {
-          value = value.substring(0, 2) + '/' + value.substring(2, 4);
-        }
-        e.target.value = value.substring(0, 5);
-      });
-
-      // 5. BOTÃO COPIAR CÓDIGO PIX
-      const btnCopyPix = document.getElementById('btnCopyPix');
-      const pixKey = document.getElementById('pixKey');
-      btnCopyPix.addEventListener('click', () => {
-        pixKey.select();
-        navigator.clipboard.writeText(pixKey.value).then(() => {
-          btnCopyPix.textContent = 'Copiado!';
-          btnCopyPix.style.borderColor = 'var(--neon-cyan)';
-          setTimeout(() => {
-            btnCopyPix.textContent = 'Copiar';
-            btnCopyPix.style.borderColor = '';
-          }, 2000);
-        });
-      });
-
-    // 6. PROCESSAMENTO E REDIRECIONAMENTO PARA O VOUCHER (INTEGRADO AO SUPABASE)
-      const processingModal = document.getElementById('processingModal');
-      const statusHeading = document.getElementById('statusHeading');
-      const statusDesc = document.getElementById('statusDesc');
-
-      async function executePayment(metodo) {
-        processingModal.classList.add('show');
-
-        const reservationCode = 'NX-' + Math.floor(100000 + Math.random() * 900000);
-
-        // 1. Grava os dados da reserva no PostgreSQL do Supabase
-        await saveReservationToDB({
-          codigo: reservationCode,
-          hospede: playerName,
-          quartoId: roomParam,
-          quarto: displayRoom.textContent,
-          checkin: checkinParam,
-          checkout: checkoutParam,
-          total: totalParam,
-          metodo: metodo
-        });
-
-        // 2. Feedback visual e transição para o voucher
-        setTimeout(() => {
-          statusHeading.textContent = 'Pagamento Confirmado!';
-          statusHeading.style.color = 'var(--neon-cyan)';
-          statusDesc.textContent = 'Setup reservado no banco de dados. Gerando seu Gamer Pass...';
-
-          setTimeout(() => {
-            const redirectParams = new URLSearchParams({
-              codigo: reservationCode,
-              hospede: playerName,
-              quarto: displayRoom.textContent,
-              checkin: checkinParam,
-              checkout: checkoutParam,
-              total: totalParam,
-              metodo: metodo
-            });
-            window.location.href = `finalizacao.html?${redirectParams.toString()}`;
-          }, 1200);
-        }, 1600);
       }
 
-      document.getElementById('btnConfirmPix').addEventListener('click', () => {
-        executePayment('PIX Instantâneo');
-      });
-
-      document.getElementById('cardForm').addEventListener('submit', (e) => {
-        e.preventDefault();
-        executePayment('Cartão de Crédito');
-      });
+      const cardForm = document.getElementById('cardForm');
+      if (cardForm) {
+        cardForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          executePayment('Cartão de Crédito');
+        });
+      }
     });
   </script>
 
