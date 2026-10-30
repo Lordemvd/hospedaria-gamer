@@ -188,4 +188,5 @@ Projeto acadêmico e profissional desenvolvido sob o padrão Zero-Framework:
 * **Desenvolvedor Responsável:** Lorde (`Lordemvd`)
 * **Repositório Oficial:** [github.com/Lordemvd/hospedaria-gamer](https://github.com/Lordemvd/hospedaria-gamer)
 * **Ambiente de Produção:** [lordemvd.github.io/hospedaria-gamer](https://lordemvd.github.io/hospedaria-gamer/)
-* **Slide de Produção:** https://docs.google.com/presentation/d/1n_DaIZiSX9DVTsFED3KNoy9wb3n0rtfYsy5lR6Bx2h0/edit?usp=sharing
+* ## 📊 Apresentação do Projeto
+[![Apresentação Online](https://img.shields.io/badge/Google%20Slides-Acessar%20Apresentação-ff007f?style=for-the-badge&logo=google&logoColor=white)](https://docs.google.com/presentation/d/e/2PACX-1vRYPa2ew-gPi8doFiMzZqXqFC5gjCPUmd5rQrmzZhT8LMKXbPAj18BwwlCBNXTE2oh0DDrZbcoOY0mq/pub?start=true&loop=false&delayms=3000)
