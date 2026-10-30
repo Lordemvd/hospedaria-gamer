@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexus Inn | Política de Cancelamento e Reembolso</title>
+  <link rel="stylesheet" href="../style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%8F%B3%3C/text%3E%3C/svg%3E">
+
+  <style>
+    .refund-container {
+      max-width: 960px;
+      margin: 40px auto 60px;
+      padding: 0 20px;
+    }
+
+    .refund-header {
+      text-align: center;
+      margin-bottom: 40px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 25px;
+    }
+
+    .refund-header h1 {
+      font-family: var(--font-display, 'Orbitron', sans-serif);
+      color: #fff;
+      font-size: 2.2rem;
+      letter-spacing: 1px;
+      margin-top: 10px;
+    }
+
+    .timeline-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-bottom: 35px;
+    }
+
+    .tier-card {
+      background: #0d0f18;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 24px;
+      position: relative;
+    }
+
+    .tier-card.full-refund {
+      border-color: rgba(0, 240, 255, 0.4);
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.08);
+    }
+
+    .tier-card.partial-refund {
+      border-color: rgba(176, 38, 255, 0.4);
+    }
+
+    .tier-card.no-refund {
+      border-color: rgba(255, 0, 85, 0.4);
+    }
+
+    .tier-tag {
+      font-family: var(--font-display, 'Orbitron', sans-serif);
+      font-size: 0.8rem;
+      padding: 4px 10px;
+      border-radius: 4px;
+      display: inline-block;
+      margin-bottom: 12px;
+      font-weight: 700;
+    }
+
+    .tier-card.full-refund .tier-tag {
+      background: rgba(0, 240, 255, 0.15);
+      color: var(--neon-cyan, #00f0ff);
+      border: 1px solid var(--neon-cyan, #00f0ff);
+    }
+
+    .tier-card.partial-refund .tier-tag {
+      background: rgba(176, 38, 255, 0.15);
+      color: var(--neon-purple, #b026ff);
+      border: 1px solid var(--neon-purple, #b026ff);
+    }
+
+    .tier-card.no-refund .tier-tag {
+      background: rgba(255, 0, 85, 0.15);
+      color: #ff6b8b;
+      border: 1px solid rgba(255, 0, 85, 0.4);
+    }
+
+    .tier-title {
+      font-family: var(--font-display, 'Orbitron', sans-serif);
+      font-size: 1.15rem;
+      color: #fff;
+      margin-bottom: 10px;
+    }
+
+    .tier-desc {
+      color: #cbd5e1;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .rules-card {
+      background: #0d0f18;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 30px;
+      margin-bottom: 25px;
+    }
+
+    .rules-card h2 {
+      font-family: var(--font-display, 'Orbitron', sans-serif);
+      color: var(--neon-cyan, #00f0ff);
+      font-size: 1.25rem;
+      margin-top: 0;
+      margin-bottom: 15px;
+    }
+
+    .rules-card p, .rules-card li {
+      color: #cbd5e1;
+      line-height: 1.8;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <div class="logo">
+      <a href="../index.html" style="text-decoration: none; color: inherit;">
+        <span class="logo-highlight">NEXUS</span>INN
+      </a>
+    </div>
+    <nav class="nav-links">
+      <a href="../index.html">Início</a>
+      <a href="../index.html#quartos">Quartos</a>
+      <a href="galeria.html">Galeria</a>
+      <a href="contato.html">Suporte</a>
+    </nav>
+  </header>
+
+  <main class="refund-container">
+    <div class="refund-header">
+      <span class="badge">POLÍTICA COMERCIAL TRANSPARENTE</span>
+      <h1>CANCELAMENTO & REEMBOLSO</h1>
+      <p style="color: var(--text-muted); font-size: 0.95rem; margin-top: 8px;">
+        Entenda prazos de estorno, regras de desistência e funcionamento dos Drops Prioritários
+      </p>
+    </div>
+
+    <!-- CARDS DE FAIXAS DE PRAZO -->
+    <div class="timeline-grid">
+      <div class="tier-card full-refund">
+        <span class="tier-tag">100% REEMBOLSO</span>
+        <h3 class="tier-title">Até 48h Antes do Check-in</h3>
+        <p class="tier-desc">
+          Cancelamentos solicitados com mais de 48 horas de antecedência do horário oficial de entrada (14h) recebem estorno integral imediato via chave PIX de origem ou estorno na fatura do cartão.
+        </p>
+      </div>
+
+      <div class="tier-card partial-refund">
+        <span class="tier-tag">50% REEMBOLSO</span>
+        <h3 class="tier-title">Entre 48h e 24h do Check-in</h3>
+        <p class="tier-desc">
+          Nesta janela, 50% do valor total é retido para cobrir o custo de bloqueio de setup e indisponibilidade de calendário, e 50% é estornado automaticamente ao hóspede.
+        </p>
+      </div>
+
+      <div class="tier-card no-refund">
+        <span class="tier-tag">SEM ESTORNO</span>
+        <h3 class="tier-title">Menos de 24h ou No-Show</h3>
+        <p class="tier-desc">
+          Desistências com menos de 24 horas de antecedência ou ausência no dia do check-in não são elegíveis a reembolso devido à retenção de infraestrutura exclusiva.
+        </p>
+      </div>
+    </div>
+
+    <!-- PROCESSO DE LIBERAÇÃO PARA A WAITLIST -->
+    <article class="rules-card">
+      <h2>Mecânica de Liberação Automática (Drops)</h2>
+      <p>
+        Assim que uma reserva é cancelada no sistema administrativo da Nexus Inn, o nosso motor no banco de dados PostgreSQL executa dois procedimentos em tempo real:
+      </p>
+      <ol style="color: #cbd5e1; line-height: 1.8; padding-left: 20px;">
+        <li><strong>Desbloqueio de Inventário:</strong> O quarto e o período ficam livres instantaneamente para reservas públicas na Home.</li>
+        <li><strong>Disparo para a Fila de Espera:</strong> O jogador registrado na aba de <em>Drops</em> com período coincidente recebe notificação imediata por e-mail ou Discord tag com 15 minutos de prioridade para contratação.</li>
+      </ol>
+    </article>
+
+    <!-- COMO SOLICITAR -->
+    <article class="rules-card">
+      <h2>Como Solicitar o Cancelamento</h2>
+      <p>
+        O cancelamento pode ser executado diretamente pelo painel do jogador conectado através do botão <strong>Minhas Reservas</strong> na Navbar ou mediante solicitação formal via ticket com o código da estadia (formato <code>NX-XXXXXX</code>) na nossa Central de Ajuda.
+      </p>
+    </article>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-content">
+      <p>&copy; 2026 Nexus Inn - Infraestrutura gamer com monitoramento em tempo real.</p>
+      <div style="margin-top: 10px; font-size: 0.85rem;">
+        <a href="termos.html" style="color: var(--text-muted); margin: 0 8px;">Termos de Uso</a> &bull;
+        <a href="cancelamento.html" style="color: var(--neon-cyan); margin: 0 8px;">Política de Cancelamento</a> &bull;
+        <a href="contato.html" style="color: var(--text-muted); margin: 0 8px;">Central de Ajuda</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

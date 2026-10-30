@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexus Inn | Central de Suporte & Atendimento</title>
+  <link rel="stylesheet" href="../style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%A7%3C/text%3E%3C/svg%3E">
+
+  <style>
+    .contact-container {
+      max-width: 1100px;
+      margin: 40px auto 60px;
+      padding: 0 20px;
+    }
+
+    .contact-header {
+      text-align: center;
+      margin-bottom: 40px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 25px;
+    }
+
+    .contact-header h1 {
+      font-family: var(--font-display, 'Orbitron', sans-serif);
+      color: #fff;
+      font-size: 2.2rem;
+      letter-spacing: 1px;
+      margin-top: 10px;
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.3fr;
+      gap: 30px;
+    }
+
+    @media (max-width: 860px) {
+      .contact-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .channels-card {
+      background: #0d0f18;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 30px;
+    }
+
+    .channel-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 15px;
+      margin-bottom: 25px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .channel-item:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .channel-icon {
+      font-size: 1.6rem;
+      background: rgba(0, 240, 255, 0.08);
+      border: 1px solid var(--border-glow, rgba(0, 240, 255, 0.3));
+      padding: 10px;
+      border-radius: 6px;
+      flex-shrink: 0;
+    }
+
+    .channel-info h4 {
+      font-family: var(--font-display, 'Orbitron', sans-serif);
+      color: #fff;
+      font-size: 1rem;
+      margin: 0 0 4px 0;
+    }
+
+    .channel-info p {
+      color: var(--text-muted, #94a3b8);
+      font-size: 0.9rem;
+      margin: 0 0 6px 0;
+    }
+
+    .channel-info a {
+      color: var(--neon-cyan, #00f0ff);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .ticket-card {
+      background: #0d0f18;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 30px;
+    }
+
+    .ticket-card h3 {
+      font-family: var(--font-display, 'Orbitron', sans-serif);
+      color: var(--neon-cyan, #00f0ff);
+      margin-top: 0;
+      margin-bottom: 8px;
+      font-size: 1.25rem;
+    }
+
+    .ticket-card p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-family: var(--font-display, 'Orbitron', sans-serif);
+      color: #cbd5e1;
+      margin-bottom: 6px;
+    }
+
+    .form-control {
+      width: 100%;
+      background: #07080c;
+      border: 1px solid #282d44;
+      color: #fff;
+      padding: 10px 14px;
+      border-radius: 4px;
+      font-family: var(--font-body, 'Rajdhani', sans-serif);
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s ease;
+      box-sizing: border-box;
+    }
+
+    .form-control:focus {
+      border-color: var(--neon-cyan, #00f0ff);
+    }
+
+    textarea.form-control {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .feedback-success {
+      display: none;
+      background: rgba(0, 240, 255, 0.1);
+      border: 1px solid var(--neon-cyan, #00f0ff);
+      color: var(--neon-cyan, #00f0ff);
+      padding: 14px;
+      border-radius: 4px;
+      margin-top: 15px;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <div class="logo">
+      <a href="../index.html" style="text-decoration: none; color: inherit;">
+        <span class="logo-highlight">NEXUS</span>INN
+      </a>
+    </div>
+    <nav class="nav-links">
+      <a href="../index.html">Início</a>
+      <a href="../index.html#quartos">Quartos</a>
+      <a href="galeria.html">Galeria</a>
+      <a href="contato.html" class="active">Suporte</a>
+    </nav>
+  </header>
+
+  <main class="contact-container">
+    <div class="contact-header">
+      <span class="badge">HELP DESK 24/7</span>
+      <h1>CENTRAL DE ATENDIMENTO</h1>
+      <p style="color: var(--text-muted); font-size: 0.95rem; margin-top: 8px;">
+        Suporte técnico de conectividade, solicitações operacionais e dúvidas sobre reservas
+      </p>
+    </div>
+
+    <div class="contact-grid">
+      <!-- CANAIS DIRETOS -->
+      <aside class="channels-card">
+        <div class="channel-item">
+          <div class="channel-icon">💬</div>
+          <div class="channel-info">
+            <h4>Discord Oficial</h4>
+            <p>Canal exclusivo com bot de drops e suporte em tempo real da guilda.</p>
+            <a href="https://discord.com" target="_blank" rel="noopener">discord.gg/nexusinn</a>
+          </div>
+        </div>
+
+        <div class="channel-item">
+          <div class="channel-icon">✉️</div>
+          <div class="channel-info">
+            <h4>E-mail de Operações</h4>
+            <p>Para parcerias, imprensa e solicitações de estorno formal.</p>
+            <a href="mailto:contato@nexusinn.com">contato@nexusinn.com</a>
+          </div>
+        </div>
+
+        <div class="channel-item">
+          <div class="channel-icon">📍</div>
+          <div class="channel-info">
+            <h4>Complexo Físico</h4>
+            <p>Setor de Hotelaria Gamer &bull; Pavilhão Tecnológico E-Sports.</p>
+            <span style="color: #cbd5e1; font-size: 0.9rem;">Av. das Nações Digitais, 2048 &bull; Sala VIP</span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- FORMULÁRIO DE TICKET -->
+      <section class="ticket-card">
+        <h3>Abrir Chamado Prioritário</h3>
+        <p>Preencha os dados abaixo. Tempo médio de resposta: sub-10 minutos.</p>
+
+        <form id="ticketForm">
+          <div class="form-group">
+            <label for="ticketName">GamerTag ou Nome Completo</label>
+            <input type="text" id="ticketName" class="form-control" placeholder="Ex: Lorde_vida" required>
+          </div>
+
+          <div class="form-group">
+            <label for="ticketContact">E-mail ou Contato</label>
+            <input type="text" id="ticketContact" class="form-control" placeholder="seu-email@dominio.com ou Discord#0000" required>
+          </div>
+
+          <div class="form-group">
+            <label for="ticketCategory">Assunto do Chamado</label>
+            <select id="ticketCategory" class="form-control" required>
+              <option value="duvida">Dúvidas sobre Configurações do Setup</option>
+              <option value="reserva">Alteração ou Consulta de Reserva</option>
+              <option value="cancelamento">Solicitação de Estorno / Cancelamento</option>
+              <option value="parceria">Eventos, Bootcamps e Torneios LAN</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="ticketMessage">Mensagem / Descrição</label>
+            <textarea id="ticketMessage" class="form-control" placeholder="Detalhe sua necessidade..." required></textarea>
+          </div>
+
+          <button type="submit" id="btnTicketSubmit" class="btn-primary" style="width: 100%; padding: 12px; margin-top: 8px;">
+            Transmitir Chamado
+          </button>
+        </form>
+
+        <div id="ticketFeedback" class="feedback-success"></div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-content">
+      <p>&copy; 2026 Nexus Inn - Todos os direitos reservados.</p>
+      <div style="margin-top: 10px; font-size: 0.85rem;">
+        <a href="termos.html" style="color: var(--text-muted); margin: 0 8px;">Termos de Uso</a> &bull;
+        <a href="cancelamento.html" style="color: var(--text-muted); margin: 0 8px;">Política de Cancelamento</a> &bull;
+        <a href="contato.html" style="color: var(--neon-cyan); margin: 0 8px;">Central de Ajuda</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Pré-preenche dados caso o jogador esteja autenticado
+      const currentUserRaw = localStorage.getItem('nexus_current_user');
+      if (currentUserRaw) {
+        try {
+          const user = JSON.parse(currentUserRaw);
+          const nameInput = document.getElementById('ticketName');
+          const contactInput = document.getElementById('ticketContact');
+          if (nameInput) nameInput.value = user.gamerTag || user.fullName || '';
+          if (contactInput) contactInput.value = user.email || '';
+        } catch(e) {}
+      }
+
+      // Envio do Chamado com geração de protocolo
+      const form = document.getElementById('ticketForm');
+      const feedback = document.getElementById('ticketFeedback');
+      const btn = document.getElementById('btnTicketSubmit');
+
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        btn.disabled = true;
+        btn.textContent = 'A transmitir...';
+
+        const protocol = '#TICKET-' + Math.floor(1000 + Math.random() * 9000);
+
+        setTimeout(() => {
+          btn.disabled = false;
+          btn.textContent = 'Transmitir Chamado';
+          form.reset();
+
+          feedback.style.display = 'block';
+          feedback.innerHTML = `✅ <strong>Chamado registrado com sucesso!</strong><br>Protocolo gerado: <strong>${protocol}</strong>. Nossa equipe de operações responderá em até 10 minutos.`;
+        }, 1000);
+      });
+    });
+  </script>
+</body>
+</html>
